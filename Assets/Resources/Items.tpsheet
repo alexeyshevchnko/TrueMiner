@@ -1,0 +1,18 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# http://www.codeandweb.com/texturepacker/unity
+#
+# Sprite sheet: Items.png (128 x 128)
+# $TexturePacker:SmartUpdate:33ab63b98492a472494b7ffe09f9e487:7fb674042195febac25fc086278f1bed:ff72447e4ee6a52320ae9d7c9baf37a7$
+#
+
+fire1;2;94;30;32;0.5;0.5
+fire2;2;60;30;32;0.5;0.5
+fire3;34;94;28;32;0.4642857142857143;0.5
+fire4;2;26;30;32;0.4666666666666667;0.5
+fire5;64;94;28;32;0.42857142857142855;0.5
+fire6;94;96;28;30;0.4642857142857143;0.4666666666666667
+fire7;94;62;26;32;0.5;0.5
+torch;2;6;14;18;0.35714285714285715;1.6666666666666665

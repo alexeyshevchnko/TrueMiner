@@ -1,0 +1,62 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+#Tooling
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*
+*.sass-cache
+
+
+#User Specific
+*.userprefs
+*.usertasks
+.DS_Store
+
+#Mono Project Files
+*.pidb
+*.resources
+
+#Unity3d generated
+Temp/
+Library/
+Builds/
+*.unityproj
+*.sln
+*.csproj
+
+#Project specifics
+Assets/_Old/
+web_build/
+orbix_ios/
+*.apk
+.DS_Store
+/*.suo
+/obj
+/*.iml
+/.idea
+log.txt
+OrbixMap.txt
+
+Assets/Build/**
+Assets/Build.meta
+
+#I don't know why, but Unity keeps deleting this file and annoying me
+Assets/orbix-interop/TestCase/TestCase.csproj.meta
+/Assembly-CSharp-vs.csproj.user
+/UnityVS.client.sln.DotSettings
+/client-csharp.sln.DotSettings
+/client-csharp.sln.DotSettings.user
+/Library
+/Temp
+/Assembly-CSharp.csproj
+/Assembly-CSharp-Editor.csproj
+/Assembly-CSharp-Editor-vs.csproj
+/Assembly-CSharp-vs.csproj
+/Orbix2D.sln
+/Orbix2D-csharp.sln
+/webgl3

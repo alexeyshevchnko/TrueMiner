@@ -1,0 +1,509 @@
+fileFormatVersion: 2
+guid: 28fa38bba7f6e4942918fe5e5bbb41df
+timeCreated: 1507881123
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Tiles_0
+    21300002: Tiles_1
+    21300004: Tiles_118
+    21300006: Tiles_146
+    21300008: Tiles_147
+    21300010: Tiles_153
+    21300012: Tiles_154
+    21300014: Tiles_193
+    21300016: Tiles_6
+    21300018: Tiles_2
+    21300020: Tiles_5_1
+    21300022: Tree_Tops
+    21300024: Liquid_0
+    21300026: Liquid_00
+    21300028: Tiles_62
+    21300030: Tiles_73
+    21300032: Tiles_74
+    21300034: Tiles_dark
+    21300036: Tiles_light
+    21300038: Tiles_light2
+    21300040: Tiles_bg
+    21300042: fire1
+    21300044: fire2
+    21300046: fire3
+    21300048: fire4
+    21300050: fire5
+    21300052: fire6
+    21300054: fire7
+    21300056: Liquid_000
+    21300058: Tiles_gold
+    21300060: Tree_tiles
+    21300062: Tree_top_leaves
+    21300064: Tree_top_naked
+    21300066: TILES_wood
+    21300068: TILES_brick
+    21300070: Tiles_coal
+    21300072: Tiles_kost
+    21300074: Tiles_meat
+    21300076: Tiles_med
+    21300078: Tiles_stal
+    21300080: Tiles_stone
+    21300082: stairs
+  externalObjects: {}
+  serializedVersion: 4
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Android
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Windows Store Apps
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Liquid_0
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 990
+        width: 306
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Liquid_00
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 956
+        width: 268
+        height: 32
+      alignment: 9
+      pivot: {x: 0.50625, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Liquid_000
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 810
+        width: 250
+        height: 144
+      alignment: 9
+      pivot: {x: 0.576, y: -0.9285714}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: TILES_brick
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 754
+        width: 256
+        height: 232
+      alignment: 9
+      pivot: {x: 0.5625, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: TILES_wood
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 54
+        width: 230
+        height: 160
+      alignment: 9
+      pivot: {x: 0.62068963, y: -0.088709675}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_2
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 216
+        width: 232
+        height: 124
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_5_1
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 726
+        width: 142
+        height: 214
+      alignment: 9
+      pivot: {x: 0.5070422, y: 0.49532712}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_62
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 164
+        width: 230
+        height: 88
+      alignment: 9
+      pivot: {x: 0.50431037, y: 0.48863637}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_73
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 988
+        width: 358
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_74
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 988
+        width: 358
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_bg
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 862
+        width: 88
+        height: 124
+      alignment: 9
+      pivot: {x: 1.6, y: -0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_coal
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 576
+        width: 234
+        height: 232
+      alignment: 9
+      pivot: {x: 0.61538464, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_dark
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 364
+        width: 232
+        height: 126
+      alignment: 9
+      pivot: {x: 0.62068963, y: -0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_gold
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 544
+        width: 232
+        height: 232
+      alignment: 9
+      pivot: {x: 0.62068963, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_kost
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 342
+        width: 232
+        height: 232
+      alignment: 9
+      pivot: {x: 0.62068963, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_light
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 254
+        width: 232
+        height: 126
+      alignment: 9
+      pivot: {x: 0.62068963, y: -0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_light2
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 238
+        width: 232
+        height: 124
+      alignment: 9
+      pivot: {x: 0.62068963, y: -0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_meat
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 286
+        width: 232
+        height: 232
+      alignment: 9
+      pivot: {x: 0.62068963, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_med
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 52
+        width: 232
+        height: 232
+      alignment: 9
+      pivot: {x: 0.62068963, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_stal
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 492
+        width: 232
+        height: 232
+      alignment: 9
+      pivot: {x: 0.62068963, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tiles_stone
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 520
+        width: 234
+        height: 232
+      alignment: 9
+      pivot: {x: 0.61538464, y: 0.41810346}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tree_Tops
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 778
+        width: 240
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5125, y: 0.4875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tree_tiles
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 382
+        width: 232
+        height: 160
+      alignment: 9
+      pivot: {x: 0.5086207, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tree_top_leaves
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 860
+        width: 246
+        height: 80
+      alignment: 9
+      pivot: {x: 0.52307695, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: Tree_top_naked
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 942
+        width: 272
+        height: 80
+      alignment: 9
+      pivot: {x: 0.49586776, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: stairs
+      rect:
+        serializedVersion: 2
+        x: 632
+        y: 956
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+    outline: []
+    physicsShape: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
