@@ -20,12 +20,14 @@ public struct Vector2Int {
         return string.Format("x = {0}, y = {1}",x,y);
     }
 
+    private static Vector2Int NULL = new Vector2Int(int.MinValue, int.MinValue);
+
     public bool IsNull() {
         return x == int.MinValue && y == int.MinValue;
     }
 
     public static Vector2Int GetNull() {
-        return new Vector2Int(int.MinValue, int.MinValue);
+        return NULL;
     }
 
     //left, right, top, bottom
@@ -65,5 +67,7 @@ public struct Vector2Int {
     public static bool operator !=(Vector2Int c1, Vector2Int c2) {
         return !c1.Equals(c2);
     }
+
+    
 
 }

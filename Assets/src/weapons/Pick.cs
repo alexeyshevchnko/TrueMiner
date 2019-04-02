@@ -77,7 +77,7 @@ public class Pick : MonoBehaviour, IWeapon {
         var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         var ray = pos - firePoint.position;
-        List<Vector2Int> tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, false);
+        var tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, false);
 
        // Debug.LogError(tilesDown.Count);
 
@@ -153,12 +153,16 @@ public class DamagePointBase : MonoBehaviour {
     }
 
     void Do(Vector3 start, Vector3 end) {
-        List<Vector2Int> tiles = Collision.Raycast(start, Vector2.one, end - start, true);
-        foreach (var tile in tiles) {
-            if (Map[tile.x, tile.y].IsDecor()) {
+        var tiles = Collision.Raycast(start, Vector2.one, end - start, true);
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            var tile = tiles[i];
+            if (Map[tile.x, tile.y].IsDecor())
+            {
                 TileDataProvider.ChangeTile(tile, 0, 0);
             }
         }
+
     }
 
     void Update() {

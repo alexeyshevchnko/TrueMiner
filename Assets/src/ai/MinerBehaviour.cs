@@ -83,7 +83,7 @@ public class MinerBehaviour  : IAIBehaviour {
 
     public void Update() {
         var dir = new Vector2();
-        var pos = pysicItem.GetPosition();
+        var pos = pysicItem.Position;
 
         switch (State) {
             case MinerState.idleReturn:
@@ -140,7 +140,7 @@ public class MinerBehaviour  : IAIBehaviour {
 
                 if (pos.x < minPos.x && direcr != 1) {
                     pysicItem.SetVelocity(new Vector2());
-                    pysicItem.SetPosition(new Vector2(minPos.x, pysicItem.GetPosition().y));
+                    pysicItem.SetPosition(new Vector2(minPos.x, pysicItem.Position.y));
                  //   direcr = 1;
                     speed = UnityEngine.Random.Range(0.1f, 4.5f);
 

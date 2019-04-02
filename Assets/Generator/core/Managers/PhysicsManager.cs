@@ -213,7 +213,7 @@ public class PhysicsManager : IPhysicsManager {
            
             for (int j = 0; j < objects.Count; j++) {
                 var item = objects[j];
-                Vector2 itemCenterPos = item.GetPosition();
+                Vector2 itemCenterPos = item.Position;
                 //1е если радиус меньше чем растояние между центрами то обьект входит в рейндж
                 if (Vector2.Distance(center, itemCenterPos) < radius) {
                     rez.Add(item);
@@ -263,12 +263,12 @@ public class PhysicsManager : IPhysicsManager {
             var item = objects[j];
             //пришлось подгонять мега кастыль
             var itemTopLeftPos = new Vector2(
-                item.GetPosition().x - (item.Size.x / 2f + item.Size.x * 0.2f),
-                item.GetPosition().y + (item.Size.y / 2f + item.Size.y * 0.1f));
+                item.Position.x - (item.Size.x / 2f + item.Size.x * 0.2f),
+                item.Position.y + (item.Size.y / 2f + item.Size.y * 0.1f));
 
             var itemBottomRightPos = new Vector2(
-                item.GetPosition().x + (item.Size.x / 2f + item.Size.x * 0.2f),
-                item.GetPosition().y - (item.Size.y / 2f + item.Size.y * 0.1f));
+                item.Position.x + (item.Size.x / 2f + item.Size.x * 0.2f),
+                item.Position.y - (item.Size.y / 2f + item.Size.y * 0.1f));
 
             //Vector2 itemTopLeftPos = item.GetTopLeftPos();
             //Vector2 itemBottomRightPos = item.GetBottomRightPos();

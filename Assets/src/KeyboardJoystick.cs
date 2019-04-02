@@ -59,7 +59,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
             if (oldJampFrame != Time.frameCount 
                 && 
-                (Collision.Raycast(pysicItem.GetPosition(), viewReciver.size, Vector2.down).Count != 0 ||
+                (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0 ||
                 isStairs)) {
                 countJampFrame = 0;
                 pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
@@ -101,14 +101,14 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
             if (!isStairs)
             {
-                if (Collision.Raycast(pysicItem.GetPosition(), viewReciver.size, Vector2.down).Count != 0)
+                if (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0)
                 {
                     var countTile = MaskManager.GetMaskLJamp(pysicItem.GetBottomLeftPos());
                     if (countTile > 0)
                     {
                         pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
-                        pysicItem.SetPosition(new Vector2(pysicItem.GetPosition().x - 1,
-                            pysicItem.GetPosition().y + 16*countTile + 1));
+                        pysicItem.SetPosition(new Vector2(pysicItem.Position.x - 1,
+                            pysicItem.Position.y + 16*countTile + 1));
                     }
 
                 }
@@ -126,15 +126,15 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
             if (!isStairs)
             {
-                if (Collision.Raycast(pysicItem.GetPosition(), viewReciver.size, Vector2.down).Count != 0)
+                if (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0)
                 {
                     var countTile = MaskManager.GetMaskRJamp(pysicItem.GetBottomRightPos());
                     //Debug.LogError(countTile);
                     if (countTile > 0)
                     {
                         pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
-                        pysicItem.SetPosition(new Vector2(pysicItem.GetPosition().x + 1,
-                            pysicItem.GetPosition().y + 16 * countTile + 1));
+                        pysicItem.SetPosition(new Vector2(pysicItem.Position.x + 1,
+                            pysicItem.Position.y + 16 * countTile + 1));
                     }
 
                 }

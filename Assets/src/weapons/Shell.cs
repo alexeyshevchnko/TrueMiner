@@ -15,9 +15,12 @@ public class Shell : MonoBehaviourPhysicItem {
 
        // Debug.LogError(pysicItem.velocity.magnitude);
         if (pysicItem.velocity.magnitude > 6) {
-            List<Vector2Int> tiles = Collision.Raycast(pysicItem.GetPosition(), size, pysicItem.velocity, true);
-            foreach (var tile in tiles) {
-                if (Map[tile.x, tile.y].IsDecor()) {
+            var tiles = Collision.Raycast(pysicItem.Position, size, pysicItem.velocity, true);
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                var tile = tiles[i];
+                if (Map[tile.x, tile.y].IsDecor())
+                {
                     TileDataProvider.ChangeTile(tile, 0, 0);
                 }
             }

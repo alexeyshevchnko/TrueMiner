@@ -76,7 +76,7 @@ public class ExplosionShell : MonoBehaviour, IoC.IInitialize {
 
             foreach (var item in physicItems) {
                 if (item.IsReactExplosion) {
-                    Vector2 addVelosity = item.GetPosition() - (Vector2) pos;
+                    Vector2 addVelosity = item.Position - (Vector2) pos;
                     //addVelosity.normalized
                     item.AddVelocity(50*addVelosity.normalized);
                 }

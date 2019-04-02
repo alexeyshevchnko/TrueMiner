@@ -76,7 +76,7 @@ public class Axe : MonoBehaviour, IWeapon {
         var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         var ray = pos - firePoint.position;
-        List<Vector2Int> tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, true);
+        var tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, true);
 
         // Debug.LogError(tilesDown.Count);
 

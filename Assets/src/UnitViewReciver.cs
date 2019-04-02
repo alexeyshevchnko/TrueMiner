@@ -79,7 +79,7 @@ public class UnitViewReciver : MonoBehaviour,IoC.IInitialize {
 
         ChackAnim();
         pysicItem.Update();
-        transform.position = pysicItem.GetPosition();
+        transform.position = pysicItem.Position;
 
       //  PhysicsManager.ChackCollision(pysicItem);
     }

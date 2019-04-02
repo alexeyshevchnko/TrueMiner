@@ -18,7 +18,9 @@ public interface IPhysicItem {
     void SetVelocity(Vector2 val);
     float ReboundFactor { get; set; }
     void SetPosition(Vector2 pos);
-    Vector2 GetPosition();
+    //Vector2 Position();
+    Vector2 Position { get; }
+
     Vector2 GetTopLeftPos();
     Vector2 GetBottomRightPos();
     Vector2 GetTopRightPos();

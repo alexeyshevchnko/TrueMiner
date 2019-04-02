@@ -86,9 +86,14 @@ public class PhysicItem : IPhysicItem {
         momentVector = val;
     }
 
-    public Vector2 GetPosition() {
-        return position;
+    public Vector2 Position
+    {
+        get { return position; }
     }
+
+ //   public Vector2 Position() {
+  //      return position;
+  //  }
 
     public void SetPosition(Vector2 pos) {
         Sleep = false;

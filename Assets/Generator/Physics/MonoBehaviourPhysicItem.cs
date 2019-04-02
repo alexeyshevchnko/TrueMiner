@@ -56,8 +56,8 @@ public class MonoBehaviourPhysicItem : MonoBehaviour, IoC.IInitialize, IMonoBeha
             return;
 
         
-        DeltaPosition = pysicItem.GetPosition() - (Vector2)transform.position;
-        transform.position = pysicItem.GetPosition();
+        DeltaPosition = pysicItem.Position - (Vector2)transform.position;
+        transform.position = pysicItem.Position;
 
         RotateOnDirection();
         pysicItem.Update();

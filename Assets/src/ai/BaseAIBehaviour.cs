@@ -47,19 +47,22 @@ public class BaseAIBehaviour : IAIBehaviour {
     public void Update() {
         var dir = new Vector2(speed * direcr, 0);
         pysicItem.AddVelocity(dir);
-        var pos = pysicItem.GetPosition();
+        var pos = pysicItem.Position;
 
-        List<Vector2Int> tiles = Collision.Raycast(pos, pysicItem.Size, dir, true);
+        var tiles = Collision.Raycast(pos, pysicItem.Size, dir, true);
 
         //прыжок только нсли есть земля
         var dirDown = new Vector2(0, -1.1f);
-        List<Vector2Int> tilesDown = Collision.Raycast(pos, pysicItem.Size, dirDown, false);
+        var tilesDown = Collision.Raycast(pos, pysicItem.Size, dirDown, false);
         if (tilesDown.Count > 0) {
             
             bool tryJamp = false;
 
-            foreach (var tile in tiles) {
-                if (!Map[tile.x, tile.y].IsEmpty()) {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                var tile = tiles[i];
+                if (!Map[tile.x, tile.y].IsEmpty())
+                {
                     tryJamp = true;
                     break;
                 }

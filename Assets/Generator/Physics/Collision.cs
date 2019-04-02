@@ -4,6 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Collision : ICollision,IoC.IInitialize {
+    private float tileSize;
+    BufferList Buffer = new BufferList();
+
     [IoC.Inject]
     public IMapGenerator MapGenerator { set; protected get; }
 
@@ -19,41 +22,66 @@ public class Collision : ICollision,IoC.IInitialize {
         }
     }
 
+    private int _countTileMapX=0;
     private int countTileMapX {
-        get { return MapGenerator.SizeX - 1; }
+        get
+        {
+            if (_countTileMapX == 0)
+            {
+                _countTileMapX = MapGenerator.SizeX - 1;
+            }
+            return _countTileMapX;
+        }
     }
 
+    private int _countTileMapY = 0;
     private int countTileMapY {
-        get { return MapGenerator.SizeY - 1; }
-    }
-    public void OnInject() {
-    }
-
-    int ChackY(int y) {
-        if (y < 0)
-            return 0;
-        if (y > countTileMapY)
-            return countTileMapY;
-        return y;
+        get
+        {
+            if (_countTileMapY == 0)
+            {
+                _countTileMapY = MapGenerator.SizeY - 1;
+            }
+            return _countTileMapY;
+        }
     }
 
-    int ChackX(int x) {
-        if (x < 0)
-            return 0;
-        if (x > countTileMapX)
-            return countTileMapX;
-        return x;
+    
+    public void OnInject()
+    {
+        tileSize = TileDataProvider.TileSize;
+    
     }
 
     Vector2Int GetMapPos(Vector2 pos) {
-        int offsetX = ChackX(Mathf.CeilToInt((pos.x + 1.5f * TileDataProvider.TileSize) / TileDataProvider.TileSize));
-        int offsetY = ChackY(Mathf.CeilToInt((pos.y + 1.5f * TileDataProvider.TileSize) / TileDataProvider.TileSize));
+        if (tileSize == 0)
+        {
+            tileSize = TileDataProvider.TileSize;
+        }
+        ///Mathf.CeilToInt
+        int offsetX = (int)((pos.x + 1.5f * tileSize) / tileSize)+1;
+        int offsetY = (int)((pos.y + 1.5f * tileSize) / tileSize)+1;
+        
+        if (offsetX < 0)
+            offsetX = 0;
+        if (offsetX > countTileMapX)
+            offsetX = countTileMapX;
+
+        if (offsetY < 0)
+            offsetY = 0;
+        if (offsetY > countTileMapY)
+            offsetY = countTileMapY;
+        
         return new Vector2Int(offsetX, offsetY);
     }
 
     Vector2 GetWorldPos(Vector2Int pos) {
-        float offsetX = (pos.x - 2f) * TileDataProvider.TileSize;
-        float offsetY = (pos.y - 2f) * TileDataProvider.TileSize;
+        if (tileSize == 0)
+        {
+            tileSize = TileDataProvider.TileSize;
+        }
+        float offsetX = (pos.x - 2f) * tileSize;
+        float offsetY = (pos.y - 2f) * tileSize;
         return new Vector2(offsetX, offsetY); 
     }
 
@@ -94,8 +122,10 @@ public class Collision : ICollision,IoC.IInitialize {
 
 
     //вернёт ооффсеты не нулевые в квадрате startPos endPos
-    public List<Vector2Int> GetCollidersInRect(Vector2 startPos, Vector2 endPos, bool includingAll = false) {
-        List<Vector2Int> rezPos = new List<Vector2Int>();
+    public BufferItem GetCollidersInRect(Vector2 startPos, Vector2 endPos, bool includingAll = false)
+    {
+        //List<Vector2Int> rezPos = new List<Vector2Int>();
+        Buffer.NextBuffer();
 
         Vector2Int p0 = GetMapPos(startPos);
         Vector2Int p1 = GetMapPos(endPos);
@@ -106,20 +136,21 @@ public class Collision : ICollision,IoC.IInitialize {
         int maxX = p0.x >= p1.x ? p0.x : p1.x;
         int maxY = p0.y >= p1.y ? p0.y : p1.y;
 
-
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
-                if (includingAll) {
-                    rezPos.Add(new Vector2Int(x, y));
+                if (includingAll)
+                {
+                    Buffer.Add(new Vector2Int(x, y));
+                    
                 } else {
                     if (!Map[x, y].IsEmpty()) {
-                        rezPos.Add(new Vector2Int(x, y));
+                        Buffer.Add(new Vector2Int(x, y));
                     }
                 }
             }
         }
 
-        return rezPos;
+        return Buffer.GetCurrent;
     }
 
     public Vector2 ChackVelocity(Vector2 position, Vector2 velocity, float width, float height) {
@@ -153,7 +184,7 @@ public class Collision : ICollision,IoC.IInitialize {
         float x = width / 2;
         float y = height / 2;
 
-        List<Vector2Int> collisions = Raycast(position, new Vector2(width, height), velocity);
+        var collisions = Raycast(position, new Vector2(width, height), velocity);
 
         if (collisions.Count == 0) {
             return velocity;
@@ -162,15 +193,18 @@ public class Collision : ICollision,IoC.IInitialize {
         //находим ближайший к нам
         float minDistance = -1;
         Vector2 wPos = Vector2.zero;
-        foreach (var col in collisions) {
+        for (int i = 0; i < collisions.Count; i++)
+        {
+            var col = collisions[i];
             var wPos2 = GetWorldPos(col);
             var dist = Vector2.Distance(position, wPos2);
-            if (wPos == Vector2.zero || dist < minDistance) {
+            if (wPos == Vector2.zero || dist < minDistance)
+            {
                 minDistance = dist;
                 wPos = wPos2;
-          //      Map[col.x, col.y].type = 1;
             }
         }
+
 
         var rez = Vector2.zero;
         float tileSize12 = TileDataProvider.TileSize/2;
@@ -185,19 +219,26 @@ public class Collision : ICollision,IoC.IInitialize {
         return rez;
     }
 
-    public List<Vector2Int> Raycast(Vector2 position, Vector2 size, Vector2 ray, bool includingAll = false) {
-        List<Vector2Int> rezX = Raycast0(position, size, /*new Vector2(ray.x, 0)*/ray, includingAll);
+    public BufferItem Raycast(Vector2 position, Vector2 size, Vector2 ray, bool includingAll = false)
+    {
+        BufferItem rezX = Raycast0(position, size, /*new Vector2(ray.x, 0)*/ray, includingAll);
         //List<Vector2Int> rezY = Raycast0(position, size, new Vector2(0, ray.y), includingAll);
         //rezX.AddRange(rezY);
+
+
+
         return rezX;
     }
 
-    private List<Vector2Int> Raycast0(Vector2 position, Vector2 size, Vector2 ray, bool includingAll = false) {
-
-        List<Vector2Int> rez = new List<Vector2Int>();
-
+    
+    private BufferItem Raycast0(Vector2 position, Vector2 size, Vector2 ray, bool includingAll = false)
+    {
         if (ray == Vector2.zero)
-            return rez;
+        {
+            Buffer.NextBuffer();
+            return Buffer.GetCurrent;
+        }
+            
 
         float x = size.x / 2;
         float y = size.y / 2;
