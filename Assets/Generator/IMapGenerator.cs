@@ -8,6 +8,9 @@ public interface IMapGenerator {
     void ChangeMap();
     TileInfoStructure[,] GetMap();
     TileInfoStructure GetTile(Vector2Int pos);
+
+
+
     List<Vector2Int> Surface { get; }
     Vector2Int CenterPos { get; }
     Action OnGenerate { get; set; }

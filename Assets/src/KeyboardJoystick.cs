@@ -17,6 +17,9 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
     [IoC.Inject]
     public IMapGenerator MapGenerator { set; protected get; }
 
+    [IoC.Inject]
+    public IMaskManager MaskManager { set; protected get; }
+
     public float Speed = 1;
     public Vector2 jampVelocity = new Vector2(0, -21);
 
@@ -89,11 +92,29 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         }
 
         // Left
-        if (oldLeftFrame != Time.frameCount && Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || TouchInput.instance.isLeft) {
+        if (oldLeftFrame != Time.frameCount && Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || TouchInput.instance.isLeft)
+        {
+            
             pysicItem.AddVelocity(new Vector2(-Speed, 0));
             oldLeftFrame = Time.frameCount;
             controller.Rotat(-1);
-        //    PhotonManager.inst.SendPlayerRotate(controller.Id, -1);
+
+            if (!isStairs)
+            {
+                if (Collision.Raycast(pysicItem.GetPosition(), viewReciver.size, Vector2.down).Count != 0)
+                {
+                    var countTile = MaskManager.GetMaskLJamp(pysicItem.GetBottomLeftPos());
+                    if (countTile > 0)
+                    {
+                        pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
+                        pysicItem.SetPosition(new Vector2(pysicItem.GetPosition().x - 1,
+                            pysicItem.GetPosition().y + 16*countTile + 1));
+                    }
+
+                }
+            }
+
+
         }
 
         // Right
@@ -101,7 +122,24 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
             pysicItem.AddVelocity(new Vector2(Speed, 0));
             oldRightFrame = Time.frameCount;
             controller.Rotat(1);
-         //   PhotonManager.inst.SendPlayerRotate(controller.Id, 1);
+
+
+            if (!isStairs)
+            {
+                if (Collision.Raycast(pysicItem.GetPosition(), viewReciver.size, Vector2.down).Count != 0)
+                {
+                    var countTile = MaskManager.GetMaskRJamp(pysicItem.GetBottomRightPos());
+                    //Debug.LogError(countTile);
+                    if (countTile > 0)
+                    {
+                        pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
+                        pysicItem.SetPosition(new Vector2(pysicItem.GetPosition().x + 1,
+                            pysicItem.GetPosition().y + 16 * countTile + 1));
+                    }
+
+                }
+            }
+
         }
 
 

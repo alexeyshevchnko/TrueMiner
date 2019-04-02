@@ -37,6 +37,7 @@ public class Main : IContextRoot {
         container.Bind<IGuiPoolManager>().AsSingle<GuiPoolManager>();
 
         container.Bind<ISwapItemManager>().AsSingle<SwapItemManager>();
+        container.Bind<IMaskManager>().AsSingle<MaskManager>();
         
     }
     private void StartGame() {
