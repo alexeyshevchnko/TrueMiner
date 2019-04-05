@@ -737,6 +737,7 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     }
 
     public void Update() {
+        return;
         liquid.Update();
      //   LightRenderer.Update();
         
@@ -745,6 +746,7 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
 
 
     private void LiquidUpdate() {
+        return;
         while (true) {
             Thread.Sleep(sleepTime);
             try {

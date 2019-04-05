@@ -25,6 +25,8 @@ public class Pick : MonoBehaviour, IWeapon {
     [IoC.Inject]
     public ICollision Collision { set; protected get; }
 
+    private bool isTouch;
+
     private TileInfoStructure[,] Map {
         get {
             return MapGenerator.GetMap();
@@ -44,6 +46,7 @@ public class Pick : MonoBehaviour, IWeapon {
 
     public void Init(ref IItem data, PlayerModel playerModel) {
         itemData = data;
+        firePoint = transform.transform.GetComponentInParent<PlayerController>().transform;
     }
 
     public IItem GetItem() {
@@ -51,7 +54,10 @@ public class Pick : MonoBehaviour, IWeapon {
     }
 
     private bool isFireing = false;
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
+        
+        this.isTouch = isTouch;
         if (isFireing)
             return;
         isFireing = true;
@@ -65,26 +71,34 @@ public class Pick : MonoBehaviour, IWeapon {
         damagePoint.enabled = true;
     }
 
-    public void FireCycle(Vector2 direct) {
-        Fire(direct);
+    
+    public void FireCycle(Vector2 direct, bool isTouch)
+    {
+        Fire(direct, isTouch);
     }
 
     void OnFinishedFire() {
         isFireing = false;
         transform.localRotation = new Quaternion();
         damagePoint.enabled = false;
-        
-        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        var ray = pos - firePoint.position;
+        var ray = Vector3.zero;
+
+        var v = UltimateJoystick.GetVerticalAxis("Joystick2");
+        var h = UltimateJoystick.GetHorizontalAxis("Joystick2");
+        ray = new Vector3(h, v) *100;
+
+        if (!isTouch)
+        {
+
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            ray = (pos - firePoint.position);
+           // Debug.LogError(Vector2.Distance(ray,Vector2.zero));
+
+        }
+
         var tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, false);
 
-       // Debug.LogError(tilesDown.Count);
-
-        
-        
-
-        
         if(tilesDown.Count>0){
             // ищем ближайшею
             int index = 0;
@@ -100,7 +114,8 @@ public class Pick : MonoBehaviour, IWeapon {
 
             if (minDist <= range) {
                 tileDataProvider.DamageTile(tilesDown[index], 100);
-
+                var pos = tileDataProvider.OffsetTileToWorldPos(tilesDown[index]);
+                //var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 var removeItemId = SwapItemManager.RemoveItem(pos);
                 if (removeItemId != 0) {
                     //сделать предмет

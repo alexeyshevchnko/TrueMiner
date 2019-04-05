@@ -54,7 +54,8 @@ public class Backsword : MonoBehaviour, IWeapon {
     }
 
     private bool isFireing = false;
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
         if(isFireing)
             return;
         isFireing = true;
@@ -68,7 +69,8 @@ public class Backsword : MonoBehaviour, IWeapon {
         damagePoint.enabled = true;
     }
 
-    public void FireCycle(Vector2 direct) {
+    public void FireCycle(Vector2 direct, bool isTouch)
+    {
         
     }
 

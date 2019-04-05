@@ -17,8 +17,11 @@ public class Bow : MonoBehaviour, IWeapon {
 
     private IItem itemData;
 
+    private Transform rootPos;
+
     public void Init(ref IItem data, PlayerModel playerModel) {
         itemData = data;
+        rootPos = transform.transform.GetComponentInParent<PlayerController>().transform;
     }
 
     public IItem GetItem() {
@@ -31,7 +34,8 @@ public class Bow : MonoBehaviour, IWeapon {
 
     private ICooldownItem cooldownShow;
 
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
         if (Time.time - lastTimeFire < cooldown)
             return;
         lastTimeFire = Time.time;
@@ -44,11 +48,26 @@ public class Bow : MonoBehaviour, IWeapon {
 
         Vector3 direct3 = new Vector3(direct.x, direct.y, firePoint.position.z);
 
-        Vector3.Distance(firePoint.position, direct3);
+        
+        
+        if (isTouch)
+        {
+            var h = UltimateJoystick.GetHorizontalAxis("Joystick2");
+            var v = UltimateJoystick.GetVerticalAxis("Joystick2");
+            var vPos = new Vector3(h, v) * 100;
+            direct3 = vPos + rootPos.position;
+            direct3 = new Vector3(direct3.x, direct3.y, firePoint.position.z);
+        }
+        
+
+
+       
+
         item.AddVelocity((direct3 - firePoint.position).normalized * maxSpeed);
     }
 
-    public void FireCycle(Vector2 direct) {
+    public void FireCycle(Vector2 direct, bool isTouch)
+    {
         
     }
 

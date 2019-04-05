@@ -50,7 +50,8 @@ public class Axe : MonoBehaviour, IWeapon {
     }
 
     private bool isFireing = false;
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
         if (isFireing)
             return;
         isFireing = true;
@@ -64,8 +65,9 @@ public class Axe : MonoBehaviour, IWeapon {
         damagePoint.enabled = true;
     }
 
-    public void FireCycle(Vector2 direct) {
-        Fire(direct);
+    public void FireCycle(Vector2 direct, bool isTouch)
+    {
+        Fire(direct, isTouch);
     }
 
     void OnFinishedFire() {

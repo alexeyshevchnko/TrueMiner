@@ -8,6 +8,7 @@ public class CooldownManager : ICooldownManager, IoC.IInitialize {
 
     private int count = 0;
 
+    private readonly List<int> itemsKey = new List<int>();
     private readonly Dictionary<int, ICooldownItem> items = new Dictionary<int, ICooldownItem>();
     private readonly Dictionary<int, float> lastTickTimes = new Dictionary<int, float>();
 
@@ -34,6 +35,7 @@ public class CooldownManager : ICooldownManager, IoC.IInitialize {
 
     private void AddCooldown(ICooldownItem cooldown) {
         items.Add(cooldown.Id, cooldown);
+        itemsKey.Add(cooldown.Id);
         lastTickTimes[cooldown.Id] = GetTime();
     }
 
@@ -49,6 +51,7 @@ public class CooldownManager : ICooldownManager, IoC.IInitialize {
             return;
 
         items.Remove(item.Id);
+        itemsKey.Remove(item.Id);
         lastTickTimes.Remove(item.Id);
     }
 
@@ -64,9 +67,11 @@ public class CooldownManager : ICooldownManager, IoC.IInitialize {
 
 
     public void UpdateOfTime(float currentTime) {
-        var listKeys = items.Keys.ToList();
-        for (int i = listKeys.Count - 1; i >= 0; i--) {
-            int id = listKeys[i];
+       // items.Keys.
+
+        for (int i = itemsKey.Count - 1; i >= 0; i--)
+        {
+            int id = itemsKey[i];
             float lastTickTime = lastTickTimes[id];
             CooldownItem cooldown = (CooldownItem)items[id];
 
@@ -103,6 +108,7 @@ public class CooldownManager : ICooldownManager, IoC.IInitialize {
 
     public void Clear() {
         items.Clear();
+        itemsKey.Clear();
         lastTickTimes.Clear();
     }
 

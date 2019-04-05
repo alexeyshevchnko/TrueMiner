@@ -45,6 +45,9 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         get { return viewReciver.pysicItem; }
     }
 
+    private float joystickH;
+    private float joystickV;
+    private float oldJ;
     void Update() {
 
         if (Container == null)
@@ -52,37 +55,31 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
         var offset = TileDataProvider.WorldPosToOffsetTile(pysicItem.GetBottomPos());
         bool isStairs = MapGenerator.GetTile(new Vector2Int(offset.x, offset.y)).IsStairs();
+        joystickH = UltimateJoystick.GetHorizontalAxis("Joystick1");
+        joystickV = UltimateJoystick.GetVerticalAxis("Joystick1");
 
         //jamp
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) 
-            || TouchInput.instance.isJampDown) {
-
-            if (oldJampFrame != Time.frameCount 
-                && 
-                (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0 ||
-                isStairs)) {
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) /*|| (joystickV >= 0 && joystickV < 0.4)*/)
+        {
+            
+            if (oldJampFrame != Time.frameCount && (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0 || isStairs)) {
                 countJampFrame = 0;
                 pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
                 oldJampFrame = Time.frameCount;
             }
-
-         
         }
+     
 
         //jamp isStairs
         if (isStairs &&( Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)
-            || TouchInput.instance.isJampDown)) {
-
-          //  var offsetCenter = TileDataProvider.WorldPosToOffsetTile(pysicItem.GetPosition());
-          //  bool isStairsCenter = MapGenerator.GetTile(new Vector2Int(offsetCenter.x, offsetCenter.y-2)).IsStairs();
-
-          //  if (isStairsCenter) {
+            ||  joystickV > .5)) {
                 pysicItem.ApplayVelocity(new Vector2(0, 4));
-          //  }
         }
 
         // Down
-        if (oldDownFrame != Time.frameCount && Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
+        if (oldDownFrame != Time.frameCount && Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)
+            || joystickV < -.5)
+        {
             pysicItem.AddVelocity(new Vector2(0, -Speed));
             oldDownFrame = Time.frameCount;
 
@@ -91,11 +88,15 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
             }
         }
 
+        
+        
         // Left
-        if (oldLeftFrame != Time.frameCount && Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || TouchInput.instance.isLeft)
+        if (oldLeftFrame != Time.frameCount && Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) ||
+            (joystickH < -.2))
         {
-            
-            pysicItem.AddVelocity(new Vector2(-Speed, 0));
+            var speed = joystickH != 0 ? Speed * joystickH : -Speed;
+
+            pysicItem.AddVelocity(new Vector2(speed, 0));
             oldLeftFrame = Time.frameCount;
             controller.Rotat(-1);
 
@@ -117,9 +118,14 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
         }
 
+
+
         // Right
-        if (oldRightFrame != Time.frameCount && Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || TouchInput.instance.isRight) {
-            pysicItem.AddVelocity(new Vector2(Speed, 0));
+        if (oldRightFrame != Time.frameCount && Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) ||
+            (joystickH > .2))
+        {
+            var speed = joystickH != 0 ? Speed * joystickH : Speed;
+            pysicItem.AddVelocity(new Vector2(speed, 0));
             oldRightFrame = Time.frameCount;
             controller.Rotat(1);
 
@@ -143,91 +149,109 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         }
 
 
+        var joystickH2 = UltimateJoystick.GetHorizontalAxis("Joystick2");
+        var joystickV2 = UltimateJoystick.GetVerticalAxis("Joystick2");
+        
+        bool joystick = Vector2.Distance(new Vector2(joystickH2, joystickV2), Vector2.zero) > 0.1;
+        bool joystick0 = UltimateJoystick.GetIsDown("Joystick1");
 
         var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        if (!Settings.IS_EDIT_MOD && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl)) && !UICamera.IsGuiClick) {
+        if (!Settings.IS_EDIT_MOD && (
+            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl) || joystick)) && !UICamera.IsGuiClick)
+        {
             if (model.CurrentWeapon != null) {
-                var dir = (pos - transform.position).normalized;
-                controller.Rotat(dir.x);
-          //      PhotonManager.inst.SendPlayerRotate(controller.Id, dir.x);
-            //    Debug.LogError("fire");
-                model.CurrentWeapon.Fire(pos);
-           //     PhotonManager.inst.SendFire(controller.Id, pos);
-                
+                if (!joystick)
+                {
+                    var dir = (pos - transform.position).normalized;
+                    controller.Rotat(dir.x);
+                }
+                else
+                {
+                    controller.Rotat(joystickH2);
+                }
+                model.CurrentWeapon.Fire(pos, joystick);
             }
         }
 
-        if (((!Settings.IS_EDIT_MOD) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.LeftControl)) && !UICamera.IsGuiClick)) {
+        if (((!Settings.IS_EDIT_MOD) && (
+            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.LeftControl) || joystick)) && !UICamera.IsGuiClick))
+        {
             if (model.CurrentWeapon != null) {
-                var dir = (pos - transform.position).normalized;
-                controller.Rotat(dir.x);
-               // PhotonManager.inst.SendPlayerRotate(controller.Id, dir.x);
-                model.CurrentWeapon.FireCycle(pos);
-          //      PhotonManager.inst.SendFireCycle(controller.Id, pos);
+                if (!joystick)
+                {
+                    var dir = (pos - transform.position).normalized;
+                    controller.Rotat(dir.x);
+                }
+                else
+                {
+                    controller.Rotat(joystickH2);
+                }
+                model.CurrentWeapon.FireCycle(pos, joystick);
             }
         }
 
-        if (model.CurrentWeapon != null) {
-            model.CurrentWeapon.Rotate(pos);
+        if (model.CurrentWeapon != null)
+        {
+            var rot = pos;
+            if (joystick)
+            {
+                var v = UltimateJoystick.GetVerticalAxis("Joystick2");
+                var h = UltimateJoystick.GetHorizontalAxis("Joystick2");
+                rot = transform.position + new Vector3(h, v) *100 ;
+            }
+            model.CurrentWeapon.Rotate(rot);
         }
 
 
         //Bag
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             model.UseItem(1);
-           // PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2)) {
             model.UseItem(2);
-          //  PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3)) {
             model.UseItem(3);
-          //  PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4)) {
             model.UseItem(4);
-         //   PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5)) {
             model.UseItem(5);
-         //   PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha6)) {
             model.UseItem(6);
-          //  PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha7)) {
             model.UseItem(7);
-         //   PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha8)) {
             model.UseItem(8);
-         //   PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha9)) {
             model.UseItem(9);
-          //  PhotonManager.inst.SendChangeWeapon(controller.Id, model.GetСurrentWeaponId());
         }
 
-      //  PhotonManager.inst.SendPlayerPysicItem(controller.Id, pysicItem.GetSyncData());
     }
+
+    private float oldJoystickV = 0;
+
 
     public int jampUpdateCount = 3;
     public Vector2 Gravity;
     public void FixedUpdate() {
-
         pysicItem.SetGravity(Gravity);
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) || TouchInput.instance.isJampPress) {
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) /*|| joystickV > 0.4*/)
+        {
 
             if (countJampFrame < jampUpdateCount) {
                 countJampFrame++;
@@ -235,6 +259,35 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
             }
         }
 
+
+        if (joystickV > 0)
+        {
+            if (joystickV - oldJoystickV >= 0.4) //joystickV >= 0.4)
+            {
+
+                var offset = TileDataProvider.WorldPosToOffsetTile(pysicItem.GetBottomPos());
+                bool isStairs = MapGenerator.GetTile(new Vector2Int(offset.x, offset.y)).IsStairs();
+
+                if (oldJampFrame != Time.frameCount &&
+                    (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0 || isStairs))
+                {
+                    pysicItem.AddVelocity(new Vector2(0, -pysicItem.velocity.y));
+                    pysicItem.AddVelocity(jampVelocity - new Vector2(0, 0));
+                    pysicItem.AddVelocity(jampVelocity - new Vector2(0, 1));
+                    pysicItem.AddVelocity(jampVelocity - new Vector2(0, 2));
+                    //  pysicItem.AddVelocity(jampVelocity - new Vector2(0, 3));
+                    //   pysicItem.AddVelocity(jampVelocity - new Vector2(0, 4));
+                    // pysicItem.AddVelocity(jampVelocity - new Vector2(0, 4));
+                    // pysicItem.AddVelocity(jampVelocity - new Vector2(0, 6));
+                    oldJoystickV = joystickV;
+                }
+            }
+
+            if (joystickV - oldJoystickV < 0)
+            {
+                oldJoystickV = joystickV;
+            }
+        }
 
 
         if (PhysicsManager != null && viewReciver != null && viewReciver.pysicItem != null) {

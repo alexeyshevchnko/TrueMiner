@@ -47,7 +47,8 @@ public class Torch : MonoBehaviour, IWeapon, IoC.IInitialize {
         flame.SetActive(!mapGenerator.GetMap()[offse.x, offse.y].IsWater());
     }
 
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
         var tween = TweenRotation.Begin(gameObject, 0.3f, Quaternion.identity);
         tween.from = new Vector3(0, 0, 90);
         tween.to = new Vector3(0, 0, -90);
@@ -68,7 +69,8 @@ public class Torch : MonoBehaviour, IWeapon, IoC.IInitialize {
         }
     }
 
-    public void FireCycle(Vector2 direct) {
+    public void FireCycle(Vector2 direct, bool isTouch)
+    {
         ///throw new System.NotImplementedException();
     }
 

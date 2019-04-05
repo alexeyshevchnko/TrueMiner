@@ -58,7 +58,8 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
 
     private bool isFireing = false;
     private Vector2 pos;
-    public void FireCycle(Vector2 pos) {
+    public void FireCycle(Vector2 pos, bool isTouch)
+    {
         if (isFireing)
             return;
 
@@ -107,7 +108,8 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
         }
     }
 
-    public void Fire(Vector2 direct) {
+    public void Fire(Vector2 direct, bool isTouch)
+    {
         ///throw new System.NotImplementedException();
     }
 

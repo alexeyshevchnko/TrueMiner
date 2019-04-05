@@ -38,4 +38,14 @@ public class ApplicationManager : MonoBehaviour,IoC.IInitialize {
 	void FixedUpdate () {
 	    ((CooldownManager)CooldownManager).Update();
 	}
+
+    /*
+    void Update()
+    {
+        if (QualitySettings.vSyncCount != 0 || Application.targetFrameRate != 30)
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 30;
+        }
+    }*/
 }

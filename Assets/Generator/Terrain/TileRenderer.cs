@@ -112,10 +112,7 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
     public float orthographic = 7f;
     void UpdateScreenTiles() {
 
-        if (QualitySettings.vSyncCount != 0 || Application.targetFrameRate != 30) {
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 30;
-        }
+        
 
         if (usePixelPerfect) {
             if (camera.orthographicSize != ((float) (Screen.height))/2f) {
@@ -307,6 +304,7 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
     }
 
     void ApplayScreenUpdateLight() {
+        //return;
         if (ScreenUpdateManager.GetChangeLight()) {
             LightRenderer.CalculateChangeScreen(ScreenUpdateManager.GetLightUptateWorldMin(), ScreenUpdateManager.GetLightUptateWorldMax());
             LightLayerRender();

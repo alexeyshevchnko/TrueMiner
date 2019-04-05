@@ -10,13 +10,13 @@ namespace trasharia {
         }
 
         public int Range(int min, int max) {
-            if (random == null) Init(1);
+            if (random == null) Init(1211);
 
             return random.Next(min, max);
         }
 
         public float Range(float min, float max) {
-            if (random == null) Init(1);
+            if (random == null) Init(1211);
 
             var randomNumber = ((float)random.NextDouble());
             return min + (max - min) * randomNumber;
