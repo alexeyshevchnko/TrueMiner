@@ -39,7 +39,9 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
         layer = (byte)blowBlock.Layer;
         type = (short)blowBlock.Type;
         spriteRenderer.sprite = SpriteManager.CreateSprite(blowBlock.TileCollection, 2, 3);
-        
+
+        var go = UltimateJoystick.GetJoystick("Joystick2");
+        go.SetActive(false);
     }
 
     public IItem GetItem() {
@@ -64,7 +66,7 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
             return;
 
         isFireing = true;
-        var tween = TweenRotation.Begin(gameObject, 0.1f, Quaternion.identity);
+        var tween = TweenRotation.Begin(gameObject, 0.0001f, Quaternion.identity);
         tween.from = new Vector3(0, 0, 90);
         tween.to = new Vector3(0, 0, -90);
         tween.SetOnFinished(() => {
@@ -93,7 +95,14 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
                 if (items.Count == 0 || type == (short)TileTypeEnum.Stairs) {
 
                     var oldType = mapGenerator.GetMap()[offset.x, offset.y].type;
-                    tileDataProvider.ChangeTile(pos.x + 1.5f*tileSize, pos.y + 1.5f*tileSize, type, layer);
+                    tileDataProvider.ChangeTile(pos.x + 1.5f * tileSize, pos.y + 1.5f * tileSize, type, layer);
+                    if (type == (short) TileTypeEnum.Stairs)
+                    {
+                        var map2 = mapGenerator.GetMap()[offset.x + 1, offset.y];
+                        if(map2.IsEmpty())
+                        tileDataProvider.ChangeTile(pos.x + tileSize + 1.5f * tileSize, pos.y + 1.5f * tileSize, type, layer);
+                    }
+
                     var newType = mapGenerator.GetMap()[offset.x, offset.y].type;
 
                     if (newType != oldType) {

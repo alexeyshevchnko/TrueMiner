@@ -1032,7 +1032,16 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
         return UltimateJoysticks[joystickName].isDown;
     }
 
-	/// <summary>
+    public static GameObject GetJoystick(string joystickName)
+    {
+        if (!JoystickConfirmed(joystickName))
+            return null;
+
+        return UltimateJoysticks[joystickName].gameObject;
+
+    }
+
+    /// <summary>
 	/// Returns the current state of the tap count according to the options set.
 	/// </summary>
 	/// <param name="joystickName">The name of the desired Ultimate Joystick.</param>

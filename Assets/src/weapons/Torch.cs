@@ -30,6 +30,8 @@ public class Torch : MonoBehaviour, IWeapon, IoC.IInitialize {
     public void Init(ref IItem data, PlayerModel playerModel) {
         this.playerModel = playerModel;
         itemData = data;
+        var go = UltimateJoystick.GetJoystick("Joystick2");
+        go.SetActive(false);
     }
 
     public IItem GetItem() {

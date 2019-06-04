@@ -32,6 +32,10 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         viewReciver = GetComponent<UnitViewReciver>();
 	    controller = GetComponent<PlayerController>();
 	    model = controller.GetModel();
+
+
+        var go = UltimateJoystick.GetJoystick("Joystick2");
+        go.SetActive(false);
 	}
 
     private bool a1, a2, a3, a4, a5, a6;

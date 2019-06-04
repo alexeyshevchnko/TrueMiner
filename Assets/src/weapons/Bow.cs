@@ -22,6 +22,8 @@ public class Bow : MonoBehaviour, IWeapon {
     public void Init(ref IItem data, PlayerModel playerModel) {
         itemData = data;
         rootPos = transform.transform.GetComponentInParent<PlayerController>().transform;
+        var go = UltimateJoystick.GetJoystick("Joystick2");
+        go.SetActive(true);
     }
 
     public IItem GetItem() {

@@ -25,7 +25,7 @@ public class TargetManager : ITargetManager{
     
     private GameObject player;
     private List<AiController> units = new List<AiController>();
-    private int maxUnitts = 0; 
+    private int maxUnitts = 10; 
 
     List<PlayerController> otherPlayers = new List<PlayerController>();
 

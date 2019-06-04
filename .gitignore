@@ -34,6 +34,7 @@ Assets/_Old/
 web_build/
 orbix_ios/
 *.apk
+*.zip
 .DS_Store
 /*.suo
 /obj

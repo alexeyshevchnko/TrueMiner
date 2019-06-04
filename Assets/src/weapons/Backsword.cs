@@ -47,6 +47,8 @@ public class Backsword : MonoBehaviour, IWeapon {
 
     public void Init(ref IItem data, PlayerModel playerModel) {
         itemData = data;
+        var go = UltimateJoystick.GetJoystick("Joystick2");
+        go.SetActive(true);
     }
 
     public IItem GetItem() {
