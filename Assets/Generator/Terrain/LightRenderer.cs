@@ -77,8 +77,8 @@ public class LightRenderer : ILightRenderer,IoC.IInitialize {
     }
 
     public float currTime ;
-    public float time = 100000;
-    public float maxTime = 100000;
+    public float time = 100;
+    public float maxTime = 100;
     public int dirTime = 1;
 
     public void Update() {

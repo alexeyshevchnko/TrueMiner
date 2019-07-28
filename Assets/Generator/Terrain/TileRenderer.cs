@@ -11,7 +11,7 @@ using trasharia;
 //using UnityEditor;
 
 //using UnityEditor;
-
+ 
 //using UnityEditor;
 
 public class TileRenderer : MonoBehaviour,IoC.IInitialize {

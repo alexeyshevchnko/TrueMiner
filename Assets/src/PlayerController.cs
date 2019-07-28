@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GoogleMobileAds.Api;
 using IoC;
 using trasharia;
 
@@ -172,7 +173,17 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
         this.direct = direct;
     }
 
+
+    private RewardBasedVideoAd rewardBasedVideo;
+
     public void ReSpawnFromDead() {
+
+        this.rewardBasedVideo = RewardBasedVideoAd.Instance;
+        if (rewardBasedVideo.IsLoaded())
+        {
+            rewardBasedVideo.Show();
+        }
+
         gameObject.SetActive(false);
         CooldownManager.AddCooldown(3, null, () => {
             pysicItem.AddVelocity(-pysicItem.velocity);
