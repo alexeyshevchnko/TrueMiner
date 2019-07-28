@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1334596275",
+    "firebase_url": "https://chief-cook.firebaseio.com",
+    "project_id": "chief-cook",
+    "storage_bucket": "chief-cook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1334596275:android:7a5ebbd4fba69c8b",
+        "android_client_info": {
+          "package_name": "com.Pocket.Craft.Miner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1334596275-lkkqbn9oe59k507s0lcbvtrdcvtjuv5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAox3SSugzRIxbGj6mf_9UgMxRW8rxsPyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1334596275-lkkqbn9oe59k507s0lcbvtrdcvtjuv5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
