@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,8 +38,6 @@ public class UvProvider : IUvProvider {
         uvEmpty.uvP4 = Vector2.one;
 
         empty = uvEmpty;
-        Sprite s = new Sprite();
-        //Sprite.Create()
     }
 
     public virtual void LoadTiles(Sprite sprite, long shiftPaddingX = 1, long shiftPaddingY = 1, int countHeight = 1) {
