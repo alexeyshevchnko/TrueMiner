@@ -22,12 +22,26 @@ _ReSharper*/
 *.resources
 
 #Unity3d generated
-Temp/
-Library/
-Builds/
+[Ll]ogs/
+[Tt]emp/
+[Ll]ibrary/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+webgl/
 *.unityproj
 *.sln
 *.csproj
+*.user
+*.tmp
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vs/
 
 #Project specifics
 Assets/_Old/
