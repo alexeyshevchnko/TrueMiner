@@ -1,0 +1,751 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.0/respin/6000.0.60f1-f02d6f9f9009' branch; Version is '6000.0.60f1 (61dfb374e36f) revision 6414259'; Using compiler version '193933523'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-263" at "2026-11-20T02:12:27.9073483Z"
+OS: 'Windows 11  (10.0.26300) 64bit CoreSingleLanguage' Language: 'ru' Physical Memory: 16110 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-20T02:12:27Z
+
+COMMAND LINE ARGUMENTS:
+D:\Unity\6000.0.60f1\Editor\Unity.exe
+-batchmode
+-nographics
+-quit
+-projectPath
+D:\projects\TrueMiner
+-executeMethod
+AuditFix.Repair
+-logFile
+D:\projects\TrueMiner\auditfix-uigui2.log
+Successfully changed project path to: D:\projects\TrueMiner
+D:/projects/TrueMiner
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 11864, path: "D:/Unity/hub/Unity Hub/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              f85f9bd452244345967481458bff523d
+  Correlation Id:          c1e87ec967c6a8c1f8826f2732333473
+  External correlation Id: 8899169235396967918
+  Machine Id:              ezjwcsO7/mDPUGgN23xqOJMayFY=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-263" (connect: 0.00s, validation: 0.00s, handshake: 0.03s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-263-notifications" at "2026-11-20T02:12:27.9437007Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-2S4K-3RBX-PUF7-AT4D-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 312064-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-2S4K-3RBX-PUF7-AT4D-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 312064-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 0.04s
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [12460]  Target information:
+
+Player connection [12460]  * "[IP] 192.168.56.1 [Port] 55504 [Flags] 2 [Guid] 1363379172 [EditorId] 1363379172 [Version] 1048832 [Id] WindowsEditor(7,root) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12460]  * "[IP] 172.19.0.1 [Port] 55504 [Flags] 2 [Guid] 1363379172 [EditorId] 1363379172 [Version] 1048832 [Id] WindowsEditor(7,root) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12460]  * "[IP] 192.168.1.47 [Port] 55504 [Flags] 2 [Guid] 1363379172 [EditorId] 1363379172 [Version] 1048832 [Id] WindowsEditor(7,root) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12460] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [12460] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-16476" after 0.2 seconds.
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 1 unused hashed content filesRefreshing native plugins compatible for Editor in 0.61 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.0.60f1 (61dfb374e36f)
+[Subsystems] Discovering subsystems at path D:/Unity/6000.0.60f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path D:/projects/TrueMiner/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'D:/Unity/6000.0.60f1/Editor/Data/Managed'
+Mono path[1] = 'D:/Unity/6000.0.60f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'D:/Unity/6000.0.60f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56476
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: D:/Unity/6000.0.60f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: D:/Unity/6000.0.60f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-2S4K-3RBX-PUF7-AT4D-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 312064-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: D:/Unity/6000.0.60f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+Registered in 0.005620 seconds.
+- Loaded All Assemblies, in  0.318 seconds
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.256 seconds
+Domain Reload Profiling: 574ms
+	BeginReloadAssembly (120ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (29ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (119ms)
+		LoadAssemblies (121ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (115ms)
+			TypeCache.Refresh (114ms)
+				TypeCache.ScanAssembly (104ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (256ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (227ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (19ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (47ms)
+			ProcessInitializeOnLoadAttributes (116ms)
+			ProcessInitializeOnLoadMethodAttributes (41ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-2S4K-3RBX-PUF7-AT4D-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 312064-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 52 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.ads@4.4.2 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ads@a7b997f68a1d)
+    com.unity.ai.navigation@2.0.9 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.analytics@3.8.1 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.analytics@6cc66d58ac08)
+    com.unity.collab-proxy@2.9.3 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.collab-proxy@ab839cc7d2ad)
+    com.unity.ide.rider@3.0.38 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.23 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ide.visualstudio@198cdf337d13)
+    com.unity.purchasing@4.12.2 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.purchasing@649c6c7b3b1b)
+    com.unity.timeline@1.8.9 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.xr.legacyinputhelpers@2.1.12 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.xr.legacyinputhelpers@b7579e86f3b4)
+    com.unity.services.core@1.14.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.services.core@9e81a5e38245)
+    com.unity.services.analytics@6.1.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.services.analytics@10a9ca5d5622)
+    com.unity.nuget.newtonsoft-json@3.2.1 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.nuget.newtonsoft-json@74deb55db2a0)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.2d.sprite@897b7eecf04e)
+    com.unity.2d.tilemap@1.0.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.2d.tilemap@b1f6833cdf82)
+    com.unity.multiplayer.center@1.0.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.multiplayer.center@f3fb577b3546)
+    com.unity.test-framework@1.6.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.test-framework@0baaad2f700c)
+    com.unity.ugui@2.0.0 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ugui@27299721f2fd)
+    com.unity.modules.accessibility@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.ai@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vehicles@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: D:\Unity\6000.0.60f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: D:\projects\TrueMiner\Library\PackageCache\com.unity.ext.nunit@031a54704bff)
+[Package Manager] com.unity.purchasing@4.12.2 is deprecated: Unity IAP 4 is unsupported as of June 8, 2026. IAP 5 is the supported version going forward.
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.02 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: D:\Unity\6000.0.60f1\Editor\Data\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/2000b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: D:/projects/TrueMiner
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 0s737ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/2000b0aEDbg-inputdata.json
+*** Tundra requires additional run (0.70 seconds), 1 items updated, 691 evaluated
+Starting: D:\Unity\6000.0.60f1\Editor\Data\Tools\netcorerun\netcorerun.exe "D:\Unity\6000.0.60f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/2000b0aEDbg.dag.json" "Library/Bee/2000b0aEDbg-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: D:/projects/TrueMiner
+ExitCode: 0 Duration: 0s334ms
+Starting: D:\Unity\6000.0.60f1\Editor\Data\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/2000b0aEDbg.dag" --continue-on-failure --dagfilejson="Library\Bee\2000b0aEDbg.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: D:/projects/TrueMiner
+ExitCode: 0 Duration: 1s445ms
+Finished compiling graph: 701 nodes, 11538 flattened edges (10402 ToBuild, 128 ToUse), maximum node priority 533
+[381/698    0s] WriteText Library/Bee/artifacts/2000b0aEDbg.dag/Assembly-CSharp-Editor.rsp
+[389/698    0s] WriteText Library/Bee/artifacts/2000b0aEDbg.dag/Assembly-CSharp.rsp
+[692/698    0s] Csc Library/Bee/artifacts/2000b0aEDbg.dag/Assembly-CSharp.dll (+2 others)
+Assets\Generator\Terrain\TileSham\Vector2Int.cs(5,15): warning CS0659: 'Vector2Int' overrides Object.Equals(object o) but does not override Object.GetHashCode()
+
+Assets\Generator\Terrain\TileSham\Vector2Int.cs(5,15): warning CS0661: 'Vector2Int' defines operator == or operator != but does not override Object.GetHashCode()
+
+Assets\src\weapons\Shell.cs(12,28): warning CS0114: 'Shell.FixedUpdate()' hides inherited member 'MonoBehaviourPhysicItem.FixedUpdate()'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword.
+
+Assets\src\weapons\BlockItem.cs(8,26): warning CS0108: 'BlockItem.MapGenerator' hides inherited member 'MonoBehaviourPhysicItem.MapGenerator'. Use the new keyword if hiding was intended.
+
+Assets\Generator\Terrain\TileRenderer.cs(40,19): warning CS0108: 'TileRenderer.camera' hides inherited member 'Component.camera'. Use the new keyword if hiding was intended.
+
+Assets\src\background\BackgroundView.cs(13,19): warning CS0108: 'BackgroundView.camera' hides inherited member 'Component.camera'. Use the new keyword if hiding was intended.
+
+Assets\Generator\Terrain\IInfinityTileMap.cs(6,15): warning CS0108: 'IInfinityTileMap.layerData' hides inherited member 'IBaseInfinityTileMap.layerData'. Use the new keyword if hiding was intended.
+
+Assets\Generator\Terrain\IInfinityTileMap.cs(15,15): warning CS0108: 'IInfinityTileMapLight.layerData' hides inherited member 'IBaseInfinityTileMap.layerData'. Use the new keyword if hiding was intended.
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX\Scripts\CFX_ShurikenThreadFix.cs(20,4): warning CS0618: 'ParticleSystem.enableEmission' is obsolete: 'enableEmission property is deprecated. Use emission.enabled instead.'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(74,5): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(91,9): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(92,6): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(92,29): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(123,4): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+
+Assets\Generator\core\Managers\SwapItemManager.cs(32,17): warning CS0162: Unreachable code detected
+
+Assets\Generator\core\PoolTypes\BasePoolEffect.cs(25,37): warning CS0618: 'ParticleSystem.duration' is obsolete: 'duration property is deprecated. Use main.duration instead.'
+
+Assets\Generator\core\PoolTypes\BoomEffect.cs(11,37): warning CS0618: 'ParticleSystem.duration' is obsolete: 'duration property is deprecated. Use main.duration instead.'
+
+Assets\Generator\Cave.cs(154,9): warning CS0162: Unreachable code detected
+
+Assets\Generator\ParticleScale.cs(13,33): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+
+Assets\Generator\ParticleScale.cs(14,29): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+
+Assets\Generator\ParticleScale.cs(18,9): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+
+Assets\Generator\ParticleScale.cs(19,9): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 3\JMO Assets\Cartoon FX\Demo\Assets\CFX3_Demo.cs(140,20): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+
+Assets\external\Tiled Sprite\Scripts\TiledSpriteRenderer.cs(296,3): warning CS0618: 'Renderer.useLightProbes' is obsolete: 'Use lightProbeUsage instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX\Scripts\CFX_ShurikenThreadFix.cs(31,4): warning CS0618: 'ParticleSystem.enableEmission' is obsolete: 'enableEmission property is deprecated. Use emission.enabled instead.'
+
+Assets\external\Ultimate Joystick\Scripts\UltimateJoystickScreenSizeUpdater.cs(18,37): warning CS0618: 'Object.FindObjectsOfType(Type)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID, but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\GameManager.cs(159,72): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\Generator\Terrain\Liquid.cs(114,13): warning CS0219: The variable 'countUpdate' is assigned but its value is never used
+
+Assets\Generator\TileDataProvider.cs(176,9): warning CS0162: Unreachable code detected
+
+Assets\Generator\Terrain\TileSham\TerrariaTreeTileShema.cs(238,9): warning CS0162: Unreachable code detected
+
+Assets\src\weapons\BlowBlockItem.cs(87,17): warning CS0162: Unreachable code detected
+
+Assets\src\weapons\BlowBlockItem.cs(91,17): warning CS0162: Unreachable code detected
+
+Assets\src\weapons\BlowBlockItem.cs(94,17): warning CS0162: Unreachable code detected
+
+Assets\src\weapons\BlowBlockItem.cs(98,17): warning CS0162: Unreachable code detected
+
+Assets\src\weapons\BlowBlockItem.cs(103,17): warning CS0162: Unreachable code detected
+
+Assets\Generator\TileDataProvider.cs(741,9): warning CS0162: Unreachable code detected
+
+Assets\Generator\TileDataProvider.cs(750,9): warning CS0162: Unreachable code detected
+
+Assets\Generator\MapGenerator.cs(297,13): warning CS0219: The variable 'lastHillSizeY' is assigned but its value is never used
+
+Assets\Generator\MapGenerator.cs(775,9): warning CS0162: Unreachable code detected
+
+Assets\Generator\Physics\PhysicItem.cs(267,18): warning CS0414: The field 'PhysicItem.trace' is assigned but its value is never used
+
+Assets\Generator\Terrain\TileRenderer.cs(442,17): warning CS0414: The field 'TileRenderer.countFixedUpdate' is assigned but its value is never used
+
+Assets\Generator\Terrain\TileRenderer.cs(142,17): warning CS0414: The field 'TileRenderer.oldTime' is assigned but its value is never used
+
+Assets\src\ai\MinerBehaviour.cs(22,19): warning CS0414: The field 'MinerBehaviour.dirJamp' is assigned but its value is never used
+
+Assets\Generator\Terrain\Liquid.cs(277,17): warning CS0414: The field 'Liquid.lastCount' is assigned but its value is never used
+
+Assets\Generator\Terrain\Liquid.cs(111,17): warning CS0414: The field 'Liquid.maxWaterUpdate' is assigned but its value is never used
+
+Assets\src\PlayerController.cs(40,18): warning CS0414: The field 'PlayerController.isJamp' is assigned but its value is never used
+
+Assets\src\ai\MinerBehaviour.cs(25,17): warning CS0414: The field 'MinerBehaviour.countTryJamp' is assigned but its value is never used
+
+Assets\Generator\Physics\PhysicItem.cs(61,17): warning CS0414: The field 'PhysicItem.jumpHeight' is assigned but its value is never used
+
+Assets\Generator\Terrain\InfinityTileMapPixel.cs(151,18): warning CS0414: The field 'InfinityTileMapPixel.b' is assigned but its value is never used
+
+Assets\Generator\Terrain\Liquid.cs(30,17): warning CS0414: The field 'Liquid.lastUpdateFrame' is assigned but its value is never used
+
+Assets\src\ai\MinerBehaviour.cs(21,17): warning CS0414: The field 'MinerBehaviour.attemptJampCount' is assigned but its value is never used
+
+Assets\Generator\Physics\PhysicItem.cs(62,19): warning CS0414: The field 'PhysicItem.jumpSpeed' is assigned but its value is never used
+[693/698    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[694/698    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[695/698    0s] Csc Library/Bee/artifacts/2000b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(36,3): warning CS0618: 'PreferenceItem' is obsolete: '[PreferenceItem] is deprecated. Use [SettingsProvider] instead.'
+
+Assets\Editor\ParticleScaleEditor.cs(16,16): warning CS0168: The variable 'txt' is declared but never used
+
+Assets\Editor\StopPlayingOnCompilation.cs(22,14): warning CS0618: 'EditorApplication.playmodeStateChanged' is obsolete: 'Use EditorApplication.playModeStateChanged and/or EditorApplication.pauseStateChanged'
+
+Assets\Editor\StopPlayingOnCompilation.cs(34,9): warning CS0618: 'EditorApplication.playmodeStateChanged' is obsolete: 'Use EditorApplication.playModeStateChanged and/or EditorApplication.pauseStateChanged'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(986,17): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(120,25): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(120,86): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(1003,24): warning CS0618: 'Object.FindObjectsOfType(Type)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID, but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(155,7): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(155,68): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(100,37): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(161,3): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(881,5): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(921,5): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(718,8): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(718,69): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(733,7): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(733,68): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(947,4): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(947,22): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(948,4): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(948,16): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(949,4): warning CS0618: 'ParticleSystem.playOnAwake' is obsolete: 'playOnAwake property is deprecated. Use main.playOnAwake instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(949,23): warning CS0618: 'ParticleSystem.playOnAwake' is obsolete: 'playOnAwake property is deprecated. Use main.playOnAwake instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(950,4): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(950,25): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(951,4): warning CS0618: 'ParticleSystem.emissionRate' is obsolete: 'emissionRate property is deprecated. Use emission.rateOverTime, emission.rateOverDistance, emission.rateOverTimeMultiplier or emission.rateOverDistanceMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(951,24): warning CS0618: 'ParticleSystem.emissionRate' is obsolete: 'emissionRate property is deprecated. Use emission.rateOverTime, emission.rateOverDistance, emission.rateOverTimeMultiplier or emission.rateOverDistanceMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(952,4): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(952,22): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(953,4): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(953,21): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(954,4): warning CS0618: 'ParticleSystem.startColor' is obsolete: 'startColor property is deprecated. Use main.startColor instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(954,22): warning CS0618: 'ParticleSystem.startColor' is obsolete: 'startColor property is deprecated. Use main.startColor instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(955,4): warning CS0618: 'ParticleSystem.startRotation' is obsolete: 'startRotation property is deprecated. Use main.startRotation or main.startRotationMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(955,25): warning CS0618: 'ParticleSystem.startRotation' is obsolete: 'startRotation property is deprecated. Use main.startRotation or main.startRotationMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(956,4): warning CS0618: 'ParticleSystem.startLifetime' is obsolete: 'startLifetime property is deprecated. Use main.startLifetime or main.startLifetimeMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(956,25): warning CS0618: 'ParticleSystem.startLifetime' is obsolete: 'startLifetime property is deprecated. Use main.startLifetime or main.startLifetimeMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(957,4): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(957,27): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1170,3): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1171,3): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1172,6): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1173,4): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+[696/698    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[697/698    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (1.43 seconds), 8 items updated, 698 evaluated
+[ApiUpdater] Total time: 828ms, Parse response file: 44ms, Collect updater configs: 82ms, Update: 700ms, Save: 2ms Files: 1 modified / 2 visited / 201 total (Library/Bee/artifacts/2000b0aEDbg.dag/Assembly-CSharp.dll).
+[API Updater] Updated Files:
+Skipping ScriptUpdater consent dialog. Consent declined based on command line parameters.
+Finished running ScriptUpdaters
+Assets\Generator\Terrain\TileSham\Vector2Int.cs(5,15): warning CS0659: 'Vector2Int' overrides Object.Equals(object o) but does not override Object.GetHashCode()
+Assets\Generator\Terrain\TileSham\Vector2Int.cs(5,15): warning CS0661: 'Vector2Int' defines operator == or operator != but does not override Object.GetHashCode()
+Assets\src\weapons\Shell.cs(12,28): warning CS0114: 'Shell.FixedUpdate()' hides inherited member 'MonoBehaviourPhysicItem.FixedUpdate()'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword.
+Assets\src\weapons\BlockItem.cs(8,26): warning CS0108: 'BlockItem.MapGenerator' hides inherited member 'MonoBehaviourPhysicItem.MapGenerator'. Use the new keyword if hiding was intended.
+Assets\Generator\Terrain\TileRenderer.cs(40,19): warning CS0108: 'TileRenderer.camera' hides inherited member 'Component.camera'. Use the new keyword if hiding was intended.
+Assets\src\background\BackgroundView.cs(13,19): warning CS0108: 'BackgroundView.camera' hides inherited member 'Component.camera'. Use the new keyword if hiding was intended.
+Assets\Generator\Terrain\IInfinityTileMap.cs(6,15): warning CS0108: 'IInfinityTileMap.layerData' hides inherited member 'IBaseInfinityTileMap.layerData'. Use the new keyword if hiding was intended.
+Assets\Generator\Terrain\IInfinityTileMap.cs(15,15): warning CS0108: 'IInfinityTileMapLight.layerData' hides inherited member 'IBaseInfinityTileMap.layerData'. Use the new keyword if hiding was intended.
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX\Scripts\CFX_ShurikenThreadFix.cs(20,4): warning CS0618: 'ParticleSystem.enableEmission' is obsolete: 'enableEmission property is deprecated. Use emission.enabled instead.'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(74,5): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(91,9): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(92,6): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(92,29): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\PlayerController.cs(123,4): warning CS0618: 'Rigidbody.velocity' is obsolete: 'Please use Rigidbody.linearVelocity instead. (UnityUpgradable) -> linearVelocity'
+Assets\Generator\core\Managers\SwapItemManager.cs(32,17): warning CS0162: Unreachable code detected
+Assets\Generator\core\PoolTypes\BasePoolEffect.cs(25,37): warning CS0618: 'ParticleSystem.duration' is obsolete: 'duration property is deprecated. Use main.duration instead.'
+Assets\Generator\core\PoolTypes\BoomEffect.cs(11,37): warning CS0618: 'ParticleSystem.duration' is obsolete: 'duration property is deprecated. Use main.duration instead.'
+Assets\Generator\Cave.cs(154,9): warning CS0162: Unreachable code detected
+Assets\Generator\ParticleScale.cs(13,33): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+Assets\Generator\ParticleScale.cs(14,29): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+Assets\Generator\ParticleScale.cs(18,9): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+Assets\Generator\ParticleScale.cs(19,9): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+Assets\external\CartoonFx\Pack 3\JMO Assets\Cartoon FX\Demo\Assets\CFX3_Demo.cs(140,20): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+Assets\external\Tiled Sprite\Scripts\TiledSpriteRenderer.cs(296,3): warning CS0618: 'Renderer.useLightProbes' is obsolete: 'Use lightProbeUsage instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX\Scripts\CFX_ShurikenThreadFix.cs(31,4): warning CS0618: 'ParticleSystem.enableEmission' is obsolete: 'enableEmission property is deprecated. Use emission.enabled instead.'
+Assets\external\Ultimate Joystick\Scripts\UltimateJoystickScreenSizeUpdater.cs(18,37): warning CS0618: 'Object.FindObjectsOfType(Type)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID, but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\external\Ultimate Joystick\_Examples\Spaceship Example\Scripts\GameManager.cs(159,72): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\Generator\Terrain\Liquid.cs(114,13): warning CS0219: The variable 'countUpdate' is assigned but its value is never used
+Assets\Generator\TileDataProvider.cs(176,9): warning CS0162: Unreachable code detected
+Assets\Generator\Terrain\TileSham\TerrariaTreeTileShema.cs(238,9): warning CS0162: Unreachable code detected
+Assets\src\weapons\BlowBlockItem.cs(87,17): warning CS0162: Unreachable code detected
+Assets\src\weapons\BlowBlockItem.cs(91,17): warning CS0162: Unreachable code detected
+Assets\src\weapons\BlowBlockItem.cs(94,17): warning CS0162: Unreachable code detected
+Assets\src\weapons\BlowBlockItem.cs(98,17): warning CS0162: Unreachable code detected
+Assets\src\weapons\BlowBlockItem.cs(103,17): warning CS0162: Unreachable code detected
+Assets\Generator\TileDataProvider.cs(741,9): warning CS0162: Unreachable code detected
+Assets\Generator\TileDataProvider.cs(750,9): warning CS0162: Unreachable code detected
+Assets\Generator\MapGenerator.cs(297,13): warning CS0219: The variable 'lastHillSizeY' is assigned but its value is never used
+Assets\Generator\MapGenerator.cs(775,9): warning CS0162: Unreachable code detected
+Assets\Generator\Physics\PhysicItem.cs(267,18): warning CS0414: The field 'PhysicItem.trace' is assigned but its value is never used
+Assets\Generator\Terrain\TileRenderer.cs(442,17): warning CS0414: The field 'TileRenderer.countFixedUpdate' is assigned but its value is never used
+Assets\Generator\Terrain\TileRenderer.cs(142,17): warning CS0414: The field 'TileRenderer.oldTime' is assigned but its value is never used
+Assets\src\ai\MinerBehaviour.cs(22,19): warning CS0414: The field 'MinerBehaviour.dirJamp' is assigned but its value is never used
+Assets\Generator\Terrain\Liquid.cs(277,17): warning CS0414: The field 'Liquid.lastCount' is assigned but its value is never used
+Assets\Generator\Terrain\Liquid.cs(111,17): warning CS0414: The field 'Liquid.maxWaterUpdate' is assigned but its value is never used
+Assets\src\PlayerController.cs(40,18): warning CS0414: The field 'PlayerController.isJamp' is assigned but its value is never used
+Assets\src\ai\MinerBehaviour.cs(25,17): warning CS0414: The field 'MinerBehaviour.countTryJamp' is assigned but its value is never used
+Assets\Generator\Physics\PhysicItem.cs(61,17): warning CS0414: The field 'PhysicItem.jumpHeight' is assigned but its value is never used
+Assets\Generator\Terrain\InfinityTileMapPixel.cs(151,18): warning CS0414: The field 'InfinityTileMapPixel.b' is assigned but its value is never used
+Assets\Generator\Terrain\Liquid.cs(30,17): warning CS0414: The field 'Liquid.lastUpdateFrame' is assigned but its value is never used
+Assets\src\ai\MinerBehaviour.cs(21,17): warning CS0414: The field 'MinerBehaviour.attemptJampCount' is assigned but its value is never used
+Assets\Generator\Physics\PhysicItem.cs(62,19): warning CS0414: The field 'PhysicItem.jumpSpeed' is assigned but its value is never used
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(36,3): warning CS0618: 'PreferenceItem' is obsolete: '[PreferenceItem] is deprecated. Use [SettingsProvider] instead.'
+Assets\Editor\ParticleScaleEditor.cs(16,16): warning CS0168: The variable 'txt' is declared but never used
+Assets\Editor\StopPlayingOnCompilation.cs(22,14): warning CS0618: 'EditorApplication.playmodeStateChanged' is obsolete: 'Use EditorApplication.playModeStateChanged and/or EditorApplication.pauseStateChanged'
+Assets\Editor\StopPlayingOnCompilation.cs(34,9): warning CS0618: 'EditorApplication.playmodeStateChanged' is obsolete: 'Use EditorApplication.playModeStateChanged and/or EditorApplication.pauseStateChanged'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(986,17): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(120,25): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(120,86): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(1003,24): warning CS0618: 'Object.FindObjectsOfType(Type)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID, but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(155,7): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(155,68): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(100,37): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+Assets\external\TexturePacker\Editor\TexturePackerImporter.cs(161,3): warning CS0618: 'TextureImporter.spritesheet' is obsolete: 'Support for accessing sprite meta data through spritesheet has been removed. Please use the UnityEditor.U2D.Sprites.ISpriteEditorDataProvider interface instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(881,5): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(921,5): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(718,8): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(718,69): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(733,7): warning CS0618: 'PrefabUtility.GetPrefabType(Object)' is obsolete: 'Use GetPrefabAssetType and GetPrefabInstanceStatus to get the full picture about Prefab types.'
+Assets\external\Ultimate Joystick\Editor\UltimateJoystickEditor.cs(733,68): warning CS0618: 'PrefabType' is obsolete: 'PrefabType no longer tells everything about Prefab instance.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(947,4): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(947,22): warning CS0618: 'ParticleSystem.startDelay' is obsolete: 'startDelay property is deprecated. Use main.startDelay or main.startDelayMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(948,4): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(948,16): warning CS0618: 'ParticleSystem.loop' is obsolete: 'loop property is deprecated. Use main.loop instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(949,4): warning CS0618: 'ParticleSystem.playOnAwake' is obsolete: 'playOnAwake property is deprecated. Use main.playOnAwake instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(949,23): warning CS0618: 'ParticleSystem.playOnAwake' is obsolete: 'playOnAwake property is deprecated. Use main.playOnAwake instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(950,4): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(950,25): warning CS0618: 'ParticleSystem.playbackSpeed' is obsolete: 'playbackSpeed property is deprecated. Use main.simulationSpeed instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(951,4): warning CS0618: 'ParticleSystem.emissionRate' is obsolete: 'emissionRate property is deprecated. Use emission.rateOverTime, emission.rateOverDistance, emission.rateOverTimeMultiplier or emission.rateOverDistanceMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(951,24): warning CS0618: 'ParticleSystem.emissionRate' is obsolete: 'emissionRate property is deprecated. Use emission.rateOverTime, emission.rateOverDistance, emission.rateOverTimeMultiplier or emission.rateOverDistanceMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(952,4): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(952,22): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(953,4): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(953,21): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(954,4): warning CS0618: 'ParticleSystem.startColor' is obsolete: 'startColor property is deprecated. Use main.startColor instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(954,22): warning CS0618: 'ParticleSystem.startColor' is obsolete: 'startColor property is deprecated. Use main.startColor instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(955,4): warning CS0618: 'ParticleSystem.startRotation' is obsolete: 'startRotation property is deprecated. Use main.startRotation or main.startRotationMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(955,25): warning CS0618: 'ParticleSystem.startRotation' is obsolete: 'startRotation property is deprecated. Use main.startRotation or main.startRotationMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(956,4): warning CS0618: 'ParticleSystem.startLifetime' is obsolete: 'startLifetime property is deprecated. Use main.startLifetime or main.startLifetimeMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(956,25): warning CS0618: 'ParticleSystem.startLifetime' is obsolete: 'startLifetime property is deprecated. Use main.startLifetime or main.startLifetimeMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(957,4): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(957,27): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1170,3): warning CS0618: 'ParticleSystem.startSize' is obsolete: 'startSize property is deprecated. Use main.startSize or main.startSizeMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1171,3): warning CS0618: 'ParticleSystem.gravityModifier' is obsolete: 'gravityModifier property is deprecated. Use main.gravityModifier or main.gravityModifierMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1172,6): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+Assets\external\CartoonFx\Pack 2\JMO Assets\Cartoon FX Easy Editor\Editor\CFXEasyEditor.cs(1173,4): warning CS0618: 'ParticleSystem.startSpeed' is obsolete: 'startSpeed property is deprecated. Use main.startSpeed or main.startSpeedMultiplier instead.'
+AssetDatabase: script compilation time: 4.285038s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.990 seconds
+Refreshing native plugins compatible for Editor in 7.00 ms, found 2 plugins.
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.696 seconds
+Domain Reload Profiling: 1686ms
+	BeginReloadAssembly (246ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (11ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (131ms)
+	RebuildCommonClasses (30ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (20ms)
+	LoadAllAssembliesAndSetupDomain (685ms)
+		LoadAssemblies (664ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (95ms)
+			TypeCache.Refresh (72ms)
+				TypeCache.ScanAssembly (63ms)
+			BuildScriptInfoCaches (19ms)
+			ResolveRequiredComponents (2ms)
+	FinalizeReload (696ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (607ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (11ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (112ms)
+			ProcessInitializeOnLoadAttributes (345ms)
+			ProcessInitializeOnLoadMethodAttributes (133ms)
+			AfterProcessingInitializeOnLoad (1ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (5ms)
+Start importing Assets/Resources/gui/guiMain.prefab using Guid(c00e336f396d6b8489edeeb6ee978850) (PrefabImporter) -> (artifact id: '8cf8ca9ee35f8826a9d107f36cdb330f') in 0.0095175 seconds
+Start importing Assets/PoolPefubs/gui/RedLbl.prefab using Guid(91bf40ae8363a5042a30da3dab14b602) (PrefabImporter) -> (artifact id: '3a8b7766e420d9f2539b103f891a1f9a') in 0.002715 seconds
+Start importing Assets/Resources/buildings/flag/flag.prefab using Guid(a25a49be222136942a2ebfbefe4dca3a) (PrefabImporter) -> (artifact id: '972f526d98d4d0b12aaa864673ebfa4f') in 0.0025483 seconds
+Start importing Assets/Resources/units/Player.prefab using Guid(35f8113f3d42c6c4cb2af6d4b63fca21) (PrefabImporter) -> (artifact id: 'fdfda21c8073bcce9239b646ea1c08a9') in 0.0063321 seconds
+Start importing Assets/PoolPefubs/Boom.prefab using Guid(976a26a7106a1474dab596abf8538522) (PrefabImporter) -> (artifact id: '0ef4f6f24dd2f6191fca52ae0f22fc65') in 0.0085137 seconds
+Start importing Assets/Prefubs/gui/bagItem.prefab using Guid(b93f39fb015c5da40a57cc99ec796201) (PrefabImporter) -> (artifact id: '57ac2d6a8c369248a5872ffc5db39003') in 0.002236 seconds
+Start importing Assets/PoolPefubs/PointLight.prefab using Guid(fb9609e3097d94a4aa2f065414f47a13) (PrefabImporter) -> (artifact id: '861ddb860ce8bfccbc65c69fe9a0bd47') in 0.0028826 seconds
+Refreshing native plugins compatible for Editor in 2.32 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=7f1b2d805438dc247b743c198e866f88): Total: 6.891 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=7 (actual=7, local cache=0, cache server=0)
+		Asset DB Process Time: managed=2 ms, native=1155 ms
+		Asset DB Callback time: managed=370 ms, native=39 ms
+		Scripting: domain reloads=1, domain reload time=990 ms, compile time=4286 ms, other=45 ms
+		Project Asset Count: scripts=1218, non-scripts=3534
+		Asset File Changes: new=2, changed=16, moved=0, deleted=570
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 25.643ms
+	ApplyChangesToAssetFolders: 0.454ms
+	Scan: 200.381ms
+	OnSourceAssetsModified: 1.759ms
+	CategorizeAssetsWithTransientArtifact: 28.214ms
+	ProcessAssetsWithTransientArtifactChanges: 31.113ms
+	UnregisterDeletedAssets: 0.623ms
+	CategorizeAssets: 30.657ms
+	ImportOutOfDateAssets: 752.368ms (-3578.668ms without children)
+		ImportManagerImport: 43.663ms (5.205ms without children)
+			ImportInProcess: 38.378ms
+			UpdateCategorizedAssets: 0.081ms
+		CompileScripts: 4286.394ms
+		ReloadNativeAssets: 0.001ms
+		UnloadImportedAssets: 0.101ms
+		ReloadImportedAssets: 0.001ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.509ms
+		InitializingProgressBar: 0.008ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.359ms
+	PostProcessAllAssets: 380.086ms
+	Hotreload: 4.267ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 0.519ms
+	PersistCurrentRevisions: 1.130ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 1.694ms
+	Untracked: 5434.064ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 5.885ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-test123 U5.5
+GetVirtualKey: Could not map char: z (122) to any virtual key
+GetVirtualKey: Could not map char: y (121) to any virtual key
+GetVirtualKey: Could not map char: u (117) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: d (100) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: r (114) to any virtual key
+GetVirtualKey: Could not map char: i (105) to any virtual key
+GetVirtualKey: Could not map char: x (120) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: v (118) to any virtual key
+GetVirtualKey: Could not map char: V (86) to any virtual key
+GetVirtualKey: Could not map char: d (100) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: k (107) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: l (108) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: r (114) to any virtual key
+GetVirtualKey: Could not map char: P (80) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: g (103) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: o (111) to any virtual key
+GetVirtualKey: Could not map char: s (115) to any virtual key
+GetVirtualKey: Could not map char: s (115) to any virtual key
+GetVirtualKey: Could not map char: b (98) to any virtual key
+GetVirtualKey: Could not map char: b (98) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3120 unused Assets / (1.9 MB). Loaded Objects now: 3604.
+Memory consumption went from 125.8 MB to 123.9 MB.
+Total: 8.144900 ms (FindLiveObjects: 0.214100 ms CreateObjectMapping: 0.175000 ms MarkObjects: 6.589300 ms  DeleteObjects: 1.165700 ms)
+
+GetVirtualKey: Could not map char: z (122) to any virtual key
+GetVirtualKey: Could not map char: y (121) to any virtual key
+GetVirtualKey: Could not map char: u (117) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: d (100) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: r (114) to any virtual key
+GetVirtualKey: Could not map char: i (105) to any virtual key
+GetVirtualKey: Could not map char: x (120) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: v (118) to any virtual key
+GetVirtualKey: Could not map char: V (86) to any virtual key
+GetVirtualKey: Could not map char: d (100) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: k (107) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: p (112) to any virtual key
+GetVirtualKey: Could not map char: l (108) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+GetVirtualKey: Could not map char: r (114) to any virtual key
+GetVirtualKey: Could not map char: P (80) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: g (103) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: f (102) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: a (97) to any virtual key
+GetVirtualKey: Could not map char: n (110) to any virtual key
+GetVirtualKey: Could not map char: o (111) to any virtual key
+GetVirtualKey: Could not map char: s (115) to any virtual key
+GetVirtualKey: Could not map char: s (115) to any virtual key
+GetVirtualKey: Could not map char: b (98) to any virtual key
+GetVirtualKey: Could not map char: b (98) to any virtual key
+GetVirtualKey: Could not map char: c (99) to any virtual key
+executeMethod class 'AuditFix' could not be found.
+Argument was -executeMethod AuditFix.Repair
+Exiting without the bug reporter. Application will terminate with return code 1

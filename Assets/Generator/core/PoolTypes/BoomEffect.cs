@@ -1,18 +1,13 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BoomEffect : BasePoolEffect {
     public ParticleSystem OtherParticle;
-    public TweenScale tweenScale;
 
     public override void OnSpawn() {
         this.Inject();
         MainParticle.Play();
         OtherParticle.Play();
-        tweenScale.ResetToBeginning();
-        
-        tweenScale.enabled = true;
-        tweenScale.Play();
         CooldownManager.AddCooldown(MainParticle.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
 
        //GameObjectPoolManager.Spawn<LightBoomEffect>(transform.position, Quaternion.identity);

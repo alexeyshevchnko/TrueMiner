@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +8,9 @@ public class GuiPoolManager : IGuiPoolManager {
 
     public void SetPool(GOPool pool) {
         this.pool = pool;
-        pool.OnUnspawnGO += FreeResources;
+        if (pool != null) {
+            pool.OnUnspawnGO += FreeResources;
+        }
     }
 
     private void FreeResources(GameObject objectToDestroy) {

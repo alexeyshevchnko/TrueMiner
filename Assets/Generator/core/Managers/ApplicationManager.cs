@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -22,9 +22,24 @@ public class ApplicationManager : MonoBehaviour,IoC.IInitialize {
 
     public void OnInject() {
         
-        PrefubManager.InitPlayer(Player);
-        PrefubManager.InitUnits(Units);
-        PrefubManager.InitItems(Items);
+        if (Player == null) {
+            Debug.LogError("[ApplicationManager] 'Player' prefab is not assigned in the scene!", this);
+        } else {
+            PrefubManager.InitPlayer(Player);
+        }
+
+        if (Units == null || Units.Count == 0) {
+            Debug.LogError("[ApplicationManager] 'Units' list is empty!", this);
+        } else {
+            PrefubManager.InitUnits(Units);
+        }
+
+        if (Items == null || Items.Count == 0) {
+            Debug.LogError("[ApplicationManager] 'Items' list is empty!", this);
+        } else {
+            PrefubManager.InitItems(Items);
+        }
+
         TargetManager.Init();
         GuiPoolManager.SetPool(GuiPool.guiPool);
 

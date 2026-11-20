@@ -1,16 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using IoC;
+using UnityEngine;
 
-public class RootModel : MonoBehaviour,IoC.IInitialize {
+public class RootModel : MonoBehaviour, IoC.IInitialize {
     [IoC.Inject]
-    public IContainer Container { set; protected get; }
+    public IoC.IContainer Container { set; protected get; }
 
     static public RootModel instance;
     public RootContext rootContext;
-    public NguiRootContext view;
-
-   
 
     void Awake() {
         if (instance != null) {
@@ -20,10 +15,10 @@ public class RootModel : MonoBehaviour,IoC.IInitialize {
         }
         instance = this;
         rootContext = new RootContext();
-        view.SetContext(rootContext);
+        GameUi.EnsureCreated();
     }
 
-    void Start() { 
+    void Start() {
         this.Inject();
     }
 
@@ -33,6 +28,9 @@ public class RootModel : MonoBehaviour,IoC.IInitialize {
         Container.Inject(rootContext.Player);
         rootContext.Player.Bag = new BagContext();
         Container.Inject(rootContext.Player.Bag);
-        //Debug.LogError("OnInject");
+
+        if (GameUi.Instance != null) {
+            Container.Inject(GameUi.Instance);
+        }
     }
 }

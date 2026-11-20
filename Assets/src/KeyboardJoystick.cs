@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using IoC;
 using trasharia;
@@ -158,7 +158,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         if (!Settings.IS_EDIT_MOD && (
-            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl) || joystick)) && !UICamera.IsGuiClick)
+            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl) || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))
         {
             if (model.CurrentWeapon != null) {
                 if (!joystick)
@@ -175,7 +175,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         }
 
         if (((!Settings.IS_EDIT_MOD) && (
-            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.LeftControl) || joystick)) && !UICamera.IsGuiClick))
+            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.LeftControl) || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())))
         {
             if (model.CurrentWeapon != null) {
                 if (!joystick)

@@ -324,8 +324,7 @@ public class SwapItemManager : ISwapItemManager {
         }
     }
 
-    void AddIndex(int x, int y, GameObject go) {
-        Debug.LogError(go);
+    void AddIndex(int x, int y, GameObject go) { 
         if (!activeItems.ContainsKey(x)) {
             activeItems[x] = new Dictionary<int, GameObject>();
         }

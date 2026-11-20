@@ -1,81 +1,19 @@
-﻿using UnityEngine;
-using System.Collections;
+using UnityEngine;
+using System.Collections.Generic;
 using trasharia.weapons;
 
-public class PlayerComtext : EZData.Context,IoC.IInitialize {
+public class PlayerComtext : IoC.IInitialize {
     [IoC.Inject]
-    public ITargetManager TargetManager { set; protected get; }
-
-   // public BagItemContext MoveItem;
-
-
+    public ITargetManager TargetManager { get; set; }
 
     public int selectId = -1;
 
-
-
-    #region MoveItem
-    public readonly EZData.VariableContext<BagItemContext> MoveItemEzVariableContext = new EZData.VariableContext<BagItemContext>(null);
-    public BagItemContext MoveItem {
-        get { return MoveItemEzVariableContext.Value; }
-        set { MoveItemEzVariableContext.Value = value; }
-    }
-    #endregion
-
-
-
-    #region Property IsMoveItem
-    private readonly EZData.Property<bool> _privateIsMoveItemProperty = new EZData.Property<bool>();
-    public EZData.Property<bool> IsMoveItemProperty { get { return _privateIsMoveItemProperty; } }
-    public bool IsMoveItem {
-        get { return IsMoveItemProperty.GetValue(); }
-        set { IsMoveItemProperty.SetValue(value); }
-    }
-    #endregion
-
-
-
-    #region Property Bag
-    private readonly EZData.Property<BagContext> _privateBagProperty = new EZData.Property<BagContext>();
-    public EZData.Property<BagContext> BagProperty { get { return _privateBagProperty; } }
-    public BagContext Bag {
-        get { return BagProperty.GetValue(); }
-        set { BagProperty.SetValue(value); }
-    }
-    #endregion
-
-    #region Property IsShowBag
-    private readonly EZData.Property<bool> _privateIsShowBagProperty = new EZData.Property<bool>();
-    public EZData.Property<bool> IsShowBagProperty { get { return _privateIsShowBagProperty; } }
-    public bool IsShowBag {
-        get { return IsShowBagProperty.GetValue(); }
-        set { IsShowBagProperty.SetValue(value); }
-    }
-    #endregion
-
-
-
-    #region Property HpPct
-    private readonly EZData.Property<float> _privateHpPctProperty = new EZData.Property<float>();
-    public EZData.Property<float> HpPctProperty { get { return _privateHpPctProperty; } }
-    public float HpPct {
-        get { return HpPctProperty.GetValue(); }
-        set { HpPctProperty.SetValue(value); }
-    }
-    #endregion
-
-
-    #region Property HpMax
-    private readonly EZData.Property<float> _privateHpMaxProperty = new EZData.Property<float>();
-    public EZData.Property<float> HpMaxProperty { get { return _privateHpMaxProperty; } }
-    public float HpMax {
-        get { return HpMaxProperty.GetValue(); }
-        set { HpMaxProperty.SetValue(value); }
-    }
-    #endregion
-
-
-
+    public BagItemContext MoveItem { get; set; }
+    public bool IsMoveItem { get; set; }
+    public BagContext Bag { get; set; }
+    public bool IsShowBag { get; set; }
+    public float HpPct { get; set; }
+    public float HpMax { get; set; }
 
     public void ShowBag() {
         if (MoveItem != null) {
@@ -85,7 +23,6 @@ public class PlayerComtext : EZData.Context,IoC.IInitialize {
         MoveItem = null;
         IsMoveItem = false;
         IsShowBag = !IsShowBag;
-       // UnselectAll();
         if (selectId != -1) {
             SelectItem(selectId);
         }
@@ -98,7 +35,6 @@ public class PlayerComtext : EZData.Context,IoC.IInitialize {
             }
         }
     }
-
 
     public void OnInject() {
         IsShowBag = false;
@@ -116,8 +52,8 @@ public class PlayerComtext : EZData.Context,IoC.IInitialize {
         }
     }
 
-    void UpdateCell(Bag bag, EZData.Collection<BagItemContext> viewBag, int i, int delta) {
-        var view = viewBag.GetItem(i - delta);
+    void UpdateCell(Bag bag, List<BagItemContext> viewBag, int i, int delta) {
+        var view = viewBag[i - delta];
         IItem data = null;
         if (bag.items.ContainsKey(i + 1)) {
             data = bag.items[i + 1];
@@ -131,21 +67,18 @@ public class PlayerComtext : EZData.Context,IoC.IInitialize {
         }
     }
 
-
     public void SelectItem(int id) {
         if (!IsShowBag) {
             UnselectAll();
-            Bag.Items.GetItem(id - 1).BgIcon = "cellSelect";
+            Bag.Items[id - 1].BgIcon = "cellSelect";
             selectId = id;
         }
     }
 
     void UnselectAll() {
         for (int i = 0; i < 9; i++) {
-            var view = Bag.Items.GetItem(i);
+            var view = Bag.Items[i];
             view.BgIcon = "cell";
         }
     }
-
-    
 }

@@ -1,34 +1,27 @@
-﻿using UnityEngine;
-using System.Collections;
-using IoC;
+using UnityEngine;
+using System.Collections.Generic;
 
-public class BagContext : EZData.Context,IoC.IInitialize {
+public class BagContext : IoC.IInitialize {
 
     [IoC.Inject]
-    public IContainer Container { set; protected get; }
+    public IoC.IContainer Container { set; protected get; }
 
-    #region Collection Items
-    private readonly EZData.Collection<BagItemContext> _privateItems = new EZData.Collection<BagItemContext>(false);
-    public EZData.Collection<BagItemContext> Items { get { return _privateItems; } }
-    #endregion
+    public List<BagItemContext> Items { get; private set; }
+    public List<BagItemContext> BagItems { get; private set; }
 
-
-    #region Collection BagItems
-    private readonly EZData.Collection<BagItemContext> _privateBagItems = new EZData.Collection<BagItemContext>(false);
-    public EZData.Collection<BagItemContext> BagItems { get { return _privateBagItems; } }
-    #endregion
-
+    public BagContext() {
+        Items = new List<BagItemContext>();
+        BagItems = new List<BagItemContext>();
+    }
 
     public void OnInject() {
-        
         for (int i = 0; i < 9; i++) {
-            var item = new BagItemContext() {Number = i + 1, Empty = true, BgIcon = "cell"};
+            var item = new BagItemContext() { Number = i + 1, Empty = true, BgIcon = "cell" };
             Container.Inject(item);
             Items.Add(item);
         }
 
-
-        for (int i = 0; i < 4*9; i++) {
+        for (int i = 0; i < 4 * 9; i++) {
             var item = new BagItemContext() { Number = i + 10, Empty = true, BgIcon = "cell" };
             Container.Inject(item);
             BagItems.Add(item);

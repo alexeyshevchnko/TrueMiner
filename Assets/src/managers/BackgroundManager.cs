@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace Managers {
@@ -22,6 +22,10 @@ namespace Managers {
 
         private void UpdatePos() {
            
+            if (view == null || view.main == null || view.main2 == null || view.main3 == null || view.camera == null) {
+                return;
+            }
+
             //2250
 
             var main = view.main.transform;
@@ -85,6 +89,9 @@ namespace Managers {
 
 
         public void SetTime(float v) {
+            if (view == null || view.main == null || view.main2 == null || view.main3 == null) {
+                return;
+            }
             //Debug.LogError(v);
             Color newColor = Color.Lerp(view.min, view.max, 1 - v);
             view.main.color = newColor;

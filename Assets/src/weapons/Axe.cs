@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using trasharia.weapons;
 using UnityEngine;
@@ -55,12 +55,7 @@ public class Axe : MonoBehaviour, IWeapon {
         if (isFireing)
             return;
         isFireing = true;
-        var tween = TweenRotation.Begin(gameObject, cooldown, Quaternion.identity);
-        tween.from = new Vector3(0, 0, 90);
-        tween.to = new Vector3(0, 0, -90);
-        tween.SetOnFinished(() => {
-            OnFinishedFire();
-        });
+        StartCoroutine(WeaponAnim.Swing(transform, cooldown, OnFinishedFire));
 
         damagePoint.enabled = true;
     }

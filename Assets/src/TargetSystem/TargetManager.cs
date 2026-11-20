@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -52,8 +52,12 @@ public class TargetManager : ITargetManager{
     public PlayerController PlayerController { get; private set; }
 
     void CreatePlayer() {
-        var parent = GameObject.Find("Units");
         var prefub = PrefubManager.GetPlayer();
+        if (prefub == null) {
+            Debug.LogError("[TargetManager] Player prefab is null — assign ApplicationManager.Player in the scene!", null);
+            return;
+        }
+        var parent = GameObject.Find("Units");
         player = GameObject.Instantiate(prefub, Vector3.zero, new Quaternion()) as GameObject;
         player.transform.parent = parent.transform;
         var controller = player.GetComponent<PlayerController>();

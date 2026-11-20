@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using trasharia.weapons;
 
@@ -64,13 +64,7 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
             return;
 
         isFireing = true;
-        var tween = TweenRotation.Begin(gameObject, 0.1f, Quaternion.identity);
-        tween.from = new Vector3(0, 0, 90);
-        tween.to = new Vector3(0, 0, -90);
-        tween.SetOnFinished(() => {
-             OnFinishedFire();
-            transform.rotation = Quaternion.identity;
-        });
+        StartCoroutine(WeaponAnim.Swing(transform, 0.1f, OnFinishedFire));
 
         this.pos = pos;
     }

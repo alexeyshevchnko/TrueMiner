@@ -1,42 +1,49 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using trasharia.weapons;
 using UnityEngine;
 
 public class GuiLbl : MonoBehaviour, IBasePoolObject {
     private static Dictionary<string, GuiLbl> CurrentVisible = new Dictionary<string, GuiLbl>();
-    [IoC.Inject]
-    public ICooldownManager CooldownManager { set; protected get; }
+
     [IoC.Inject]
     public IGuiPoolManager GuiPoolManager { set; protected get; }
 
-    public UILabel label;
-
-    public TweenAlpha tweenAlpha;
-    public TweenScale tweenScale;
-
-    private ICooldownItem cooldown;
+    public TextMesh label;
 
     public int Count;
     public string Name;
 
+    void Awake() {
+        if (label == null) {
+            label = GetComponent<TextMesh>();
+            if (label == null) {
+                label = gameObject.AddComponent<TextMesh>();
+            }
+            var mr = GetComponent<MeshRenderer>();
+            if (mr == null) {
+                mr = gameObject.AddComponent<MeshRenderer>();
+            }
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            label.font = font;
+            label.anchor = TextAnchor.MiddleCenter;
+            label.characterSize = 0.13f;
+            label.fontSize = 26;
+            if (font != null) {
+                mr.material = font.material;
+            }
+        }
+    }
+
     public void Init(Color color, string text) {
+        if (label == null) Awake();
         label.color = color;
-        label.effectColor = Color.black;
         label.text = text;
-
-        tweenAlpha.duration = 1;
-        tweenScale.duration = 1;
-
-        tweenScale.ResetToBeginning();
-        tweenAlpha.ResetToBeginning();
-        tweenScale.Play();
-        tweenAlpha.Play();
-
-        cooldown = CooldownManager.AddCooldown(tweenAlpha.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
+        StartCoroutine(Life(1f));
     }
 
     public void Init(string name, int count) {
+        if (label == null) Awake();
         Count = count;
         Name = name;
         if (CurrentVisible.ContainsKey(name)) {
@@ -45,46 +52,45 @@ public class GuiLbl : MonoBehaviour, IBasePoolObject {
         }
 
         foreach (var lbl in CurrentVisible) {
-            if (lbl.Key != name) {
-                if (lbl.Value.transform.position.y - transform.position.y < 25) {
-                    lbl.Value.transform.position = lbl.Value.transform.position + Vector3.up*25;
-                }
+            if (lbl.Key != name && lbl.Value.transform.position.y - transform.position.y < 25f) {
+                lbl.Value.transform.position += Vector3.up * 25f;
             }
         }
 
         CurrentVisible[name] = this;
-
         label.color = Color.white;
-        label.effectColor = Color.black;
         label.text = string.Format("{0} :({1})", name, Count);
+        StartCoroutine(Life(2f));
+    }
 
-        tweenAlpha.duration = 2;
-        tweenScale.duration = 2;
-
-        tweenScale.ResetToBeginning();
-        tweenAlpha.ResetToBeginning();
-        tweenScale.Play();
-        tweenAlpha.Play();
-
-        cooldown = CooldownManager.AddCooldown(tweenAlpha.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
+    IEnumerator Life(float duration) {
+        Vector3 start = transform.position;
+        Color c = label.color;
+        float t = 0f;
+        while (t < duration) {
+            t += Time.deltaTime;
+            transform.position = start + Vector3.up * (25f * t / duration);
+            c.a = Mathf.Clamp01(1f - t / duration);
+            label.color = c;
+            yield return null;
+        }
+        UnSpawn();
     }
 
     public void OnSpawn() {
         this.Inject();
-        //cooldown = CooldownManager.AddCooldown(tweenAlpha.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
     }
 
     public void ForceUnSpawn() {
-        CooldownManager.RemoveCooldown(cooldown);
+        StopAllCoroutines();
         UnSpawn();
     }
 
     protected virtual void UnSpawn() {
-        GuiPoolManager.Unspawn(gameObject);
-
+        StopAllCoroutines();
         if (CurrentVisible.ContainsKey(Name)) {
             CurrentVisible.Remove(Name);
         }
+        GuiPoolManager.Unspawn(gameObject);
     }
-
 }

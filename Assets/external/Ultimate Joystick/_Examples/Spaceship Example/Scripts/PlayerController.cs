@@ -71,7 +71,7 @@ namespace UltimateJoystickExample.Spaceship
 				// Then reset the player's rotation, position, velocity and angular vel.
 				myRigidbody.rotation = Quaternion.identity;
 				myRigidbody.position = Vector3.zero;
-				myRigidbody.velocity = Vector3.zero;
+				myRigidbody.linearVelocity = Vector3.zero;
 				myRigidbody.angularVelocity = Vector3.zero;
 			}
 			else
@@ -88,8 +88,8 @@ namespace UltimateJoystickExample.Spaceship
 				myRigidbody.AddForce( transform.forward * UltimateJoystick.GetDistance( "Movement" ) * 1000.0f * accelerationSpeed * Time.deltaTime );
 
 				// If the player's force is greater than the max speed, then normalize it.
-				if( myRigidbody.velocity.magnitude > maxSpeed )
-					myRigidbody.velocity = myRigidbody.velocity.normalized * maxSpeed;
+				if( myRigidbody.linearVelocity.magnitude > maxSpeed )
+					myRigidbody.linearVelocity = myRigidbody.linearVelocity.normalized * maxSpeed;
 
 				// Run the CheckExitScreen function to see if the player has left the screen.
 				CheckExitScreen();
@@ -120,7 +120,7 @@ namespace UltimateJoystickExample.Spaceship
 			bullet.name = bulletPrefab.name;
 			
 			// Apply a speed to the bullet's velocity.
-			bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 200.0f;
+			bullet.GetComponent<Rigidbody>().linearVelocity = bullet.transform.forward * 200.0f;
 
 			// Destroy the bullet after 3 seconds.
 			Destroy( bullet, 3.0f );

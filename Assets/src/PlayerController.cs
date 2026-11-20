@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using IoC;
 using trasharia;
@@ -41,7 +41,10 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
 
     void Start() {
         viewReciver = GetComponent<UnitViewReciver>();
-        pysicItem = viewReciver.pysicItem;
+        if (viewReciver == null) viewReciver = GetComponentInChildren<UnitViewReciver>();
+        if (viewReciver != null) {
+            pysicItem = viewReciver.pysicItem;
+        }
 
         lightPoint = new LightPoint();
         lightPoint.SetSize(32);
@@ -75,6 +78,11 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
 
         maxHp = 100;
         currHp = 100;
+
+        if (RootContext.Instance != null && RootContext.Instance.Player != null) {
+            RootContext.Instance.Player.HpMax = maxHp;
+            RootContext.Instance.Player.HpPct = 1f;
+        }
 
       //  TargetManager.Player = this;
     }
@@ -118,30 +126,34 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
     }
 
 
+    private Coroutine flashRoutine;
+
     public void TweenAlpha(float duration, bool play) {
+        if (play) {
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = StartCoroutine(FlashRoutine(duration));
+        } else {
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = null;
+            SetSpritesAlpha(1f);
+        }
+    }
+
+    System.Collections.IEnumerator FlashRoutine(float duration) {
+        float min = 0.3f;
+        while (true) {
+            for (float t = 0f; t < duration; t += Time.deltaTime) {
+                float k = Mathf.PingPong(t / Mathf.Max(duration, 0.001f), 1f);
+                SetSpritesAlpha(Mathf.Lerp(min, 1f, k));
+                yield return null;
+            }
+        }
+    }
+
+    void SetSpritesAlpha(float a) {
         var sprites = GetComponentsInChildren<SpriteRenderer>(true);
-        foreach (var sprite in sprites) {
-            
-            TweenAlpha tween = sprite.gameObject.GetComponent<TweenAlpha>();
-            if (tween == null && play) {
-                tween = sprite.gameObject.AddComponent<TweenAlpha>();
-                tween.from = 0.3f;
-                tween.to = 1;
-                tween.style = UITweener.Style.PingPong;
-            }
-
-            if (tween != null) {
-                tween.enabled = play;
-            }
-
-            if (play) {
-                tween.duration = duration;
-                tween.PlayReverse();
-            }
-
-            if (!play) {
-                sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.b, 1);
-            }
+        foreach (var s in sprites) {
+            s.color = new Color(s.color.r, s.color.g, s.color.b, a);
         }
     }
 
@@ -190,8 +202,10 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
     public float currHp { get; set; }
     public void Damage(float hp) {
         currHp = Mathf.Clamp(currHp - hp, 0, maxHp);
-        RootContext.Instance.Player.HpMax = maxHp;
-        RootContext.Instance.Player.HpPct = currHp / (float)maxHp;
+        if (RootContext.Instance != null && RootContext.Instance.Player != null) {
+            RootContext.Instance.Player.HpMax = maxHp;
+            RootContext.Instance.Player.HpPct = maxHp > 0 ? currHp / (float)maxHp : 0f;
+        }
 
         if (hp > 0)
         IgoPoolManager.Spawn<BloodEffect>(transform.position, Quaternion.identity);
@@ -221,8 +235,10 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
 
     public void SetHP(int val) {
         currHp = val;
-        RootContext.Instance.Player.HpMax = maxHp;
-        RootContext.Instance.Player.HpPct = currHp / (float)maxHp;
+        if (RootContext.Instance != null && RootContext.Instance.Player != null) {
+            RootContext.Instance.Player.HpMax = maxHp;
+            RootContext.Instance.Player.HpPct = maxHp > 0 ? currHp / (float)maxHp : 0f;
+        }
     }
 
     public Transform GetTransform() {

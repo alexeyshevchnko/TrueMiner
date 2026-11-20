@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using trasharia.weapons;
 using IoC;
@@ -49,13 +49,7 @@ public class Torch : MonoBehaviour, IWeapon, IoC.IInitialize {
 
     public void Fire(Vector2 direct, bool isTouch)
     {
-        var tween = TweenRotation.Begin(gameObject, 0.3f, Quaternion.identity);
-        tween.from = new Vector3(0, 0, 90);
-        tween.to = new Vector3(0, 0, -90);
-        tween.SetOnFinished(() => {
-            // OnFinishedFire();
-            transform.rotation = Quaternion.identity;
-        });
+        StartCoroutine(WeaponAnim.Swing(transform, 0.3f, null));
 
 
         var distance = Vector3.Distance(transform.position, direct) / tileDataProvider.TileSize;
