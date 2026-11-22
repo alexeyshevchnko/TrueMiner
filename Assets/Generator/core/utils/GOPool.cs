@@ -176,6 +176,10 @@ public class GOPool : MonoBehaviour, IoC.IInitialize {
             }
         }
 
+        if (cache == null) {
+            throw new InvalidOperationException("[GOPool] No cache registered for type " + typeof(T).Name + ". Add a GOPool cache with a prefab that has " + typeof(T).Name + " to 'caches' in the scene or call AddCache.");
+        }
+
         GameObject obj = cache.GetNextObjectInCache();
 
         obj.transform.position = position;
