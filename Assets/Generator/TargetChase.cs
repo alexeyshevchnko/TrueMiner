@@ -20,13 +20,13 @@ public class TargetChase : MonoBehaviour {
 
 
     void OnChangeMap() {
-        oldSpeed = speed;
+        /*oldSpeed = speed;
         speed = 1000;
         inNoTime = true;
         CooldownManager.AddCooldown(10, null, () => {
             speed = oldSpeed;
             inNoTime = false;
-        });
+        });*/
     }
 
 	void FixedUpdate () {
