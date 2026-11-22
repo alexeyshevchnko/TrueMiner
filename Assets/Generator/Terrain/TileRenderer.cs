@@ -163,7 +163,8 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
             ScreenUpdateManager.SetScreenRect(screenStart, screenEnd);
             LightRenderer.SetScreenRect(screenStart, screenEnd);
 
-            var add = obstacleLight.layerData.SizeAdd;
+            // The obstacle light layer only exists when LayerData.Layers declares it.
+            var add = obstacleLight != null ? obstacleLight.layerData.SizeAdd : 0;
 
             SwapItemManager.SetSize(screenEnd.x - screenStart.x + 2 * add, screenEnd.y - screenStart.y + 2 * add);
             //SwapItemManager.SetStartPos(new Vector2Int(screenStart.x - add, screenStart.y - add));
@@ -196,7 +197,9 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
             for (int ii = 0; ii < layerMeshs.Count; ii++) {
                 layerMeshs[ii].ShiftCells((int)deltaX, (int)deltaY);
             }
-            obstacleLight.ShiftCells((int)deltaX, (int)deltaY);
+            if (obstacleLight != null) {
+                obstacleLight.ShiftCells((int)deltaX, (int)deltaY);
+            }
 
 
             LightRenderer.Swap((int)deltaX, (int)deltaY);  // -<
@@ -477,7 +480,6 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
 	       
 	            tileDataProvider.СircleDamageTile(pos.x + 1.5f*tileSize, pos.y + 1.5f*tileSize, carrentMarkerType,
 	                carrentMarkerLayer, carrentMarkeLiquidType, 1);
-	            lastP1 = new Vector3();
 
 	            UpdateScreenTiles();
 	           // Render();
