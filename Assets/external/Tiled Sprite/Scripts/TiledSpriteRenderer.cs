@@ -293,7 +293,8 @@ public class TiledSpriteRenderer : MonoBehaviour
 		renderer.hideFlags = HideFlags.HideInInspector | HideFlags.NotEditable;
 		renderer.shadowCastingMode = ShadowCastingMode.Off;
 		renderer.receiveShadows = false;
-		renderer.useLightProbes = false;
+		// эквивалент устаревшего useLightProbes = false (CS0618)
+		renderer.lightProbeUsage = LightProbeUsage.Off;
 		renderer.enabled = false;
 		
 		meshFilter = GetComponent<MeshFilter>();
@@ -1315,8 +1316,8 @@ public class TiledSpriteRenderer : MonoBehaviour
 	int m_orderInLayer = 0;
 	
 	// mesh related data
-	
-	new MeshRenderer renderer;
+
+	MeshRenderer renderer;
 	MeshFilter meshFilter;
 	Mesh mesh;
 	Vector3[] vertices;

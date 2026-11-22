@@ -17,18 +17,22 @@ public class CFX_ShurikenThreadFix : MonoBehaviour
 		systems = GetComponentsInChildren<ParticleSystem>();
 		
 		foreach(ParticleSystem ps in systems)
-			ps.enableEmission = false;
-		
+		{
+			var emission = ps.emission;
+			emission.enabled = false;
+		}
+
 		StartCoroutine("WaitFrame");
 	}
-	
+
 	IEnumerator WaitFrame()
 	{
 		yield return null;
-		
+
 		foreach(ParticleSystem ps in systems)
 		{
-			ps.enableEmission = true;
+			var emission = ps.emission;
+			emission.enabled = true;
 			ps.Play(true);
 		}
 	}

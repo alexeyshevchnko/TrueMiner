@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  TexturePacker Importer
  *  (c) CodeAndWeb GmbH, Saalbaustraße 61, 89233 Neu-Ulm, Germany
  * 
@@ -10,6 +10,7 @@
  */
 
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,14 +32,24 @@ public class TexturePackerImporter : AssetPostprocessor
     private static bool importPivotPoints = false;// EditorPrefs.GetBool("TPImporter.ImportPivotPoints", true);
 
 	/*
-	 *  Pivot point import can be disabled in the Preferences dialog (menu item Unity->Preferences, TexturePacker sheet)
+	 *  Pivot point import can be disabled in the Preferences dialog (menu item Unity->Preferences, TexturePacker sheet).
+	 *  Замена устаревшего [PreferenceItem] (CS0618) на современный [SettingsProvider]:
+	 *  та же секция в Preferences и тот же EditorPrefs-ключ "TPImporter.ImportPivotPoints".
 	 */
-	[PreferenceItem("TexturePacker")]
-	static void PreferencesGUI()
+	[SettingsProvider]
+	static SettingsProvider PreferencesSettingsProvider()
 	{
-		importPivotPoints = EditorGUILayout.Toggle("Always import pivot points", importPivotPoints);
-		if (GUI.changed)
-			EditorPrefs.SetBool("TPImporter.ImportPivotPoints", importPivotPoints);
+		var provider = new SettingsProvider("Preferences/TexturePacker", SettingsScope.User)
+		{
+			label = "TexturePacker",
+			guiHandler = searchContext =>
+			{
+				importPivotPoints = EditorGUILayout.Toggle("Always import pivot points", importPivotPoints);
+				if (GUI.changed)
+					EditorPrefs.SetBool("TPImporter.ImportPivotPoints", importPivotPoints);
+			}
+		};
+		return provider;
 	}
 
 
@@ -96,13 +107,23 @@ public class TexturePackerImporter : AssetPostprocessor
 			return;
 		}
 
-		Dictionary<string, SpriteMetaData> existingSprites = new Dictionary<string, SpriteMetaData>();
-		foreach (SpriteMetaData sprite in importer.spritesheet)
+		// Современный API данных спрайтов (замена удалённого importer.spritesheet, CS0618).
+		var factory = new SpriteDataProviderFactories();
+		factory.Init();
+		ISpriteEditorDataProvider dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
+		if (dataProvider == null)
+			return; // нет поддержки редактора спрайтов — оставляем импорт без изменений
+		dataProvider.InitSpriteEditorDataProvider();
+
+		// Существующие спрайты: сохраняются по имени (pivot/alignment/border и GUID),
+		// при этом SpriteRect.spriteID переносится — ссылки на спрайты в проекте остаются валидными.
+		Dictionary<string, SpriteRect> existingSprites = new Dictionary<string, SpriteRect>();
+		foreach (SpriteRect sprite in dataProvider.GetSpriteRects())
 		{
 			existingSprites.Add(sprite.name, sprite);
 		}
 
-		List<SpriteMetaData> metaData = new List<SpriteMetaData> ();
+		List<SpriteRect> metaData = new List<SpriteRect> ();
 		foreach (string row in dataFileContent) {
 			if (string.IsNullOrEmpty (row) || row.StartsWith ("#") || row.StartsWith (":"))
 				continue; // comment lines start with #, additional atlas properties with :
@@ -111,7 +132,7 @@ public class TexturePackerImporter : AssetPostprocessor
 			if (cols.Length < 7)
 				return; // format error
 
-			SpriteMetaData smd = new SpriteMetaData ();
+			SpriteRect smd = new SpriteRect ();
 			smd.name = cols [0].Replace ("/", "-");  // unity has problems with "/" in sprite names...
 			float x = float.Parse (cols [1]);
 			float y = float.Parse (cols [2]);
@@ -124,10 +145,16 @@ public class TexturePackerImporter : AssetPostprocessor
 
 			if (existingSprites.ContainsKey(smd.name))
 			{
-				SpriteMetaData sprite = existingSprites[smd.name];
+				SpriteRect sprite = existingSprites[smd.name];
+				smd.spriteID = sprite.spriteID;
 				smd.pivot = sprite.pivot;
 				smd.alignment = sprite.alignment;
 				smd.border = sprite.border;
+			}
+			else
+			{
+				// новый спрайт — стабильный уникальный идентификатор
+				smd.spriteID = GUID.Generate();
 			}
 
 			if (importPivotPoints || !existingSprites.ContainsKey(smd.name))
@@ -135,29 +162,30 @@ public class TexturePackerImporter : AssetPostprocessor
 				smd.pivot = new UnityEngine.Vector2 (px, py);
 
 				if (px == 0 && py == 0)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.BottomLeft;
+					smd.alignment = UnityEngine.SpriteAlignment.BottomLeft;
 				else if (px == 0.5 && py == 0)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.BottomCenter;
+					smd.alignment = UnityEngine.SpriteAlignment.BottomCenter;
 				else if (px == 1 && py == 0)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.BottomRight;
+					smd.alignment = UnityEngine.SpriteAlignment.BottomRight;
 				else if (px == 0 && py == 0.5)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.LeftCenter;
+					smd.alignment = UnityEngine.SpriteAlignment.LeftCenter;
 				else if (px == 0.5 && py == 0.5)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.Center;
+					smd.alignment = UnityEngine.SpriteAlignment.Center;
 				else if (px == 1 && py == 0.5)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.RightCenter;
+					smd.alignment = UnityEngine.SpriteAlignment.RightCenter;
 				else if (px == 0 && py == 1)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.TopLeft;
+					smd.alignment = UnityEngine.SpriteAlignment.TopLeft;
 				else if (px == 0.5 && py == 1)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.TopCenter;
+					smd.alignment = UnityEngine.SpriteAlignment.TopCenter;
 				else if (px == 1 && py == 1)
-					smd.alignment = (int)UnityEngine.SpriteAlignment.TopRight;
+					smd.alignment = UnityEngine.SpriteAlignment.TopRight;
 				else
-					smd.alignment = (int)UnityEngine.SpriteAlignment.Custom;
+					smd.alignment = UnityEngine.SpriteAlignment.Custom;
 			}
 			metaData.Add (smd);
 		}
 
-		importer.spritesheet = metaData.ToArray();
+		dataProvider.SetSpriteRects(metaData.ToArray());
+		dataProvider.Apply();
 	}
 }

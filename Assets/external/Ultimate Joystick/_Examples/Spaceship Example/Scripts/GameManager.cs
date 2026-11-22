@@ -1,4 +1,4 @@
-﻿/* Written by Kaz Crowe */
+/* Written by Kaz Crowe */
 /* GameManager.cs */
 using UnityEngine;
 using System.Collections;
@@ -156,7 +156,7 @@ namespace UltimateJoystickExample.Spaceship
 			// Enable the game over screen game object.
 			gameOverScreen.gameObject.SetActive( true );
 
-			GameObject expl = ( GameObject )Instantiate( playerExplosionPrefab, FindObjectOfType<PlayerController>().transform.position, Quaternion.identity );
+			GameObject expl = ( GameObject )Instantiate( playerExplosionPrefab, FindAnyObjectByType<PlayerController>().transform.position, Quaternion.identity );
 
 			Destroy( expl, 2 );
 

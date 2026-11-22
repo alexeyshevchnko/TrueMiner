@@ -15,7 +15,7 @@ public class UltimateJoystickScreenSizeUpdater : UIBehaviour
 	{
 		yield return new WaitForEndOfFrame();
 
-		UltimateJoystick[] allJoysticks = FindObjectsOfType( typeof( UltimateJoystick ) ) as UltimateJoystick[];
+		UltimateJoystick[] allJoysticks = FindObjectsByType( typeof( UltimateJoystick ) ) as UltimateJoystick[];
 
 		for( int i = 0; i < allJoysticks.Length; i++ )
 			allJoysticks[ i ].UpdatePositioning();

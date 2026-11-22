@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.Reflection;
@@ -878,7 +878,8 @@ public class CFXEasyEditor : EditorWindow
 			//Scale Lifetime
 			foreach(ParticleSystem ps in systems)
 			{
-				ps.playbackSpeed = (100.0f/LTScalingValue);
+				var main = ps.main;
+				main.simulationSpeed = (100.0f/LTScalingValue);
 			}
 		}
 	}
@@ -918,7 +919,8 @@ public class CFXEasyEditor : EditorWindow
 			//Scale Lifetime
 			foreach(ParticleSystem ps in systems)
 			{
-				ps.startDelay = DelayValue;
+				var main = ps.main;
+				main.startDelay = DelayValue;
 			}
 		}
 	}
@@ -944,17 +946,21 @@ public class CFXEasyEditor : EditorWindow
 			
 			GenericModuleCopy(psSource.FindProperty("InitialModule"), psDest.FindProperty("InitialModule"));
 			
-			dest.startDelay = source.startDelay;
-			dest.loop = source.loop;
-			dest.playOnAwake = source.playOnAwake;
-			dest.playbackSpeed = source.playbackSpeed;
-			dest.emissionRate = source.emissionRate;
-			dest.startSpeed = source.startSpeed;
-			dest.startSize = source.startSize;
-			dest.startColor = source.startColor;
-			dest.startRotation = source.startRotation;
-			dest.startLifetime = source.startLifetime;
-			dest.gravityModifier = source.gravityModifier;
+			var srcMain = source.main;
+			var destMain = dest.main;
+			var srcEmission = source.emission;
+			var destEmission = dest.emission;
+			destMain.startDelay = srcMain.startDelay;
+			destMain.loop = srcMain.loop;
+			destMain.playOnAwake = srcMain.playOnAwake;
+			destMain.simulationSpeed = srcMain.simulationSpeed;
+			destEmission.rateOverTime = srcEmission.rateOverTime;
+			destMain.startSpeed = srcMain.startSpeed;
+			destMain.startSize = srcMain.startSize;
+			destMain.startColor = srcMain.startColor;
+			destMain.startRotation = srcMain.startRotation;
+			destMain.startLifetime = srcMain.startLifetime;
+			destMain.gravityModifier = srcMain.gravityModifier;
 		}
 		
 		//Emission
@@ -1163,14 +1169,40 @@ public class CFXEasyEditor : EditorWindow
 		dest.ApplyModifiedProperties();
 	}
 	
+	//РЎРєР°Р»СЏСЂРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ MinMaxCurve, СЌРєРІРёРІР°Р»РµРЅС‚ СѓСЃС‚Р°СЂРµРІС€РµРіРѕ float-СЃРІРѕР№СЃС‚РІР°
+	//(РґР»СЏ РєСЂРёРІС‹С… вЂ” РіР»РѕР±Р°Р»СЊРЅС‹Р№ РјРЅРѕР¶РёС‚РµР»СЊ)
+	private static float GetCurveScalar(ParticleSystem.MinMaxCurve curve)
+	{
+		return curve.mode == ParticleSystemCurveMode.Constant ? curve.constant : curve.curveMultiplier;
+	}
+
+	//РњР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ MinMaxCurve СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј СЂРµР¶РёРјР° РєСЂРёРІРѕР№
+	private static ParticleSystem.MinMaxCurve ScaleCurve(ParticleSystem.MinMaxCurve curve, float scale)
+	{
+		switch(curve.mode)
+		{
+			case ParticleSystemCurveMode.Constant:
+				return new ParticleSystem.MinMaxCurve(curve.constant * scale);
+			case ParticleSystemCurveMode.Curve:
+				return new ParticleSystem.MinMaxCurve(curve.curveMultiplier * scale, curve.curve);
+			case ParticleSystemCurveMode.TwoConstants:
+				return new ParticleSystem.MinMaxCurve(curve.constantMin * scale, curve.constantMax * scale);
+			case ParticleSystemCurveMode.TwoCurves:
+				return new ParticleSystem.MinMaxCurve(curve.curveMultiplier * scale, curve.curveMin, curve.curveMax);
+			default:
+				return curve;
+		}
+	}
+
 	//Scale System
 	private void ScaleParticleValues(ParticleSystem ps, GameObject parent)
 	{
 		//Particle System
-		ps.startSize *= ScalingValue;
-		ps.gravityModifier *= ScalingValue;
-		if(ps.startSpeed > 0.01f)
-			ps.startSpeed *= ScalingValue;
+		var main = ps.main;
+		main.startSize = ScaleCurve(main.startSize, ScalingValue);
+		main.gravityModifier = ScaleCurve(main.gravityModifier, ScalingValue);
+		if(GetCurveScalar(main.startSpeed) > 0.01f)
+			main.startSpeed = ScaleCurve(main.startSpeed, ScalingValue);
 		if(ps.gameObject != parent)
 			ps.transform.localPosition *= ScalingValue;
 		
