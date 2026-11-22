@@ -122,6 +122,7 @@ public class TargetManager : ITargetManager{
         Container.Inject(controller);
         controller.Init(pos);
         controller.InitZombieBehaviour();
+        units.Add(controller);
         return controller;
     }
 
@@ -134,17 +135,14 @@ public class TargetManager : ITargetManager{
         Container.Inject(controller);
         controller.Init(pos);
         controller.InitMinerBehaviour();
+        units.Add(controller);
         return controller;
     }
 
     public void DestroyUnit(AiController unit) {
-        for (int i = units.Count - 1; i >= 0; i--) {
-            if (units[i] == unit) {
-                GameObject.Destroy(units[i].gameObject);
-                units.RemoveAt(i);
-                break;
-            }
-        }
+        // Every unit is tracked from its factory method, so removing it here always finds it.
+        units.Remove(unit);
+        GameObject.Destroy(unit.gameObject);
     }
 
     void OnTick() {
@@ -188,9 +186,9 @@ public class TargetManager : ITargetManager{
 
                     var r = Random.Range(0, 10);
                     if (r > 5) {
-                        units.Add(CreateUnit(id, R));
+                        CreateUnit(id, R);
                     } else {
-                        units.Add(CreateUnit(id, L));
+                        CreateUnit(id, L);
                     }
                 }
             }
