@@ -1,4 +1,4 @@
-﻿/* Written by Kaz Crowe */
+/* Written by Kaz Crowe */
 /* UltimateJoystick.cs */
 using UnityEngine;
 using UnityEngine.UI;
@@ -84,9 +84,27 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		{
 			if( UltimateJoysticks.ContainsKey( joystickName ) )
 				UltimateJoysticks.Remove( joystickName );
-		
+
 			UltimateJoysticks.Add( joystickName, GetComponent<UltimateJoystick>() );
+
+			// Вычисляем размещение сразу, чтобы joystickCenter был валиден с первого
+			// кадра (потребители осей могут начать читать значения раньше Start).
+			UpdateSizeAndPlacement();
 		}
+	}
+
+	// Восстановление нейтрального состояния при потере фокуса приложения или паузе,
+	// чтобы после возврата в игру не оставался «залипший» ввод (GUI_Agent_Work/ISSUE-7).
+	void OnApplicationFocus ( bool focusStatus )
+	{
+		if( focusStatus == false && joystickState == true )
+			ResetJoystick();
+	}
+
+	void OnApplicationPause ( bool pauseStatus )
+	{
+		if( pauseStatus == true && joystickState == true )
+			ResetJoystick();
 	}
 
 	void Start ()
@@ -278,8 +296,7 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 	}
 	
 	void UpdateJoystick ( PointerEventData touchInfo )
-	{
-		// Create a new Vector2 to equal the vector from the current touch to the center of joystick.
+	{		// Create a new Vector2 to equal the vector from the current touch to the center of joystick.
 		Vector2 tempVector = touchInfo.position - ( Vector2 )joystickCenter;
 
 		// If the user wants only one axis, then zero out the opposite value.
@@ -717,6 +734,13 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		
 		// Store the joystick's center so that JoystickPosition can be configured correctly.
 		joystickCenter = joystickSizeFolder.position + new Vector3( joystickSizeFolder.sizeDelta.x / 2, joystickSizeFolder.sizeDelta.y / 2 );
+
+		// Держим ручку ровно в центре после каждой перестройки размещения. Без этого
+		// UpdatePositioning (OnRectTransformDimensionsChange) вызывает ResetJoystick по
+		// СТАРОМУ центру, а затем пересчитывает центр — ручка остаётся в старой точке,
+		// GetHorizontalAxis/GetVerticalAxis возвращают постоянное смещение, и персонаж
+		// «съезжает» без касаний (GUI_Agent_Work/ISSUE-7).
+		joystick.position = joystickCenter;
 
 		// If the user wants to fade, and the joystickGroup is unassigned, find the CanvasGroup.
 		if( useFade == true && joystickGroup == null )

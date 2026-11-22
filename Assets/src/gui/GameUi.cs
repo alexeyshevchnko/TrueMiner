@@ -59,16 +59,51 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
 
     /// <summary>
     /// Подключает динамическую видимость к существующим джойстикам Ultimate Joystick
-    /// (Joystick1 — движение, Joystick2 — прицел). Сами джойстики не пересоздаются;
-    /// система управления не изменяется, меняется только отображение.
+    /// (Joystick1 — движение, Joystick2 — прицел) и создаёт зоны TouchArea:
+    /// каждая — половина экрана по ширине и вся высота, на канвасе ниже всех
+    /// игровых канвасов (routing: интерфейс всегда выигрывает raycast — зоны не
+    /// блокируют кнопки/сумку/ячейки). Сами джойстики не пересоздаются; система
+    /// управления не изменяется, меняется только отображение и маршрутизация касаний.
     /// </summary>
     void AttachJoystickTouchVisibility()
     {
-        foreach (var joystickName in new[] { "Joystick1", "Joystick2" })
+        const int touchAreaCanvasOrder = -20; // ниже GameUi (-10) и Ultimate UI Canvas (0)
+
+        var touchCanvasGo = new GameObject("TouchAreaCanvas", typeof(RectTransform), typeof(Canvas), typeof(TouchAreaRaycaster));
+        var touchCanvas = touchCanvasGo.GetComponent<Canvas>();
+        touchCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        touchCanvas.sortingOrder = touchAreaCanvasOrder;
+        var touchRect = (RectTransform)touchCanvasGo.transform;
+        touchRect.anchorMin = Vector2.zero;
+        touchRect.anchorMax = Vector2.one;
+        touchRect.offsetMin = Vector2.zero;
+        touchRect.offsetMax = Vector2.zero;
+
+        var joystickNames = new[] { "Joystick1", "Joystick2" };
+        for (var i = 0; i < joystickNames.Length; i++)
         {
-            var joystick = UltimateJoystick.GetUltimateJoystick(joystickName);
-            if (joystick != null && joystick.GetComponent<JoystickTouchVisibility>() == null)
+            var joystick = UltimateJoystick.GetUltimateJoystick(joystickNames[i]);
+            if (joystick == null)
+                continue; // джойстика нет — зона не нужна
+
+            if (joystick.GetComponent<JoystickTouchVisibility>() == null)
                 joystick.gameObject.AddComponent<JoystickTouchVisibility>();
+
+            var left = i == 0;
+            var area = new GameObject(left ? "TouchArea_Left" : "TouchArea_Right", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            area.transform.SetParent(touchCanvasGo.transform, false);
+            var areaRect = (RectTransform)area.transform;
+            // Половина экрана по X, вся высота по Y.
+            areaRect.anchorMin = new Vector2(left ? 0f : 0.5f, 0f);
+            areaRect.anchorMax = new Vector2(left ? 0.5f : 1f, 1f);
+            areaRect.offsetMin = Vector2.zero;
+            areaRect.offsetMax = Vector2.zero;
+
+            var image = area.GetComponent<Image>();
+            image.color = new Color(0f, 0f, 0f, 0f); // прозрачная зона, применяется TouchAreaRaycaster
+
+            var touchArea = area.AddComponent<JoystickTouchArea>();
+            touchArea.Target = joystick;
         }
     }
 
