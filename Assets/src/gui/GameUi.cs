@@ -74,6 +74,14 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
+        // Шрифт Comic (Resources/gui/comic.ttf) — только для цифр количества предметов.
+        Font countFont = Resources.Load<Font>("gui/comic");
+        if (countFont == null)
+        {
+            Debug.LogWarning("GameUi: шрифт gui/comic не найден, количество предметов — системным шрифтом");
+            countFont = font;
+        }
+
         // HP bar — top-left.
         var hpBg = AddImage(canvasGo.transform, "HpBg", new Color(0f, 0f, 0f, 0.6f));
         SetAnchored(hpBg.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -14f), new Vector2(240f, 28f));
@@ -114,7 +122,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         hotbar = new Slot[9];
         for (int i = 0; i < 9; i++)
         {
-            hotbar[i] = MakeSlot(hotbarPanel.transform, font);
+            hotbar[i] = MakeSlot(hotbarPanel.transform, countFont);
         }
 
         // Bag panel — toggled, above the hotbar (36 slots).
@@ -133,7 +141,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         bagSlots = new Slot[36];
         for (int i = 0; i < 36; i++)
         {
-            bagSlots[i] = MakeSlot(bagPanel.transform, font);
+            bagSlots[i] = MakeSlot(bagPanel.transform, countFont);
         }
         bagPanel.SetActive(false);
     }
@@ -151,7 +159,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         s.icon = AddImage(img.transform, "Icon", Color.white);
         Stretch(s.icon.rectTransform);
 
-        s.count = AddText(img.transform, "Count", font, 20, TextAnchor.LowerRight, Color.white);
+        s.count = AddCountText(img.transform, font);
         SetAnchored(s.count.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-4f, 4f), new Vector2(52f, 24f));
 
         btn.onClick.AddListener(() => { if (s.context != null) s.context.Click(); });
@@ -234,6 +242,21 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     }
 
     // ---- helpers ----
+    // Текст количества предметов: шрифт Comic + чёрный контур (Outline).
+    // BestFit вписывает любое количество цифр в ячейку без обрезания;
+    // выравнивание в правом нижнем углу не закрывает центр иконки.
+    static Text AddCountText(Transform parent, Font font)
+    {
+        var t = AddText(parent, "Count", font, 20, TextAnchor.LowerRight, Color.white);
+        t.resizeTextForBestFit = true;
+        t.resizeTextMinSize = 10;
+        t.resizeTextMaxSize = 20;
+        var outline = t.gameObject.AddComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 1f);
+        outline.effectDistance = new Vector2(1.5f, -1.5f);
+        return t;
+    }
+
     static Image AddImage(Transform parent, string name, Color color)
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
