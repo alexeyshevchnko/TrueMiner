@@ -72,8 +72,8 @@ public class InfinityTileMapPixel : IInfinityTileMap {
 
         Texture2D texture2 = new Texture2D(size, size, TextureFormat.RGBA32, false);
 
-        for (int x = 0; x <= size; x++) {
-            for (int y = 0; y <= size; y++) {
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
                 texture2.SetPixel(x, y, new Color32(255, 255, 255, (byte)x));
             }
         }
