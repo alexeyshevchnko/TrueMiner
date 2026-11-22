@@ -1,5 +1,31 @@
 # TEST_REPORT — результаты проверок
 
+## Сессия 2 (2026-11-22): NRE запуска + Comic/Outline
+
+### Прогон запуска (Play Mode, batch, MainScene целиком)
+- Тест `GameStartSmokeTests.MainScene_InitializesAndGuiShows` (`smoke_results.xml`): **Passed**.
+  Загружается реальная `Assets/MainScene.unity` (`EditorSceneManager.LoadSceneAsyncInPlayMode`), 3 c на инициализацию:
+  - `RootContext.Instance`, `Player`, `Bag` созданы — IoC-цепочка живая;
+  - `GameUi.Instance` создан; `GuiPool.guiPool` инициализирован (Inject прошёл без NRE);
+  - EventSystem активен; сумка открывается; тестовые количества 1 и 128 подставлены в модель.
+  - Шрифт Count-текстов содержит "comic" (проверено для хотбара[0] и сумки[0]); Outline чёрный, непрозрачный.
+- **Лог прогона `unity_smoke_run.log`: ни одного NullReferenceException / Exception / [Error]** за всю сессию игры. `UnityContext Awaked` в логе подтверждает порядок: корень контекста → инъекции пулов.
+- Замеченный в логе warning «The referenced script on this Behaviour (Game Object '<null>') is missing!» при `InstantiateGameObject` кэша guiPOOL — **предсуществующий** (скрипт отсутствует в одном из префабов кэша), не является исключением, вне объёма работ; занесён как наблюдение.
+- EditMode-регрессия (`editmode_final2.xml`): **6/6 Passed** (атлас 4 + DeselectOnClick 2).
+- PlayMode-кнопочные тесты: **3/3 Passed** (переведены на использование существующего EventSystem сцены).
+
+### Ограничения проверки (честно)
+- Скриншот `ScreenCapture.CaptureScreenshot` в batch-среде не записывается — файл `playmode_smoke.png` не создан; оформление проверено программными утверждениями (имя шрифта, компонент Outline и его цвет) + предыдущей визуальной сверкой атласа. Человеческая оценка «красиво/не читается» остаётся за ручным запуском.
+- Сенсорный ввод отдельно не эмулировался (pointer-события общие).
+- Попутные технические находки среды: `-executeMethod` в batch сам завершает редактор (Play недостижим через него); `SceneManager.LoadScene` по пути требует сцену в build profile (использован `LoadSceneAsyncInPlayMode`); PlayMode-раннер не видит тесты в editor-сборке (smoke-тест сделан в asmdef с рефлексией к Assembly-CSharp).
+
+### Коммиты
+1. `e1230ef` Fix IoC initialization NullReferenceException (+ smoke-тест запуска).
+2. `d2da9bb` Style inventory item counts with Comic font and outline.
+
+---
+## Сессия 1 (2026-11-22): иконки + кнопки
+
 Дата: 2026-11-22. Unity 6000.0.60f1, проверка в `-batchmode` (редактор закрался/не запущен во время прогонов; проект компилировался и тестировался headless).
 
 ## 1. Компиляция

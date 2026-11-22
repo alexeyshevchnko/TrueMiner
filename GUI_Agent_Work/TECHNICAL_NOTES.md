@@ -1,5 +1,11 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## IoC-инициализация и порядок Awake (дополнение после ISSUE-3)
+- Корень контейнера: `GameContext : UnityContext<Main>` на корневом объекте сцены MainScene (guid скрипта 6027da7a…). `UnityContext<T>.Awake()` создаёт `_applicationRoot = new T()` = `Main()`, который конструирует `IoC.UnityContainer` и все биндинги.
+- `MonoInjection.Inject(this MonoBehaviour)` — extension: `SendMessageUpwards("OnAdded", script)`. Сообщение поднимается по всем предкам, обработчики `OnAdded` срабатывают на каждом объекте-предке, где есть такой метод.
+- `GOPool.Awake()` (строка 137) вызывает `this.Inject()` — все наследники пула (GuiPool, POOL наchildren…) инъекцируются через `OnAdded` на `GameContext`. Так как `scriptingDefineSymbols: {}`, проверки `DesignByContract.Check.Require` вырезаны `[Conditional]`-атрибутами.
+- Исправление: `[DefaultExecutionOrder(-1000)]` на `GameContext` (Awake корня раньше всех default-объектов) + ленивый `EnsureApplicationRoot()` в `UnityContext<T>` (без двойных контейнеров).
+
 ## Общая архитектура GUI
 - GUI полностью программный (без префабов для работающего UI): `RootModel` (компонент на объекте «UI Root» сцены `MainScene.unity`) в `Awake()` вызывает `GameUi.EnsureCreated()`, тот создаёт `GameObject("GameUi", GameUi)`.
 - `GameUi.Build()` строит: ScreenSpaceOverlay Canvas (CanvasScaler 1024×768), EventSystem (создаётся только если в сцене его нет — в сцене он есть, со `StandaloneInputModule`), HP-бар, кнопки Flag («Домой» — смена карты/возврат на сгенерированную домашнюю зону через `MapGenerator.ChangeMap()`), Bag, FPS-текст, хотбар (9 слотов, GridLayoutGroup), BagPanel (36 слотов, открытие по `p.IsShowBag` и клавишам B/Tab).

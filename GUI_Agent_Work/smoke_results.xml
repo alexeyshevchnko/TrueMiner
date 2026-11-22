@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-22 08:24:26Z" end-time="2026-11-22 08:24:32Z" duration="6,4049744">
+  <test-suite type="TestSuite" id="1009" name="TrueMiner" fullname="TrueMiner" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-22 08:24:26Z" end-time="2026-11-22 08:24:32Z" duration="6.404974" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1007" name="TrueMiner.GuiTests.dll" fullname="D:/projects/TrueMiner/Library/ScriptAssemblies/TrueMiner.GuiTests.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-22 08:24:26Z" end-time="2026-11-22 08:24:32Z" duration="6.398456" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="6024" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="GameStartSmokeTests" fullname="GameStartSmokeTests" classname="GameStartSmokeTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-11-22 08:24:26Z" end-time="2026-11-22 08:24:32Z" duration="6.368880" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1002" name="MainScene_InitializesAndGuiShows" fullname="GameStartSmokeTests.MainScene_InitializesAndGuiShows" methodname="MainScene_InitializesAndGuiShows" classname="GameStartSmokeTests" runstate="Runnable" seed="181073911" result="Passed" start-time="2026-11-22 08:24:26Z" end-time="2026-11-22 08:24:32Z" duration="6.358176" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[UnityContext Awaked
+UnityContext Enabled
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object 'RedLbl') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+load tile collection = Liquid_000
+load tile collection = Liquid_00
+load tile collection = Liquid_0
+load tile collection = stairs
+load tile collection = Tiles_2
+load tile collection = Tiles_5_1
+load tile collection = Tiles_62
+load tile collection = Tiles_73
+load tile collection = Tiles_74
+load tile collection = Tiles_bg
+load tile collection = TILES_brick
+load tile collection = Tiles_coal
+load tile collection = Tiles_dark
+load tile collection = Tiles_gold
+load tile collection = Tiles_kost
+load tile collection = Tiles_light
+load tile collection = Tiles_light2
+load tile collection = Tiles_meat
+load tile collection = Tiles_med
+load tile collection = Tiles_stal
+load tile collection = Tiles_stone
+load tile collection = TILES_wood
+load tile collection = Tree_tiles
+load tile collection = Tree_top_leaves
+load tile collection = Tree_top_naked
+load tile collection = Tree_Tops
+load tile collection = Liquid_000
+load tile collection = Liquid_00
+load tile collection = Liquid_0
+load tile collection = stairs
+load tile collection = Tiles_2
+load tile collection = Tiles_5_1
+load tile collection = Tiles_62
+load tile collection = Tiles_73
+load tile collection = Tiles_74
+load tile collection = Tiles_bg
+load tile collection = TILES_brick
+load tile collection = Tiles_coal
+load tile collection = Tiles_dark
+load tile collection = Tiles_gold
+load tile collection = Tiles_kost
+load tile collection = Tiles_light
+load tile collection = Tiles_light2
+load tile collection = Tiles_meat
+load tile collection = Tiles_med
+load tile collection = Tiles_stal
+load tile collection = Tiles_stone
+load tile collection = TILES_wood
+load tile collection = Tree_tiles
+load tile collection = Tree_top_leaves
+load tile collection = Tree_top_naked
+load tile collection = Tree_Tops
+load tile collection = Liquid_000
+load tile collection = Liquid_00
+load tile collection = Liquid_0
+load tile collection = stairs
+load tile collection = Tiles_2
+load tile collection = Tiles_5_1
+load tile collection = Tiles_62
+load tile collection = Tiles_73
+load tile collection = Tiles_74
+load tile collection = Tiles_bg
+load tile collection = TILES_brick
+load tile collection = Tiles_coal
+load tile collection = Tiles_dark
+load tile collection = Tiles_gold
+load tile collection = Tiles_kost
+load tile collection = Tiles_light
+load tile collection = Tiles_light2
+load tile collection = Tiles_meat
+load tile collection = Tiles_med
+load tile collection = Tiles_stal
+load tile collection = Tiles_stone
+load tile collection = TILES_wood
+load tile collection = Tree_tiles
+load tile collection = Tree_top_leaves
+load tile collection = Tree_top_naked
+load tile collection = Tree_Tops
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+The referenced script on this Behaviour (Game Object 'PointLight') is missing!
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1003" name="GuiButtonPlayTests" fullname="GuiButtonPlayTests" classname="GuiButtonPlayTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-22 08:24:32Z" end-time="2026-11-22 08:24:32Z" duration="0.028189" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1004" name="DeselectOnClick_ClearsSelectionAfterPointerClick" fullname="GuiButtonPlayTests.DeselectOnClick_ClearsSelectionAfterPointerClick" methodname="DeselectOnClick_ClearsSelectionAfterPointerClick" classname="GuiButtonPlayTests" runstate="Runnable" seed="85077503" result="Passed" start-time="2026-11-22 08:24:32Z" end-time="2026-11-22 08:24:32Z" duration="0.014014" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="NavigationNone_ButtonIsNeverSelectedByPointerDown" fullname="GuiButtonPlayTests.NavigationNone_ButtonIsNeverSelectedByPointerDown" methodname="NavigationNone_ButtonIsNeverSelectedByPointerDown" classname="GuiButtonPlayTests" runstate="Runnable" seed="902916744" result="Passed" start-time="2026-11-22 08:24:32Z" end-time="2026-11-22 08:24:32Z" duration="0.006036" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1006" name="SlotButton_ClickIsNotRepeatedBySubmit" fullname="GuiButtonPlayTests.SlotButton_ClickIsNotRepeatedBySubmit" methodname="SlotButton_ClickIsNotRepeatedBySubmit" classname="GuiButtonPlayTests" runstate="Runnable" seed="280551227" result="Passed" start-time="2026-11-22 08:24:32Z" end-time="2026-11-22 08:24:32Z" duration="0.005127" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: D:\projects\TrueMiner\GUI_Agent_Work\smoke_results.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

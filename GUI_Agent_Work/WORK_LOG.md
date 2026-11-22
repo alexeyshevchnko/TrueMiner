@@ -1,5 +1,42 @@
 # Журнал работы (WORK_LOG)
 
+## Сессия 2 (2026-11-22): оформление количества предметов + исправление NRE при запуске
+
+### Исходное состояние
+- Ветка `refactor`, рабочее дерево чистое, HEAD = `6d87ee7` (docs из сессии 1). Посторонних незакоммиченных изменений нет.
+
+### ISSUE-3: NullReferenceException при запуске (UnityContext<T>.OnAdded) — исследовано и исправлено
+Полный разбор — в `GUI_ISSUES.md`, технические детали — в `TECHNICAL_NOTES.md` (раздел «IoC-инициализация»). Кратко:
+- `GuiPool.Awake` (дочерний `guiPOOL`) → `GOPool.Awake:137` → `this.Inject()` → `SendMessageUpwards("OnAdded")` → `UnityContext<T>.OnAdded` на корневом `GameContext`.
+- NRE на `UnityContext.cs:36` потому, что `_applicationRoot` ещё null: `Awake` корня контейнера не успел выполниться (порядок Awake между объектами сцены не задан; Script Execution Order пуст).
+- Защита `DesignByContract.Check.Require` вырезана атрибутами `[Conditional]` — `scriptingDefineSymbols: {}`, поэтому падение «голый NRE».
+- Наследование `GuiPool : GOPool` и повторный вызов Awake не при чём: вызов один и корректный.
+
+Изменения:
+- `Assets/Generator/core/GameContext.cs` (вне GUI, объяснение: точка создания IoC-контейнера, без неё любой Awake дочернего объекта может упасть): `[DefaultExecutionOrder(-1000)]`.
+- `Assets/external/IoC/IoC/UnityContext.cs`: `EnsureApplicationRoot()` — ленивая инициализация в `OnAdded` (инъекция не пропускается; контейнер не пересоздаётся — нет двойных синглтонов).
+- Коммит `e1230ef` «Fix IoC initialization NullReferenceException».
+
+### ISSUE-4: количество предметов — Comic + чёрный Outline — исправлено
+- Подтверждено: счётчик — обычный Unity UI `Text` (TextMeshPro не используется); ресурс `Resources/gui/comic.ttf` существует (импорт TrueTypeFontImporter → `Resources.Load<Font>("gui/comic")`).
+- `GameUi.cs`: новый хелпер `AddCountText` — Comic, BestFit 10–20 pt (без обрезания многозначных чисел), прежняя позиция (правый нижний угол, offset −4,4), `Outline` чёрный непрозрачный `(1.5, −1.5)`. Подключено в `MakeSlot` → одинаково в сумке и хотбаре. Остальные надписи не менялись.
+- Коммит `d2da9bb` «Style inventory item counts with Comic font and outline».
+
+### Проверки (подробности в TEST_REPORT)
+- PlayMode smoke-тест полного запуска `MainScene` (`Assets/Tests/GameStartSmokeTests.cs`): загрузка сцены по пути через `EditorSceneManager.LoadSceneAsyncInPlayMode` (без правки build settings); утверждения: RootContext/Player/Bag созданы, GameUi.Instance существует, `GuiPool.guiPool` инициализирован, EventSystem живой, шрифт Comic и чёрный Outline на Count-текстах хотбара и сумки, сумка открывается, тестовые количества 1 и 128 подставлены. **Passed.**
+- PlayMode-кнопочные тесты 3/3 **Passed** (переведены на использование существующего EventSystem сцены — нужен для совместного прогона со smoke-тестом).
+- EditMode 6/6 **Passed** (атлас + DeselectOnClick).
+- Лог smoke-прогона: **ни одного** NullReferenceException/Exception/[Error] за всю сессию игры (единственный замеченный warning «referenced script missing» — предсуществующий, в префабе кэша guiPOOL, вне объёма работ).
+- В процессе отладки попутно выяснено: `-executeMethod` в batchmode завершает редактор после метода (Play через него недостижим), `SceneManager.LoadScene` по пути требует сцену в build profile (Unity 6), PlayMode-раннер не видит тесты в editor-сборке — поэтому smoke-тест сделан в тестовой asmdef с рефлексией к Assembly-CSharp. Скриншот ScreenCapture в batch не записывается — файл не создан, оформление проверено программными утверждениями.
+
+### Коммиты сессии 2
+1. `e1230ef` Fix IoC initialization NullReferenceException (+ smoke-тест запуска).
+2. `d2da9bb` Style inventory item counts with Comic font and outline.
+3. (следующий) docs: журнал/отчёты сессии 2.
+
+---
+# Сессия 1 (2026-11-22): иконки предметов и кнопки — история
+
 ## Статус
 Завершено. Обе проблемы исправлены, изменения закоммичены (2 логических коммита + коммит документации). Компиляция и автотесты пройдены; ручная Play Mode-проверка «живым» вводом — не выполнена (см. TEST_REPORT, раздел 4).
 

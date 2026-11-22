@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0,0637568">
+  <test-suite type="TestSuite" id="1000" name="TrueMiner" fullname="TrueMiner" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.063757" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1008" name="Assembly-CSharp-Editor.dll" fullname="D:/projects/TrueMiner/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.056760" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="6136" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="GuiFixTests" fullname="GuiFixTests" classname="GuiFixTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.055473" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1002" name="Atlas_ItemIconNames_ResolveToSprite" fullname="GuiFixTests.Atlas_ItemIconNames_ResolveToSprite" methodname="Atlas_ItemIconNames_ResolveToSprite" classname="GuiFixTests" runstate="Runnable" seed="2122102624" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.020276" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="Atlas_LookupIsCaseInsensitive_AndAcceptsPngExtension" fullname="GuiFixTests.Atlas_LookupIsCaseInsensitive_AndAcceptsPngExtension" methodname="Atlas_LookupIsCaseInsensitive_AndAcceptsPngExtension" classname="GuiFixTests" runstate="Runnable" seed="316664992" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.000336" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="Atlas_RectMatchesGuiTxt_WithYFlipped" fullname="GuiFixTests.Atlas_RectMatchesGuiTxt_WithYFlipped" methodname="Atlas_RectMatchesGuiTxt_WithYFlipped" classname="GuiFixTests" runstate="Runnable" seed="541446966" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.003484" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="Atlas_UnknownIconReturnsNull" fullname="GuiFixTests.Atlas_UnknownIconReturnsNull" methodname="Atlas_UnknownIconReturnsNull" classname="GuiFixTests" runstate="Runnable" seed="193724229" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.002513" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[GuiAtlas: иконка 'definitely_not_in_atlas' не найдена в атласе gui.txt
+]]></output>
+        </test-case>
+        <test-case id="1007" name="DeselectOnClick_LeavesOtherSelectionUntouched" fullname="GuiFixTests.DeselectOnClick_LeavesOtherSelectionUntouched" methodname="DeselectOnClick_LeavesOtherSelectionUntouched" classname="GuiFixTests" runstate="Runnable" seed="1275949504" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.017110" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1006" name="DeselectOnClick_PointerClickClearsSelection" fullname="GuiFixTests.DeselectOnClick_PointerClickClearsSelection" methodname="DeselectOnClick_PointerClickClearsSelection" classname="GuiFixTests" runstate="Runnable" seed="2085774649" result="Passed" start-time="2026-11-22 08:27:20Z" end-time="2026-11-22 08:27:20Z" duration="0.000812" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: D:\projects\TrueMiner\GUI_Agent_Work\editmode_final2.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

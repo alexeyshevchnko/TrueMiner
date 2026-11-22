@@ -1,5 +1,45 @@
 # GUI_ISSUES — реестр проблем интерфейса
 
+## ISSUE-3: NullReferenceException при запуске (UnityContext<T>.OnAdded, GuiPool/GOPool) — ИСПРАВЛЕНО
+
+**Симптом (стек из задания):**
+```
+NullReferenceException: Object reference not set to an instance of an object
+UnityContext`1[T].OnAdded (Assets/external/IoC/IoC/UnityContext.cs:36)
+UnityEngine.Component:SendMessageUpwards(String, Object, SendMessageOptions)
+MonoInjection:Inject(MonoBehaviour) (Assets/external/IoC/IoC/MonoInjection.cs:7)
+GOPool:Awake() (Assets/Generator/core/utils/GOPool.cs:137)
+GuiPool:Awake() (Assets/src/gui/GuiPool.cs:21)
+```
+
+**Разбор цепочки вызовов:**
+- `GuiPool.Awake()` (Assets/src/gui/GuiPool.cs:21) → `base.Awake()` = `GOPool.Awake()` (строка 137) → `this.Inject()` (extension `MonoInjection.Inject`, MonoInjection.cs:7) → `SendMessageUpwards("OnAdded", ...)`.
+- Объект `guiPOOL` — прямой ребёнок корневого объекта `GameContext` сцены MainScene (Transform father fileID 1893496967), поэтому `SendMessageUpwards` находит метод `OnAdded` на компоненте `GameContext` (класс `UnityContext<Main>`, guid 6027da7a...).
+- Строка 36 `UnityContext<T>.OnAdded`: `_applicationRoot.container.Inject(component)`. `_applicationRoot` создаётся только в `Awake()` этого же компонента (строка 20). Если `Awake` ещё не выполнялся — `_applicationRoot == null` → NRE на строке 36.
+- Защитная проверка на строке 33 `DesignByContract.Check.Require(...)` **не работает**: метод помечен `[Conditional("DBC_CHECK_ALL"), ...]`, а в `ProjectSettings.asset` `scriptingDefineSymbols: {}` — символы не определены, вызов вырезается компилятором. Поэтому падение выглядит как «голый» NRE вместо понятного исключения (сам текст проверки прямо называет причину: «possible script execution order problem»).
+
+**Перво причина:** Script Execution Order в проекте не задан (`ProjectSettings` не содержит настроек порядка), значит порядок `Awake` между объектами сцены недетерминирован. Объект `GameContext` стоит в конце файла сцены, `guiPOOL` — раньше; Unity выполнил `GuiPool.Awake` раньше `GameContext.Awake`, и инъекция пришла в незапущенный контекст. Это проблема конфигурации инициализации (порядок/запуск `Awake`), а не наследования `GuiPool : GOPool` и не «повторного вызова Awake» — вызов один, корректный.
+
+**Исправление (первопричина, минимальное):**
+1. `Assets/Generator/core/GameContext.cs` (вне GUI — оправдание: это точка создания IoC-контейнера, без неё любой Awake дочернего объекта может упасть): атрибут `[DefaultExecutionOrder(-1000)]` на `GameContext`. Теперь `Awake` корня контейнера выполняется раньше всех объектов с порядком по умолчанию (0), включая оба пула — тот самый «script execution order fix», который подразумевался исходным `Check.Require`, но не был настроен.
+2. `Assets/external/IoC/IoC/UnityContext.cs`: `EnsureApplicationRoot()` — ленивая инициализация в `OnAdded`, если `Awake` ещё не успел выполниться. Это НЕ маскировка «return при null»: инъекция выполняется полностью, компонент получает рабочее окружение. Повторная инициализация в `Awake` защищена — контейнер не пересоздаётся, чтобы не плодить вторые синглтоны.
+3. Символы `DBC_CHECK_*` сознательно не включались (глобальное изменение компиляции не требуется для исправления).
+
+**Статус:** исправлено; проверка — batch Play Mode smoke-прогон (см. TEST_REPORT, раздел «Прогон запуска»).
+
+## ISSUE-4: Оформление количества предметов (Comic + чёрный Outline) — ИСПРАВЛЕНО
+
+**Было:** цифры количества — обычный Unity UI `Text` (TextMeshPro в проекте не используется) встроенным шрифтом LegacyRuntime/Arial, без контура.
+
+**Исправление (`GameUi.AddCountText`):**
+- Шрифт: существующий ресурс `Resources/gui/comic.ttf` (импортирован как обычный `Font`, грузится `Resources.Load<Font>("gui/comic")`), с fallback на прежний шрифт и warning, если ресурс пропадёт. Остальные надписи (HP, кнопки, FPS) продолжают использовать прежний шрифт — их оформление не менялось.
+- Контур: компонент `UnityEngine.UI.Outline`, `effectColor` — непрозрачный чёрный, `effectDistance = (1.5, -1.5)` (4 диагональных копии глифов — ровный контур, читается на светлых и тёмных иконках).
+- Разметка: прежняя позиция — правый нижний угол ячейки (offset −4,4; 52×24), чтобы не закрывать центр иконки; включён BestFit (10…20 pt) — многозначные числа не обрезаются и не переносятся, однозначные остаются крупными.
+- Общее для сумки и хотбара: обе панели создаются одним `MakeSlot`, оформление единое по построению.
+
+**Статус:** исправлено; визуальная и Play Mode-проверка — см. TEST_REPORT.
+
+
 ## ISSUE-1: Иконки предметов не отображаются (цветная заливка) — ИСПРАВЛЕНО; автотесты и компиляция пройдены (ручной Play Mode-клик — не выполнялся)
 
 **Симптом:** количество предметов в ячейках отображается, иконки — нет (вместо них плоская цветная заливка).
