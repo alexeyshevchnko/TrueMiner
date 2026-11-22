@@ -180,11 +180,20 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		// If dynamicPositioning or disableVisuals are enabled...
 		if( dynamicPositioning == true || disableVisuals == true )
 		{
+			// Перевод локального размера папки в мировые пиксели с учётом масштаба
+			// экземпляра (экземпляры джойстиков в сцене могут быть отскейлены —
+			// GUI_Agent_Work/ISSUE-10): world = local * lossyScale.
+			float placementScale = GetFolderScale();
+
 			// Then move the joystickSizeFolder to the position of the touch.
-			joystickSizeFolder.position = touchInfo.position - textureCenter;
+			joystickSizeFolder.position = touchInfo.position - textureCenter * placementScale;
 
 			// Set the joystickCenter so that the position can be calculated correctly.
 			joystickCenter = touchInfo.position;
+
+			// Ручка обязана оказаться в центре Base в момент появления джойстика:
+			// без явной установки она оставалась бы в позиции предыдущего касания.
+			joystick.position = joystickCenter;
 		}
 
 		// If the user wants animation to be shown, do that here.
@@ -358,9 +367,21 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		}
 	}
 
-	// This function will configure the position of an image based on the size and custom spacing selected.
-	Vector2 ConfigureImagePosition ( Vector2 textureSize, Vector2 customSpacing )
+	/// <summary>
+	/// Мировой масштаб визуальной части джойстика (экземпляр может быть отскейлен в
+	/// сцене, например 0.7). Нужен при переводе локальных размеров в мировые пиксели.
+	/// </summary>
+	float GetFolderScale ()
 	{
+		if( joystickSizeFolder == null )
+			return 1.0f;
+
+		var scale = joystickSizeFolder.lossyScale.x;
+		return Mathf.Approximately( scale, 0.0f ) ? 1.0f : Mathf.Abs( scale );
+	}
+
+	// This function will configure the position of an image based on the size and custom spacing selected.
+	Vector2 ConfigureImagePosition ( Vector2 textureSize, Vector2 customSpacing )	{
 		// First, fix the customSpacing to be a value between 0.0f and 1.0f.
 		Vector2 fixedCustomSpacing = customSpacing / 100;
 
@@ -733,7 +754,9 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		radius = joystickSizeFolder.sizeDelta.x * ( radiusModifier / 10 );
 		
 		// Store the joystick's center so that JoystickPosition can be configured correctly.
-		joystickCenter = joystickSizeFolder.position + new Vector3( joystickSizeFolder.sizeDelta.x / 2, joystickSizeFolder.sizeDelta.y / 2 );
+		// Учитываем масштаб экземпляра: мировой центр = позиция пивота (пивот 0,0) + локальный полуразмер * масштаб.
+		var folderScale = GetFolderScale();
+		joystickCenter = joystickSizeFolder.position + new Vector3( joystickSizeFolder.sizeDelta.x / 2, joystickSizeFolder.sizeDelta.y / 2 ) * folderScale;
 
 		// Держим ручку ровно в центре после каждой перестройки размещения. Без этого
 		// UpdatePositioning (OnRectTransformDimensionsChange) вызывает ResetJoystick по

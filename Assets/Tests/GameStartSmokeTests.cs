@@ -52,10 +52,12 @@ public class GameStartSmokeTests
 
     private static Vector2 GetFolderCenter(Component joystick)
     {
-        // Вся визуальная часть (Base) лежит в JoystickSizeFolder (pivot 0,0):
-        // центр = worldPos + sizeDelta/2. Канвас overlay: world == screen pixels.
+        // Вся визуальная часть (Base) лежит в JoystickSizeFolder (pivot 0,0).
+        // Экземпляр джойстика может быть отскейлен в сцене (0.7), поэтому мировой
+        // центр = worldPos(пивот) + локальный полуразмер * lossyScale.
         var folder = (RectTransform)GetJoystickVisuals(joystick);
-        return (Vector2)folder.position + folder.sizeDelta * 0.5f;
+        var scale = Mathf.Approximately(folder.lossyScale.x, 0f) ? 1f : Mathf.Abs(folder.lossyScale.x);
+        return (Vector2)folder.position + folder.sizeDelta * 0.5f * scale;
     }
 
     [UnityTest]
@@ -108,20 +110,26 @@ public class GameStartSmokeTests
         Assert.Less(gameUiCanvas.sortingOrder, ultimateCanvasGo.GetComponent<Canvas>().sortingOrder,
             "джойстики должны отображаться поверх интерфейса GameUi (сумки)");
 
-        // 6. Зоны TouchArea: канвас ниже всех, две половины экрана на всю высоту (ISSUE-9).
+        // 6. Зоны TouchArea: канвас ниже всех, половины ширины, нижние 50% высоты (ISSUE-9/10).
         var touchCanvasGo = GameObject.Find("TouchAreaCanvas");
         Assert.NotNull(touchCanvasGo, "TouchAreaCanvas должен существовать");
         var touchCanvas = touchCanvasGo.GetComponent<Canvas>();
         Assert.Less(touchCanvas.sortingOrder, gameUiCanvas.sortingOrder,
             "TouchArea должны лежать ВНИЗЕ сумки/ячеек/кнопок (маршрутизация raycast)");
         Assert.AreEqual(2, touchCanvasGo.transform.childCount, "должны существовать две зоны TouchArea");
+        var areaComponentType = GameType("JoystickTouchArea");
         foreach (Transform area in touchCanvasGo.transform)
         {
             var rect = (RectTransform)area;
             var image = area.GetComponent<Image>();
             Assert.AreEqual(0f, image.color.a, "зона TouchArea должна быть прозрачной");
-            var heightRatio = (rect.anchorMax.y - rect.anchorMin.y);
-            Assert.AreEqual(1f, heightRatio, "зона должна занимать всю высоту экрана");
+            var areaComponent = area.GetComponent(areaComponentType);
+            Assert.IsNotNull(areaComponent, "у зоны должен быть JoystickTouchArea");
+            var heightPercent = (float)areaComponentType.GetProperty("TouchAreaHeightPercent").GetValue(areaComponent, null);
+            var heightRatio = rect.anchorMax.y - rect.anchorMin.y;
+            Assert.AreEqual(heightPercent / 100f, heightRatio, 0.001f,
+                "высота зоны должна быть нижней частью экрана по параметру TouchAreaHeightPercent");
+            Assert.AreEqual(0f, rect.anchorMin.y, "зона прижата к низу экрана");
         }
         var leftArea = touchCanvasGo.transform.Find("TouchArea_Left") as RectTransform;
         var rightArea = touchCanvasGo.transform.Find("TouchArea_Right") as RectTransform;
@@ -131,6 +139,19 @@ public class GameStartSmokeTests
         Assert.AreEqual(0.5f, leftArea.anchorMax.x, "левая зона заканчивается на X=50%");
         Assert.AreEqual(0.5f, rightArea.anchorMin.x, "правая зона начинается от X=50%");
         Assert.AreEqual(1f, rightArea.anchorMax.x, "правая зона заканчивается на X=100%");
+
+        // Параметр высоты в Inspector: по умолчанию 50%, изменение пересчитывает якоря.
+        var leftComponent = leftArea.GetComponent(areaComponentType);
+        var rightComponent = rightArea.GetComponent(areaComponentType);
+        Assert.AreEqual(50f, (float)areaComponentType.GetProperty("TouchAreaHeightPercent").GetValue(leftComponent, null),
+            "высота зон по умолчанию должна быть 50% (нижняя половина экрана)");
+        areaComponentType.GetProperty("TouchAreaHeightPercent").SetValue(leftComponent, 30f, null);
+        Assert.AreEqual(0.3f, leftArea.anchorMax.y, 0.001f, "при 30% зона занимает нижнюю треть экрана");
+        areaComponentType.GetProperty("TouchAreaHeightPercent").SetValue(leftComponent, 70f, null);
+        Assert.AreEqual(0.7f, leftArea.anchorMax.y, 0.001f, "при 70% зона занимает нижние 70% экрана");
+        areaComponentType.GetProperty("TouchAreaHeightPercent").SetValue(leftComponent, 50f, null);
+        areaComponentType.GetProperty("TouchAreaHeightPercent").SetValue(rightComponent, 50f, null);
+        Assert.AreEqual(0.5f, rightArea.anchorMax.x - rightArea.anchorMin.x, 0.001f, "правая зона — полширины экрана, без зазора с левой (0.5–1.0)");
 
         // TouchAreaRaycaster: мышь не попадает в зоны, сенсорный палец — попадает.
         var raycaster = touchCanvasGo.GetComponent(GameType("TouchAreaRaycaster"));
@@ -201,10 +222,43 @@ public class GameStartSmokeTests
         Vector2AssertClose(GetFolderCenter(joystick2), rightTouchPoint, PixelTolerance,
             "Base правого джойстика должен быть в точке начала касания");
 
-        // 10. Отпускание одного пальца: второй продолжает работать; оси нейтральны.
+        // 9a. Handle строго в центре Base в момент появления (ISSUE-10):
+        var handle1 = GetJoystickVisuals(joystick1).Find("Joystick");
+        var base1 = GetJoystickVisuals(joystick1).Find("Base");
+        var handle2 = GetJoystickVisuals(joystick2).Find("Joystick");
+        Assert.NotNull(handle1, "у джойстика должен быть дочерний Handle 'Joystick'");
+        Assert.NotNull(base1, "у джойстика должен быть дочерний 'Base'");
+        Assert.NotNull(handle2, "у джойстика должен быть дочерний Handle 'Joystick'");
+        Vector2AssertClose((Vector2)handle1.position, (Vector2)base1.position, PixelTolerance,
+            "Handle левого джойстика должен быть в центре Base при появлении");
+        Vector2AssertClose((Vector2)handle2.position, GetFolderCenter(joystick2), PixelTolerance,
+            "Handle правого джойстика должен быть в центре Base при появлении");
+        Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.02f, "ось левого джойстика нейтральна в момент появления");
+        Assert.AreEqual(0f, JoystickAxis("Joystick2", "GetVerticalAxis"), 0.02f, "ось правого джойстика нейтральна в момент появления");
+
+        // 9b. Движение пальца: Handle смещается относительно центра Base в направлении
+        //     пальца, а горизонтальная ось становится положительной при движении вправо.
+        var dragAxisHandler = ExecuteEvents.dragHandler;
+        var dragPoint = leftTouchPoint + new Vector2(80f, 0f);
+        touch1.position = dragPoint;
+        ExecuteEvents.Execute(leftArea.gameObject, touch1, dragAxisHandler);
+        yield return new WaitForSeconds(0.1f);
+        Assert.Greater(JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.1f,
+            "при смещении пальца вправо горизонтальная ось должна стать положительной");
+        var handle1Pos = (Vector2)handle1.position;
+        Assert.Greater(handle1Pos.x, ((Vector2)base1.position).x,
+            "Handle должен сместиться вправо относительно центра Base");
+        var radius1 = ((RectTransform)GetJoystickVisuals(joystick1)).sizeDelta.x * 0.45f; // radiusModifier 4.5/10
+        Assert.LessOrEqual((handle1Pos - (Vector2)base1.position).magnitude, radius1 + 1f,
+            "Handle не должен выходить за радиус Base");
+
+        // 9c. Отпускаем левый палец перед сравнением половин — состояние нейтрально.
         ExecuteEvents.Execute(leftArea.gameObject, touch1, pointerUp);
         yield return new WaitForSeconds(0.2f);
-        Assert.False(GetJoystickVisuals(joystick1).gameObject.activeSelf, "левый джойстик должен скрыться после отпускания");
+        Assert.False(GetJoystickVisuals(joystick1).gameObject.activeSelf, "левый джойстик скрылся после отпускания");
+        Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.02f, "ось левого джойстика нейтральна после отпускания");
+
+        // 10. Правый палец всё ещё удержан; оси левого нейтральны после его отпускания.
         Assert.True(JoystickHeld(joystick2), "правый джойстик должен остаться при удержании второго пальца");
         Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.02f, "ось левого джойстика нейтральна после отпускания");
         Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetVerticalAxis"), 0.02f, "ось левого джойстика нейтральна после отпускания");
