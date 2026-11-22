@@ -130,22 +130,34 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         fpsText = AddText(canvasGo.transform, "Fps", font, 15, TextAnchor.UpperRight, Color.green);
         SetAnchored(fpsText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-14f, -108f), new Vector2(110f, 20f));
 
-        // Hotbar — always visible, bottom-center (9 slots).
+        // Hotbar — always visible, bottom-center (7 slots, масштаб 0.7 от исходного).
+        // Модель Bag.Items по-прежнему хранит 9 элементов: панель показывает первые 7,
+        // данные 8-го и 9-го слота не удаляются и остаются доступны модели (клавиши 8/9).
+        const int hotbarSlots = 7;
+        const float hotbarScale = 0.7f;
+        float hotbarCell = 66f * hotbarScale;                      // 46.2
+        float hotbarSpacing = 6f * hotbarScale;                    // 4.2
         var hotbarPanel = AddImage(canvasGo.transform, "Hotbar", new Color(0f, 0f, 0f, 0.55f));
-        SetAnchored(hotbarPanel.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 10f), new Vector2(9f * 74f + 8f * 6f + 24f, 78f));
+        // Размеры панели — из той же формулы, что была, умноженной на масштаб:
+        // ширина = padding + ячейки*hotbarSlots + промежутки + padding, высота = padding*2 + ячейка.
+        float hotbarWidth = 12f * hotbarScale + hotbarSlots * (hotbarCell + hotbarSpacing) + hotbarSpacing + 12f * hotbarScale;
+        float hotbarHeight = 6f * hotbarScale + hotbarCell + 6f * hotbarScale;
+        SetAnchored(hotbarPanel.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 10f), new Vector2(hotbarWidth, hotbarHeight));
         hotbarPanel.rectTransform.pivot = new Vector2(0.5f, 0f);
         var hgrid = hotbarPanel.gameObject.AddComponent<GridLayoutGroup>();
-        hgrid.cellSize = new Vector2(66f, 66f);
-        hgrid.spacing = new Vector2(6f, 0f);
-        hgrid.padding = new RectOffset(12, 12, 6, 6);
+        hgrid.cellSize = new Vector2(hotbarCell, hotbarCell);
+        hgrid.spacing = new Vector2(hotbarSpacing, 0f);
+        hgrid.padding = new RectOffset(
+            Mathf.RoundToInt(12f * hotbarScale), Mathf.RoundToInt(12f * hotbarScale),
+            Mathf.RoundToInt(6f * hotbarScale), Mathf.RoundToInt(6f * hotbarScale));
         hgrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        hgrid.constraintCount = 9;
+        hgrid.constraintCount = hotbarSlots;
         hgrid.childAlignment = TextAnchor.MiddleCenter;
 
-        hotbar = new Slot[9];
-        for (int i = 0; i < 9; i++)
+        hotbar = new Slot[hotbarSlots];
+        for (int i = 0; i < hotbarSlots; i++)
         {
-            hotbar[i] = MakeSlot(hotbarPanel.transform, countFont, 1f);
+            hotbar[i] = MakeSlot(hotbarPanel.transform, countFont, hotbarScale);
         }
 
         // Bag panel — toggled, above the hotbar (36 slots).
