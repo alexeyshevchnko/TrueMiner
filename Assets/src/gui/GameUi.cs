@@ -52,6 +52,26 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         Build();
     }
 
+    void Start()
+    {
+        AttachJoystickTouchVisibility();
+    }
+
+    /// <summary>
+    /// Подключает динамическую видимость к существующим джойстикам Ultimate Joystick
+    /// (Joystick1 — движение, Joystick2 — прицел). Сами джойстики не пересоздаются;
+    /// система управления не изменяется, меняется только отображение.
+    /// </summary>
+    void AttachJoystickTouchVisibility()
+    {
+        foreach (var joystickName in new[] { "Joystick1", "Joystick2" })
+        {
+            var joystick = UltimateJoystick.GetUltimateJoystick(joystickName);
+            if (joystick != null && joystick.GetComponent<JoystickTouchVisibility>() == null)
+                joystick.gameObject.AddComponent<JoystickTouchVisibility>();
+        }
+    }
+
     public void OnInject()
     {
     }
@@ -62,6 +82,9 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         canvasGo.transform.SetParent(transform, false);
         var canvas = canvasGo.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        // Ниже канваса джойстиков (Ultimate UI Canvas, sortingOrder 0): джойстики
+        // отображаются поверх сумки и её ячеек (ISSUE-5, задача «джойстики поверх сумки»).
+        canvas.sortingOrder = -10;
         var scaler = canvasGo.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1024, 768);
@@ -122,7 +145,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         hotbar = new Slot[9];
         for (int i = 0; i < 9; i++)
         {
-            hotbar[i] = MakeSlot(hotbarPanel.transform, countFont);
+            hotbar[i] = MakeSlot(hotbarPanel.transform, countFont, 1f);
         }
 
         // Bag panel — toggled, above the hotbar (36 slots).
@@ -141,12 +164,12 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         bagSlots = new Slot[36];
         for (int i = 0; i < 36; i++)
         {
-            bagSlots[i] = MakeSlot(bagPanel.transform, countFont);
+            bagSlots[i] = MakeSlot(bagPanel.transform, countFont, 1f);
         }
         bagPanel.SetActive(false);
     }
 
-    Slot MakeSlot(Transform parent, Font font)
+    Slot MakeSlot(Transform parent, Font font, float scale)
     {
         var img = AddImage(parent, "Slot", new Color(1f, 1f, 1f, 0.16f));
         var btn = img.gameObject.AddComponent<Button>();
@@ -159,8 +182,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         s.icon = AddImage(img.transform, "Icon", Color.white);
         Stretch(s.icon.rectTransform);
 
-        s.count = AddCountText(img.transform, font);
-        SetAnchored(s.count.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-4f, 4f), new Vector2(52f, 24f));
+        s.count = AddCountText(img.transform, font, scale);
 
         btn.onClick.AddListener(() => { if (s.context != null) s.context.Click(); });
         return s;
@@ -245,15 +267,18 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     // Текст количества предметов: шрифт Comic + чёрный контур (Outline).
     // BestFit вписывает любое количество цифр в ячейку без обрезания;
     // выравнивание в правом нижнем углу не закрывает центр иконки.
-    static Text AddCountText(Transform parent, Font font)
+    // scale — множитель оформления (0.7 для хотбара, 1 для сумки).
+    static Text AddCountText(Transform parent, Font font, float scale)
     {
-        var t = AddText(parent, "Count", font, 20, TextAnchor.LowerRight, Color.white);
+        var t = AddText(parent, "Count", font, Mathf.RoundToInt(20f * scale), TextAnchor.LowerRight, Color.white);
+        SetAnchored(t.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(-4f * scale, 4f * scale), new Vector2(52f * scale, 24f * scale));
         t.resizeTextForBestFit = true;
-        t.resizeTextMinSize = 10;
-        t.resizeTextMaxSize = 20;
+        t.resizeTextMinSize = Mathf.RoundToInt(10f * scale);
+        t.resizeTextMaxSize = Mathf.RoundToInt(20f * scale);
         var outline = t.gameObject.AddComponent<Outline>();
         outline.effectColor = new Color(0f, 0f, 0f, 1f);
-        outline.effectDistance = new Vector2(1.5f, -1.5f);
+        outline.effectDistance = new Vector2(1.5f * scale, -1.5f * scale);
         return t;
     }
 
