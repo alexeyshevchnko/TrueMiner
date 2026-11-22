@@ -42,8 +42,8 @@ public class InfinityTileMapPixel : IInfinityTileMap {
 
         meshFilter = (MeshFilter)go.AddComponent(typeof(MeshFilter));
         MeshRenderer renderer = go.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        renderer.material = material;
-        renderer.material.mainTexture = texture;
+        renderer.sharedMaterial = material;
+        renderer.sharedMaterial.mainTexture = texture;
         meshFilter.mesh = mesh;
     }
 
