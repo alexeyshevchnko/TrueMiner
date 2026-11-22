@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Policy;
@@ -451,30 +452,30 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
             return;
 
 
-        if (Input.GetKeyUp(KeyCode.T)) {
+        if (Keyboard.current?.tKey.wasReleasedThisFrame == true) {
            LightRenderer.Test();
            LightLayerRender(true);
         }
 
-	    if (Input.GetKeyUp(KeyCode.G)) {
+	    if (Keyboard.current?.gKey.wasReleasedThisFrame == true) {
 	        MapGenerator.ChangeMap();
 	    }
 
-	    if (Input.GetKeyUp(KeyCode.Alpha0)) {
+	    if (Keyboard.current?.digit0Key.wasReleasedThisFrame == true) {
 	        carrentMarkerType = 0;
 	        carrentMarkerLayer = 0;
 	    }
 
-        if (Input.GetKeyUp(KeyCode.Alpha8)) {
+        if (Keyboard.current?.digit8Key.wasReleasedThisFrame == true) {
             carrentMarkerType = 8;
             carrentMarkerLayer = 3;
         }
 
 	    if (Is_Edit_mod) {
 
-	        if (Input.GetMouseButton(0)) {
+	        if (Mouse.current?.leftButton.isPressed == true) {
 	            countClick++;
-	            var pos = camera.ScreenToWorldPoint(Input.mousePosition);
+	            var pos = camera.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
 	       
 	            tileDataProvider.СircleDamageTile(pos.x + 1.5f*tileSize, pos.y + 1.5f*tileSize, carrentMarkerType,
 	                carrentMarkerLayer, carrentMarkeLiquidType, 1);
@@ -484,8 +485,8 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
 
 	        }
 
-	        if (Input.GetMouseButton(1)) {
-	            var pos = camera.ScreenToWorldPoint(Input.mousePosition);
+	        if (Mouse.current?.rightButton.isPressed == true) {
+	            var pos = camera.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
 	            var tile = tileDataProvider.GetTileStructure(pos.x + 1.5f*tileSize, pos.y + 1.5f*tileSize);
 	                // pos.x, pos.y);
 	            carrentMarkerType = tile.type;
@@ -494,7 +495,7 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
 	        }
 	    }
 
-	    if (Input.GetKeyUp(KeyCode.R)) {
+	    if (Keyboard.current?.rKey.wasReleasedThisFrame == true) {
             tileDataProvider.LoadNext();
             lastP1 = new Vector3();
 
@@ -526,7 +527,7 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
 
     private void LateUpdate() {
         tileDataProvider.Update();
-        if (Input.GetKeyUp(KeyCode.P)) { 
+        if (Keyboard.current?.pKey.wasReleasedThisFrame == true) { 
             LightLayerRender(true);
         }
 

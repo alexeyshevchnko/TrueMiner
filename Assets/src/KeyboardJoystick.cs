@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using IoC;
 using trasharia;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class KeyboardJoystick : MonoBehaviour, IJoystick {
     [IoC.Inject]
@@ -59,7 +60,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         joystickV = UltimateJoystick.GetVerticalAxis("Joystick1");
 
         //jamp
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) /*|| (joystickV >= 0 && joystickV < 0.4)*/)
+        if (Keyboard.current?.spaceKey.wasPressedThisFrame == true || Keyboard.current?.upArrowKey.wasPressedThisFrame == true || Keyboard.current?.wKey.wasPressedThisFrame == true /*|| (joystickV >= 0 && joystickV < 0.4)*/)
         {
             
             if (oldJampFrame != Time.frameCount && (Collision.Raycast(pysicItem.Position, viewReciver.size, Vector2.down).Count != 0 || isStairs)) {
@@ -71,13 +72,13 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
      
 
         //jamp isStairs
-        if (isStairs &&( Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)
+        if (isStairs &&( Keyboard.current?.spaceKey.isPressed == true || Keyboard.current?.upArrowKey.isPressed == true || Keyboard.current?.wKey.isPressed == true
             ||  joystickV > .5)) {
                 pysicItem.ApplayVelocity(new Vector2(0, 4));
         }
 
         // Down
-        if (oldDownFrame != Time.frameCount && Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)
+        if (oldDownFrame != Time.frameCount && Keyboard.current?.downArrowKey.isPressed == true || Keyboard.current?.sKey.isPressed == true
             || joystickV < -.5)
         {
             pysicItem.AddVelocity(new Vector2(0, -Speed));
@@ -91,7 +92,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         
         
         // Left
-        if (oldLeftFrame != Time.frameCount && Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) ||
+        if (oldLeftFrame != Time.frameCount && Keyboard.current?.leftArrowKey.isPressed == true || Keyboard.current?.aKey.isPressed == true ||
             (joystickH < -.2))
         {
             var speed = joystickH != 0 ? Speed * joystickH : -Speed;
@@ -121,7 +122,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
 
         // Right
-        if (oldRightFrame != Time.frameCount && Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) ||
+        if (oldRightFrame != Time.frameCount && Keyboard.current?.rightArrowKey.isPressed == true || Keyboard.current?.dKey.isPressed == true ||
             (joystickH > .2))
         {
             var speed = joystickH != 0 ? Speed * joystickH : Speed;
@@ -155,10 +156,10 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         bool joystick = Vector2.Distance(new Vector2(joystickH2, joystickV2), Vector2.zero) > 0.1;
         bool joystick0 = UltimateJoystick.GetIsDown("Joystick1");
 
-        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var pos = Camera.main.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
 
         if (!Settings.IS_EDIT_MOD && (
-            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl) || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))
+            (!joystick0 || joystick0 && joystick) && (Mouse.current?.leftButton.wasPressedThisFrame == true || Keyboard.current?.leftCtrlKey.wasPressedThisFrame == true || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))
         {
             if (model.CurrentWeapon != null) {
                 if (!joystick)
@@ -175,7 +176,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
         }
 
         if (((!Settings.IS_EDIT_MOD) && (
-            (!joystick0 || joystick0 && joystick) && (Input.GetMouseButton(0) || Input.GetKey(KeyCode.LeftControl) || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())))
+            (!joystick0 || joystick0 && joystick) && (Mouse.current?.leftButton.isPressed == true || Keyboard.current?.leftCtrlKey.isPressed == true || joystick)) && !(UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())))
         {
             if (model.CurrentWeapon != null) {
                 if (!joystick)
@@ -205,39 +206,39 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
 
 
         //Bag
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+        if (Keyboard.current?.digit1Key.wasPressedThisFrame == true) {
             model.UseItem(1);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2)) {
+        if (Keyboard.current?.digit2Key.wasPressedThisFrame == true) {
             model.UseItem(2);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3)) {
+        if (Keyboard.current?.digit3Key.wasPressedThisFrame == true) {
             model.UseItem(3);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha4)) {
+        if (Keyboard.current?.digit4Key.wasPressedThisFrame == true) {
             model.UseItem(4);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha5)) {
+        if (Keyboard.current?.digit5Key.wasPressedThisFrame == true) {
             model.UseItem(5);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha6)) {
+        if (Keyboard.current?.digit6Key.wasPressedThisFrame == true) {
             model.UseItem(6);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha7)) {
+        if (Keyboard.current?.digit7Key.wasPressedThisFrame == true) {
             model.UseItem(7);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha8)) {
+        if (Keyboard.current?.digit8Key.wasPressedThisFrame == true) {
             model.UseItem(8);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha9)) {
+        if (Keyboard.current?.digit9Key.wasPressedThisFrame == true) {
             model.UseItem(9);
         }
 
@@ -250,7 +251,7 @@ public class KeyboardJoystick : MonoBehaviour, IJoystick {
     public Vector2 Gravity;
     public void FixedUpdate() {
         pysicItem.SetGravity(Gravity);
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) /*|| joystickV > 0.4*/)
+        if (Keyboard.current?.spaceKey.isPressed == true || Keyboard.current?.upArrowKey.isPressed == true || Keyboard.current?.wKey.isPressed == true /*|| joystickV > 0.4*/)
         {
 
             if (countJampFrame < jampUpdateCount) {

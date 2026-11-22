@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 
 public class CameraTransformPos : MonoBehaviour {
@@ -10,22 +11,22 @@ public class CameraTransformPos : MonoBehaviour {
 	void Update () {
         
 	    bool b = false;
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
+        if (Keyboard.current?.upArrowKey.isPressed == true || Keyboard.current?.wKey.isPressed == true) {
             transform.position = new Vector3(transform.position.x, transform.position.y + delta * Time.deltaTime, transform.position.z);
 	        b = true;
 	    }
 
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
+        if (Keyboard.current?.downArrowKey.isPressed == true || Keyboard.current?.sKey.isPressed == true) {
             transform.position = new Vector3(transform.position.x, transform.position.y - delta * Time.deltaTime, transform.position.z);
             b = true;
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
+        if (Keyboard.current?.leftArrowKey.isPressed == true || Keyboard.current?.aKey.isPressed == true) {
             transform.position = new Vector3(transform.position.x - delta * Time.deltaTime, transform.position.y, transform.position.z);
             b = true;
         }
 
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
+        if (Keyboard.current?.rightArrowKey.isPressed == true || Keyboard.current?.dKey.isPressed == true) {
             transform.position = new Vector3(transform.position.x + delta * Time.deltaTime, transform.position.y, transform.position.z);
             b = true;
         }

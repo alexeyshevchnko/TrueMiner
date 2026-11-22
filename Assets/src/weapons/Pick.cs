@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using trasharia.weapons;
@@ -86,7 +87,7 @@ public class Pick : MonoBehaviour, IWeapon {
         if (!isTouch)
         {
 
-            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var pos = Camera.main.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
             ray = (pos - firePoint.position);
            // Debug.LogError(Vector2.Distance(ray,Vector2.zero));
 
@@ -110,7 +111,7 @@ public class Pick : MonoBehaviour, IWeapon {
             if (minDist <= range) {
                 tileDataProvider.DamageTile(tilesDown[index], 100);
                 var pos = tileDataProvider.OffsetTileToWorldPos(tilesDown[index]);
-                //var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                //var pos = Camera.main.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
                 var removeItemId = SwapItemManager.RemoveItem(pos);
                 if (removeItemId != 0) {
                     //сделать предмет

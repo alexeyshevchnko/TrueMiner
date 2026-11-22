@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using trasharia.weapons;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Axe : MonoBehaviour, IWeapon {
 
@@ -70,7 +71,7 @@ public class Axe : MonoBehaviour, IWeapon {
         transform.localRotation = new Quaternion();
         damagePoint.enabled = false;
 
-        var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var pos = Camera.main.ScreenToWorldPoint(Mouse.current?.position.ReadValue() ?? Vector3.zero);
 
         var ray = pos - firePoint.position;
         var tilesDown = Collision.Raycast(firePoint.position, new Vector2(1, 1), ray, true);

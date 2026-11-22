@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -23,7 +24,7 @@ public class CFX2_Demo : MonoBehaviour
 	void OnMouseDown()
 	{
 		RaycastHit hit = new RaycastHit();
-		if(this.GetComponent<Collider>().Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 9999f))
+		if(this.GetComponent<Collider>().Raycast(Camera.main.ScreenPointToRay(Mouse.current?.position.ReadValue() ?? Vector3.zero), out hit, 9999f))
 		{
 			GameObject particle = spawnParticle();
 			particle.transform.position = hit.point + particle.transform.position;
@@ -115,11 +116,11 @@ public class CFX2_Demo : MonoBehaviour
 	
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.LeftArrow))
+		if(Keyboard.current?.leftArrowKey.wasPressedThisFrame == true)
 		{
 			prevParticle();
 		}
-		else if(Input.GetKeyDown(KeyCode.RightArrow))
+		else if(Keyboard.current?.rightArrowKey.wasPressedThisFrame == true)
 		{
 			nextParticle();
 		}

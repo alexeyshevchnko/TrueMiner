@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -270,7 +271,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         }
 
         // B / Tab открыть-закрыть сумку.
-        if (Input.GetKeyDown(KeyCode.B) || Input.GetKeyDown(KeyCode.Tab))
+        if (Keyboard.current?.bKey.wasPressedThisFrame == true || Keyboard.current?.tabKey.wasPressedThisFrame == true)
         {
             ToggleBag();
         }
