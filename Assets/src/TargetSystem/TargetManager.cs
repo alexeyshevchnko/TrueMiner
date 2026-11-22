@@ -24,6 +24,7 @@ public class TargetManager : ITargetManager{
     public IRandom Random { set; protected get; }
     
     private GameObject player;
+    private bool tickRegistered = false;
     private List<AiController> units = new List<AiController>();
     private int maxUnitts = 0; 
 
@@ -49,7 +50,10 @@ public class TargetManager : ITargetManager{
         CreatePlayer();
         //CreateUnit(0);
 
-        CooldownManager.AddInfinityCooldown(OnTick);
+        if (!tickRegistered) {
+            tickRegistered = true;
+            CooldownManager.AddInfinityCooldown(OnTick);
+        }
     }
 
     public PlayerController PlayerController { get; private set; }
@@ -59,6 +63,11 @@ public class TargetManager : ITargetManager{
         if (prefub == null) {
             Debug.LogError("[TargetManager] Player prefab is null — assign ApplicationManager.Player in the scene!", null);
             return;
+        }
+        // Map changes raise OnGenerate again; the previous player is replaced, not left behind in the scene.
+        if (player != null) {
+            otherPlayers.Remove(PlayerController);
+            GameObject.Destroy(player);
         }
         var parent = GameObject.Find("Units");
         player = GameObject.Instantiate(prefub, Vector3.zero, new Quaternion()) as GameObject;
