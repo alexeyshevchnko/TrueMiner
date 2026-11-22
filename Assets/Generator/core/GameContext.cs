@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using Managers;
 using trasharia;
+using UnityEngine;
 
 public class Main : IContextRoot {
 
@@ -45,6 +46,14 @@ public class Main : IContextRoot {
     }
 }
 
+// Script Execution Order в проекте не задан, поэтому порядок Awake между объектами
+// сцены недетерминирован. Корень IoC-контейнера должен инициализироваться раньше
+// всех остальных Awake: иначе MonoInjection.Inject (SendMessageUpwards "OnAdded") из
+// дочерних пулов (например GuiPool) попадает в UnityContext<T>.OnAdded до создания
+// _applicationRoot и падает с NullReferenceException (см. GUI_Agent_Work, ISSUE-3).
+// Проверка DesignByContract.Check.Require в UnityContext<T>.OnAdded вырезана атрибутами
+// [Conditional] (символы DBC_CHECK_* не определены), поэтому падение проявлялось как NRE.
+[DefaultExecutionOrder(-1000)]
 public class GameContext : UnityContext<Main> {
 
 }

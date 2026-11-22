@@ -16,27 +16,39 @@ public class UnityContext<T>: UnityContext where T:IContextRoot, new()
 	virtual protected void Awake()
 	{
 		Debug.Log("UnityContext Awaked");
-		
-		_applicationRoot = new T();
+
+		EnsureApplicationRoot();
 	}
-	
+
 	//
 	// Defining OnEnable as fix for UnityEngine execution order bug
 	//
 	void OnEnable()
-	{	
+	{
 		Debug.Log("UnityContext Enabled");
 	}
-	
+
 	void OnAdded(MonoBehaviour component)
 	{
-		DesignByContract.Check.Require(_applicationRoot != null && _applicationRoot.container != null, "Container not initialized correctly, possible script execution order problem");
-      //  Debug.LogError(_applicationRoot);		
-      //  Debug.LogError(_applicationRoot.container);		
+		// Если этот Awake ещё не успел выполниться (порядок Awake между объектами сцены
+		// не задан), инициализируем корень прямо здесь вместо падения с NullReferenceException.
+		// Инъекция не пропускается — компонент получает полностью рабочее окружение.
+		EnsureApplicationRoot();
+
 		_applicationRoot.container.Inject(component);
 	}
-	
-	protected IoC.IContainer container { get { return _applicationRoot.container;} } 
-	
+
+	private void EnsureApplicationRoot()
+	{
+		// Повторный вызов (OnAdded раньше Awake) не должен создавать второй контейнер:
+		// синглтоны из первого контейнера уже могли быть выданы компонентам.
+		if (_applicationRoot == null)
+		{
+			_applicationRoot = new T();
+		}
+	}
+
+	protected IoC.IContainer container { get { return _applicationRoot.container;} }
+
 	private T 				_applicationRoot;
 }

@@ -13,6 +13,8 @@ using UnityEngine.UI;
 /// не заполняется окружением тестового раннера).
 /// Тип DeselectOnClick из Assembly-CSharp получаем рефлексией: asmdef-сборка тестов
 /// не может ссылаться на предопределённую Assembly-CSharp.
+/// Если в активной сцене уже есть EventSystem (например, после smoke-теста MainScene),
+/// используется он — создаётся только при отсутствии.
 /// </summary>
 public class GuiButtonPlayTests
 {
@@ -24,6 +26,18 @@ public class GuiButtonPlayTests
         go.AddComponent(type);
     }
 
+    private static EventSystem GetOrCreateEventSystem(out GameObject eventSystemGo)
+    {
+        if (EventSystem.current != null)
+        {
+            eventSystemGo = EventSystem.current.gameObject;
+            return EventSystem.current;
+        }
+
+        eventSystemGo = new GameObject("EventSystem" + System.Guid.NewGuid().ToString("N"), typeof(EventSystem), typeof(StandaloneInputModule));
+        return eventSystemGo.GetComponent<EventSystem>();
+    }
+
     [UnityTest]
     public IEnumerator DeselectOnClick_ClearsSelectionAfterPointerClick()
     {
@@ -33,12 +47,11 @@ public class GuiButtonPlayTests
         var button = buttonGo.GetComponent<Button>();
         AddDeselectOnClick(buttonGo);
 
-        var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        var eventSystem = eventSystemGo.GetComponent<EventSystem>();
+        GameObject eventSystemGo;
+        var eventSystem = GetOrCreateEventSystem(out eventSystemGo);
         yield return null; // даём отработать OnEnable/Start
 
         Assert.NotNull(EventSystem.current, "в Play Mode EventSystem.current должен быть задан");
-        Assert.AreEqual(eventSystem, EventSystem.current);
 
         // Поток StandaloneInputModule: pointer down выбирает кнопку, click выполняет действие.
         var downData = new PointerEventData(eventSystem) { pointerId = -1, button = PointerEventData.InputButton.Left };
@@ -67,7 +80,8 @@ public class GuiButtonPlayTests
         ExecuteEvents.Execute(eventSystem.currentSelectedGameObject, new PointerEventData(eventSystem), ExecuteEvents.submitHandler);
         Assert.AreEqual(2, clicks, "штатный Submit при явном клавиатурном выборе должен работать");
 
-        Object.Destroy(eventSystemGo);
+        if (eventSystemGo.name.StartsWith("EventSystem"))
+            Object.Destroy(eventSystemGo);
         Object.Destroy(buttonGo);
         Object.Destroy(canvasGo);
     }
@@ -83,8 +97,8 @@ public class GuiButtonPlayTests
         nav.mode = Navigation.Mode.None;
         button.navigation = nav;
 
-        var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        var eventSystem = eventSystemGo.GetComponent<EventSystem>();
+        GameObject eventSystemGo;
+        var eventSystem = GetOrCreateEventSystem(out eventSystemGo);
         yield return null;
 
         Assert.NotNull(EventSystem.current);
@@ -93,7 +107,6 @@ public class GuiButtonPlayTests
         ExecuteEvents.Execute(buttonGo, downData, ExecuteEvents.pointerDownHandler);
         Assert.Null(eventSystem.currentSelectedGameObject, "с Navigation.None pointer down не должен выбирать кнопку");
 
-        Object.Destroy(eventSystemGo);
         Object.Destroy(buttonGo);
         Object.Destroy(canvasGo);
     }
@@ -107,8 +120,8 @@ public class GuiButtonPlayTests
         var slotButton = slotGo.GetComponent<Button>();
         AddDeselectOnClick(slotGo); // как в GameUi.MakeSlot
 
-        var eventSystemGo = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        var eventSystem = eventSystemGo.GetComponent<EventSystem>();
+        GameObject eventSystemGo;
+        var eventSystem = GetOrCreateEventSystem(out eventSystemGo);
         yield return null;
 
         int clicks = 0;
@@ -128,7 +141,6 @@ public class GuiButtonPlayTests
             ExecuteEvents.Execute(submitTarget, new PointerEventData(eventSystem), ExecuteEvents.submitHandler);
         Assert.AreEqual(1, clicks, "пробел не должен повторно активировать ячейку");
 
-        Object.Destroy(eventSystemGo);
         Object.Destroy(slotGo);
         Object.Destroy(canvasGo);
     }
