@@ -153,24 +153,36 @@ public class GameStartSmokeTests
         areaComponentType.GetProperty("TouchAreaHeightPercent").SetValue(rightComponent, 50f, null);
         Assert.AreEqual(0.5f, rightArea.anchorMax.x - rightArea.anchorMin.x, 0.001f, "правая зона — полширины экрана, без зазора с левой (0.5–1.0)");
 
-        // TouchAreaRaycaster: мышь не попадает в зоны, сенсорный палец — попадает.
+        // TouchAreaRaycaster: источник активации — только зоны.
         var raycaster = touchCanvasGo.GetComponent(GameType("TouchAreaRaycaster"));
         Assert.NotNull(raycaster, "у TouchAreaCanvas должен быть TouchAreaRaycaster");
         var raycastMethod = GameType("TouchAreaRaycaster").GetMethod("Raycast");
 
+        // Пробы по краям и центру зоны (нижний угол, центр, верхняя граница нижней зоны).
+        var probePositions = new Vector2[]
+        {
+            new Vector2(Screen.width * 0.25f, 4f),          // левый нижний угол
+            new Vector2(Screen.width * 0.25f, Screen.height * 0.25f), // центр левой зоны
+            new Vector2(Screen.width * 0.25f, Screen.height * 0.5f),  // верхняя граница левой зоны
+            new Vector2(Screen.width * 0.75f, 4f),          // правый нижний угол
+            new Vector2(Screen.width * 0.75f, Screen.height * 0.25f), // центр правой зоны
+            new Vector2(Screen.width * 0.75f, Screen.height * 0.5f),  // верхняя граница правой зоны
+        };
+        var expectedNames = new[] { "TouchArea_Left", "TouchArea_Left", "TouchArea_Left", "TouchArea_Right", "TouchArea_Right", "TouchArea_Right" };
+        for (var i = 0; i < probePositions.Length; i++)
+        {
+            var probe = new PointerEventData(EventSystem.current) { pointerId = i % 2, position = probePositions[i] };
+            var results = RaycastOnce(raycastMethod, raycaster, probe);
+            Assert.GreaterOrEqual(results.Count, 1, "сенсорный палец в зоне (проба " + i + ") должен попадать в TouchArea");
+            Assert.AreEqual(expectedNames[i], results[0].gameObject.name, "проба " + i + " попала не в ту зону");
+        }
+
+        // Мышь в редакторе активирует зоны (для тестирования без сенсорного устройства);
+        // в билдах мышь игнорируется — прицеливание мышью работает как раньше.
         var mouseData = new PointerEventData(EventSystem.current) { pointerId = -1, position = new Vector2(Screen.width * 0.25f, Screen.height * 0.5f) };
         var mouseResults = RaycastOnce(raycastMethod, raycaster, mouseData);
-        Assert.AreEqual(0, mouseResults.Count, "мышь (pointerId -1) не должна активировать зоны TouchArea");
-
-        var leftProbe = new PointerEventData(EventSystem.current) { pointerId = 1, position = new Vector2(Screen.width * 0.25f, Screen.height * 0.5f) };
-        var leftResults = RaycastOnce(raycastMethod, raycaster, leftProbe);
-        Assert.GreaterOrEqual(leftResults.Count, 1, "сенсорный палец в левой половине должен попадать в TouchArea_Left");
-        Assert.AreEqual("TouchArea_Left", leftResults[0].gameObject.name);
-
-        var rightProbe = new PointerEventData(EventSystem.current) { pointerId = 2, position = new Vector2(Screen.width * 0.75f, Screen.height * 0.5f) };
-        var rightResults = RaycastOnce(raycastMethod, raycaster, rightProbe);
-        Assert.GreaterOrEqual(rightResults.Count, 1, "сенсорный палец в правой половине должен попадать в TouchArea_Right");
-        Assert.AreEqual("TouchArea_Right", rightResults[0].gameObject.name);
+        Assert.AreEqual(1, mouseResults.Count, "в редакторе мышь должна попадать в TouchArea (для тестов)");
+        Assert.AreEqual("TouchArea_Left", mouseResults[0].gameObject.name);
 
         // 7. Джойстики: скрыты без касания, компонент видимости подключён.
         var visibilityType = GameType("JoystickTouchVisibility");
@@ -182,6 +194,13 @@ public class GameStartSmokeTests
         Assert.NotNull(joystick2.GetComponent(visibilityType), "Joystick2 должен иметь JoystickTouchVisibility");
         Assert.False(GetJoystickVisuals(joystick1).gameObject.activeSelf, "левый джойстик должен быть скрыт без касания");
         Assert.False(GetJoystickVisuals(joystick2).gameObject.activeSelf, "правый джойстик должен быть скрыт без касания");
+
+        // 7b. Единственный источник активации: собственная графика джойстиков отключена
+        //     от raycast (raycastTarget = false) — касание их прямоугольников не обрабатывается.
+        foreach (var graphic in joystick1.GetComponentsInChildren<Graphic>(true))
+            Assert.False(graphic.raycastTarget, "графика джойстика должна быть отключена от raycast: " + graphic.name);
+        foreach (var graphic in joystick2.GetComponentsInChildren<Graphic>(true))
+            Assert.False(graphic.raycastTarget, "графика джойстика должна быть отключена от raycast: " + graphic.name);
 
         // 8. Маршрутизация через зоны + multi-touch: палец 1 — левая зона, палец 2 — правая.
         //    События посылаются в TouchArea (как это делает EventSystem по результату raycast),
@@ -256,6 +275,26 @@ public class GameStartSmokeTests
         ExecuteEvents.Execute(leftArea.gameObject, touch1, pointerUp);
         yield return new WaitForSeconds(0.2f);
         Assert.False(GetJoystickVisuals(joystick1).gameObject.activeSelf, "левый джойстик скрылся после отпускания");
+        Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.02f, "ось левого джойстика нейтральна после отпускания");
+
+        // 9d. Перемещение пальца ЗА пределы зоны после начала управления: захват
+        //     pointerPress удерживает события на TouchArea_Left — джойстик продолжает
+        //     работать, правый не задействуется.
+        ExecuteEvents.Execute(leftArea.gameObject, touch1, pointerDown);
+        yield return new WaitForSeconds(0.1f);
+        touch1.position = new Vector2(Screen.width * 0.9f, Screen.height * 0.9f); // далеко за пределами левой зоны
+        ExecuteEvents.Execute(leftArea.gameObject, touch1, dragAxisHandler);
+        yield return new WaitForSeconds(0.1f);
+        Assert.True(JoystickHeld(joystick1), "захват пальца сохраняется за пределами зоны");
+        // Правый джойстик удерживается СВОИМ пальцем (pointerId 2): его _pointerId
+        // не должен смениться из-за того, что палец 1 переместился в правую половину.
+        var pointerId2 = (int)joystick2.GetType().GetField("_pointerId", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(joystick2);
+        Assert.AreEqual(2, pointerId2, "правый джойстик должен удерживаться только своим пальцем (fingerId 2)");
+        Assert.Greater(JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.1f,
+            "Handle/ось должны продолжать отрабатывать палец за пределами зоны");
+        ExecuteEvents.Execute(leftArea.gameObject, touch1, pointerUp);
+        yield return new WaitForSeconds(0.2f);
+        Assert.False(GetJoystickVisuals(joystick1).gameObject.activeSelf, "левый джойстик скрылся после отпускания (за пределами зоны)");
         Assert.AreEqual(0f, JoystickAxis("Joystick1", "GetHorizontalAxis"), 0.02f, "ось левого джойстика нейтральна после отпускания");
 
         // 10. Правый палец всё ещё удержан; оси левого нейтральны после его отпускания.

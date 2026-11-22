@@ -15,7 +15,7 @@ using UnityEngine.EventSystems;
 /// каждый кадр из параметра, поэтому изменение значения в Inspector сразу
 /// меняет размер зоны; разрешение/соотношение сторон учитываются якорями.
 /// </summary>
-public class JoystickTouchArea : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class JoystickTouchArea : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IPointerEnterHandler
 {
     [SerializeField, Range(10f, 100f)]
     private float touchAreaHeightPercent = 50f;
@@ -38,6 +38,16 @@ public class JoystickTouchArea : MonoBehaviour, IPointerDownHandler, IDragHandle
     {
         get { return target; }
         set { target = value; }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // Мышь над зоной — это мировая область, а не интерактивный UI: сбрасываем
+        // pointerEnter, чтобы EventSystem.IsPointerOverGameObject(-1) возвращал false
+        // и прицеливание мышью (KeyboardJoystick) работало в свободных областях экрана.
+        // Над кнопками/сумкой pointerEnter остаётся на их графике — играется как UI.
+        if (target != null && eventData.pointerId < 0)
+            eventData.pointerEnter = null;
     }
 
     private void Awake()

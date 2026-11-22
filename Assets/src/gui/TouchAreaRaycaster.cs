@@ -33,8 +33,10 @@ public class TouchAreaRaycaster : BaseRaycaster
         if (eventData == null)
             return;
 
-        // pointerId -1 — мышь. Зоны джойстиков реагируют только на пальцы (>= 0).
-        if (eventData.pointerId < 0)
+        // pointerId -1 — мышь: в билдах зоны не реагируют на мышь (десктопное
+        // прицеливание/огонь мышью, см. KeyboardJoystick), в редакторе мышь
+        // активирует зоны, чтобы можно было тестировать их без сенсорного устройства.
+        if (eventData.pointerId < 0 && !Application.isEditor)
             return;
 
         var screenPoint = eventData.position;
