@@ -146,6 +146,8 @@ public class MapGenerator : IMapGenerator {
     public void GenerateHome() {
         mapType = MapType.home;
         mapHome = new TileInfoStructure[150, 150];
+        // The home map is rebuilt from scratch, so its surface profile is rebuilt too.
+        surfaceHome.Clear();
         for (int x = 0; x < mapHome.GetLength(0); x++) {
             for (int y = 0; y < mapHome.GetLength(1); y++) {
                 var tile = new TileInfoStructure((short)TileTypeEnum.Terrain0, 0);
@@ -276,6 +278,8 @@ public class MapGenerator : IMapGenerator {
 
         float randomOffset = Random.Range(10, 120.4f);
         map = new TileInfoStructure[maxTilesX, maxTilesY];
+        // Regeneration rebuilds the map, so the previous surface profile must not be appended to.
+        surface.Clear();
 
         //1 генерируем квадрат
         for (int x = 0; x < map.GetLength(0); x++) {
