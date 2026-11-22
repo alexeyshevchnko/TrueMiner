@@ -87,7 +87,7 @@ public class DamagePoint : DamagePointBase {
     public IPhysicsManager PhysicsManager { set; protected get; }
     public float damageHP;
 
-    List<int> DamagableIds = new List<int>();
+    List<EntityId> DamagableIds = new List<EntityId>();
 
 
     protected override void OnEnable() {
@@ -109,8 +109,8 @@ public class DamagePoint : DamagePointBase {
     }
 
     private void DoDamage(AiController ai) {
-        if (DamagableIds.IndexOf(ai.GetInstanceID()) == -1) {
-            DamagableIds.Add(ai.GetInstanceID());
+        if (DamagableIds.IndexOf(ai.GetEntityId()) == -1) {
+            DamagableIds.Add(ai.GetEntityId());
 
             // The knockback direction comes from the player; without a player there is no direction to use.
             var player = TargetManager.PlayerController;
