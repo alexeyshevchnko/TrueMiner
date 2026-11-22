@@ -216,16 +216,20 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
             var ctx = (list != null && i < list.Count) ? list[i] : null;
             s.context = ctx;
             if (s.count != null) s.count.text = (ctx != null && !ctx.Empty) ? ctx.Count.ToString() : "";
-            if (s.icon != null) s.icon.color = (ctx == null || ctx.Empty) ? Color.clear : IconColor(ctx.Icon);
+            if (s.icon != null) UpdateIcon(s, ctx);
             if (s.bg != null) s.bg.color = (ctx != null && ctx.BgIcon == "cellSelect") ? new Color(1f, 0.9f, 0.2f, 0.5f) : new Color(1f, 1f, 1f, 0.16f);
         }
     }
 
-    Color IconColor(string icon)
+    void UpdateIcon(Slot s, BagItemContext ctx)
     {
-        // Временная заливка; точные спрайты атласов подключу следующим шагом.
-        if (string.IsNullOrEmpty(icon)) return new Color(0.7f, 0.7f, 0.7f, 1f);
-        return new Color(0.9f, 0.72f, 0.35f, 1f);
+        var sprite = (ctx != null && !ctx.Empty && !string.IsNullOrEmpty(ctx.Icon))
+            ? GuiAtlas.Get(ctx.Icon)
+            : null;
+        // Переназначаем только при фактической смене, чтобы не пересобирать Graphic каждый кадр.
+        if (!ReferenceEquals(s.icon.sprite, sprite)) s.icon.sprite = sprite;
+        var color = sprite != null ? Color.white : Color.clear;
+        if (s.icon.color != color) s.icon.color = color;
     }
 
     // ---- helpers ----
