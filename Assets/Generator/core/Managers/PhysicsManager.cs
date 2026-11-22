@@ -86,7 +86,9 @@ public class PhysicsManager : IPhysicsManager {
             for (int i = 0; i < item.PhysicsSectors.Length; i++) {
                 int x = item.PhysicsSectors[i].x;
                 int y = item.PhysicsSectors[i].y;
-                physicSectors[x][y].Remove(item);
+                if (physicSectors.ContainsKey(x) && physicSectors[x].ContainsKey(y)) {
+                    physicSectors[x][y].Remove(item);
+                }
             }
         }
 
@@ -152,6 +154,10 @@ public class PhysicsManager : IPhysicsManager {
     public void ChackCollision(IPhysicItem item) {
         //var aX1 = item.GetTopLeftPos().x
         var sectors = item.PhysicsSectors;
+        // A pooled or already removed item has no sectors; it cannot collide until it is registered again.
+        if (sectors == null) {
+            return;
+        }
         for (int i = 0; i < sectors.Length; i++) {
             var sector = sectors[i];
             var objects = physicSectors[sector.x][sector.y];
