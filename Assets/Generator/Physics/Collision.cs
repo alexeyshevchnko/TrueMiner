@@ -22,28 +22,14 @@ public class Collision : ICollision,IoC.IInitialize {
         }
     }
 
-    private int _countTileMapX=0;
+    // Read from the currently active map every time: the world and the home map have different sizes,
+    // so caching the value would go stale after a map change.
     private int countTileMapX {
-        get
-        {
-            if (_countTileMapX == 0)
-            {
-                _countTileMapX = MapGenerator.SizeX - 1;
-            }
-            return _countTileMapX;
-        }
+        get { return Map.GetLength(0) - 1; }
     }
 
-    private int _countTileMapY = 0;
     private int countTileMapY {
-        get
-        {
-            if (_countTileMapY == 0)
-            {
-                _countTileMapY = MapGenerator.SizeY - 1;
-            }
-            return _countTileMapY;
-        }
+        get { return Map.GetLength(1) - 1; }
     }
 
     
