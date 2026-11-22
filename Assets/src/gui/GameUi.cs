@@ -25,6 +25,10 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
 
     private float fpsFrames;
     private float fpsTimer;
+    // Last HP text inputs: the label is rebuilt only when one of them changes.
+    private int lastHpNow;
+    private int lastHpMaxNow;
+    private Text lastHpText;
 
     public class Slot
     {
@@ -170,12 +174,21 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
             if (hpFill != null) hpFill.fillAmount = Mathf.Clamp01(p.HpPct);
             if (hpText != null)
             {
-                if (p.HpMax > 0f) hpText.text = Mathf.RoundToInt(p.HpPct * p.HpMax) + "/" + Mathf.RoundToInt(p.HpMax);
-                else hpText.text = "";
+                int hpNow = Mathf.RoundToInt(p.HpPct * p.HpMax);
+                int hpMaxNow = Mathf.RoundToInt(p.HpMax);
+                if (hpNow != lastHpNow || hpMaxNow != lastHpMaxNow || lastHpText == null)
+                {
+                    lastHpNow = hpNow;
+                    lastHpMaxNow = hpMaxNow;
+                    if (p.HpMax > 0f) hpText.text = hpNow + "/" + hpMaxNow;
+                    else hpText.text = "";
+                    lastHpText = hpText;
+                }
             }
             if (bagPanel != null && bagPanel.activeSelf != p.IsShowBag) bagPanel.SetActive(p.IsShowBag);
             SyncSlots(hotbar, p.Bag != null ? p.Bag.Items : null);
-            SyncSlots(bagSlots, p.Bag != null ? p.Bag.BagItems : null);
+            // The bag grid is only visible while it is open, so it is refreshed only then.
+            if (p.IsShowBag) SyncSlots(bagSlots, p.Bag != null ? p.Bag.BagItems : null);
         }
 
         // B / Tab открыть-закрыть сумку.
