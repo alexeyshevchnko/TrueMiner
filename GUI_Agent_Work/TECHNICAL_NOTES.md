@@ -1,5 +1,12 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## Единый источник активации джойстиков (дополнение после ISSUE-11)
+- Цепочка активации: палец/мышь (мышь — только в редакторе) → `TouchAreaRaycaster` (TouchAreaCanvas, sortingOrder −20; зоны TouchArea_Left 0–50%, TouchArea_Right 50–100% ширины, нижние `TouchAreaHeightPercent`% высоты) → `JoystickTouchArea` (IPointerDown/IDrag/IPointerUp/IPointerEnter) → форвардинг того же PointerEventData в UltimateJoystick (Joystick1/Joystick2).
+- Собственная графика джойстиков (Base, Joystick/Handle, Highlight, Tension) — `raycastTarget = false` (ставит `JoystickTouchVisibility.Awake`): их прямоугольники больше не зона активации; касание обрабатывается ровно один раз — зоной.
+- Мышь над зоной: `OnPointerEnter` обнуляет `eventData.pointerEnter` (pointerId < 0) → `IsPointerOverGameObject(-1) == false` → прицел мышью работает в мировых областях; над UI pointerEnter остаётся → guard (KeyboardJoystick) блокирует выстрел. В билдах (`!Application.isEditor`) TouchAreaRaycaster мышь полностью игнорирует.
+- Захват драга: module pointerPress = TouchArea → drag/pointerUp приходят в зону даже при уходе пальца за её границы → форвардинг продолжает работать; `_pointerId` ассета не меняется (multi-touch независим).
+- Порядок канвасов: TouchAreaCanvas (−20) < GameUi (−10) < Ultimate UI Canvas (0): raycast-победа за UI, отрисовка джойстиков поверх сумки.
+
 ## Масштаб джойстиков и преобразование координат (дополнение после ISSUE-10)
 - Пользовательский коммит `ec5a1ea scale` ставит localScale 0.7 на оба экземпляра джойстиков (root 22473068). UltimateJoystick оперирует мировыми пикселями (Screen Space Overlay: world == screen), но размеры/смещения хранит в ЛОКАЛЬНЫХ единицах папки → любой микс даёт смещение `(1 − scale) × половина размера` (при 0.7: 23.54px — совпало с измерением).
 - Конвертация: `world = local × folder.lossyScale.x` (хелпер `GetFolderScale()`).
