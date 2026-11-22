@@ -112,8 +112,12 @@ public class DamagePoint : DamagePointBase {
         if (DamagableIds.IndexOf(ai.GetInstanceID()) == -1) {
             DamagableIds.Add(ai.GetInstanceID());
 
-            var dir = new Vector2(TargetManager.PlayerController.direct, 0);
-            ai.behaviour.pysicItem.AddVelocity(dir * 8);
+            // The knockback direction comes from the player; without a player there is no direction to use.
+            var player = TargetManager.PlayerController;
+            if (player != null) {
+                var dir = new Vector2(player.direct, 0);
+                ai.behaviour.pysicItem.AddVelocity(dir * 8);
+            }
             //ai.behaviour.pysicItem.AddVelocity(TargetManager.PlayerController.pysicItem.velocity.normalized * 4);
 
             ai.Damage(damageHP);

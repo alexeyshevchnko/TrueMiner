@@ -39,7 +39,10 @@ public class TargetManager : ITargetManager{
     }
 
     void OnChangeMap() {
-        PlayerController.SetPos(MapGenerator.CenterPos);
+        // The player is created later by OnMapGenerate and is placed at MapGenerator.CenterPos there.
+        if (PlayerController != null) {
+            PlayerController.SetPos(MapGenerator.CenterPos);
+        }
     }
 
     void OnMapGenerate() {
@@ -204,7 +207,7 @@ public class TargetManager : ITargetManager{
             }
         }
 
-        if (Vector2.Distance(PlayerController.transform.position, center) <= radius) {
+        if (PlayerController != null && Vector2.Distance(PlayerController.transform.position, center) <= radius) {
             rez.Add(PlayerController);
         }
 

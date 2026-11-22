@@ -78,8 +78,11 @@ public class Bag : IBag {
     public void AddBagItem(IItem item) {
        // Debug.LogError( "AddBagItem " + item.Count);
         
-        var guiLbl = GuiPoolManager.Spawn<GuiLbl>(TargetManager.PlayerController.transform.position + Vector3.up * (50 ), Quaternion.identity).GetComponent<GuiLbl>();
-        guiLbl.Init(item.GetName(), item.Count);
+        // The pickup label is anchored above the player; the item itself is added regardless.
+        if (TargetManager.PlayerController != null) {
+            var guiLbl = GuiPoolManager.Spawn<GuiLbl>(TargetManager.PlayerController.transform.position + Vector3.up * (50 ), Quaternion.identity).GetComponent<GuiLbl>();
+            guiLbl.Init(item.GetName(), item.Count);
+        }
 
         int key = -1;
         bool isNewItem = false;

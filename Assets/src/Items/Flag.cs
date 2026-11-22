@@ -18,7 +18,8 @@ public class Flag : MonoBehaviour,IoC.IInitialize {
     private static int FrameTrue = 0;
 
 	void FixedUpdate () {
-	    if (TargetManager != null) {
+	    // Visibility depends on the distance to the player; before the player exists there is nothing to compare.
+	    if (TargetManager != null && TargetManager.PlayerController != null) {
             var unitPos = TargetManager.PlayerController.transform.position;
 	        var dist = Vector3.Distance(transform.position,unitPos);
             //Debug.LogError(dist);

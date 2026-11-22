@@ -54,7 +54,10 @@ public class ZombieBehaviour : IAIBehaviour {
     }
 
     void UpdateDirect() {
-        direcr = Mathf.Sign(TargetManager.PlayerController.transform.position.x - pysicItem.Position.x);
+        var player = TargetManager.PlayerController;
+        if (player != null) {
+            direcr = Mathf.Sign(player.transform.position.x - pysicItem.Position.x);
+        }
         
 
         cooldownItem = CooldownManager.AddCooldown(1, null, UpdateDirect);
