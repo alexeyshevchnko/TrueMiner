@@ -144,7 +144,7 @@ public class SwapItemManager : ISwapItemManager {
 
             for (int x = offset.x - itemData.SizeXmm; x <= offset.x + itemData.SizeXpp; x++) {
                 for (int y = offset.y - itemData.SizeYmm; y <= offset.y + itemData.SizeYpp; y++) {
-                    if (Map[x, y].ItemId != 0) {
+                    if (IsValidPoint(x, y) && Map[x, y].ItemId != 0) {
                         return new Vector2Int(x, y);
                     }
                 }
@@ -333,6 +333,9 @@ public class SwapItemManager : ISwapItemManager {
     }
 
     private void RemoveIndex(int x, int y) {
+        if (!activeItems.ContainsKey(x)) {
+            return;
+        }
         activeItems[x].Remove(y);
 
         if (activeItems[x].Count == 0) {
