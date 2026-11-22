@@ -1,5 +1,30 @@
 # TEST_REPORT — результаты проверок
 
+## Сессия 3 (2026-11-22): джойстики + хотбар 7×0.7
+
+### Прогон Play Mode, MainScene целиком (`mobile_results.xml`) — 5/5 Passed
+| Тест | Результат | Что добавлено/проверяет |
+|---|---|---|
+| GameStartSmokeTests.MainScene_InitializesAndGuiShows | Passed | + джойстик-сценарий: канвас GameUi ниже Ultimate UI Canvas (sortingOrder −10 < 0); JoystickTouchVisibility подключён к обоим джойстикам; без касаний визуал скрыт; pointer down (pointerId 1) → левый появился, (pointerId 2) → правый появился — **одновременно и независимо**; pointer up первого → левый скрыт, правый остался; pointer up второго → скрыт; при открытой сумке TouchArea.raycastTarget=false у обоих (новые касания не активируют джойстик); IoC/GUI/иконки Comic+Outline — как раньше |
+| HotbarSevenSlotsTests.MainScene_HotbarIsSevenSlotsAtScale07 | Passed | новый: 7 ячеек; cellSize 46.2 (=66×0.7), spacing 4.2, constraintCount 7; панель прижата к низу и отцентрована (anchors/pivot); hotbar-массив UI = 7, bagSlots = 36, `Bag.Items` = 9 (модель не изменена); Count хотбара: BestFit 7–14 (=10–20×0.7), Outline ±1.05 (=±1.5×0.7), поле цифр 36.4 |
+| GuiButtonPlayTests (3 теста) | Passed | регрессия кнопок без изменений |
+
+### EditMode-регрессия (`editmode_final3.xml`) — 6/6 Passed
+Атлас (4) + DeselectOnClick (2) — без изменений.
+
+### Лог прогона
+`unity_mobile_tests.log`: NullReferenceException/Exception/[Error] — не обнаружено.
+
+### Проверено / не проверено
+- Проверено автотестами: скрытие/появление джойстиков по касанию, multi-touch-независимость (события uGUI с разными pointerId), джойстики поверх сумки, подавление зон при открытой сумке, 7 ячеек × 0.7, модель 9/36, центрирование панели.
+- Не проверено (честно): реальное сенсорное устройство/эмулятор с двумя живыми пальцами (только событийная имитация через ExecuteEvents — механику ассета это покрывает, физический multitouch-стек устройства нет); портретная ориентация (в узких экранах угловые зоны 160×160 могут перекрывать края хотбара/сумки; в ландшафте 4:3+ перекрытий нет — ячейки начинаются с x≥161px); скриншот в batch не пишется.
+- Выбор/переключение предметов: горячие клавиши 1–9 (`KeyboardJoystick`) и клик по ячейке (`BagItemContext.Click`) не изменялись; клик по первым 7 ячейкам хотбара проверен косвенно (кнопки ячеек не менялись, тест SlotButton_ClickIsNotRepeatedBySubmit).
+
+### Коммиты
+1. `260a74f` Improve mobile joystick visibility (+ smoke-тест).
+2. `f9b26e6` Resize hotbar to seven slots (+ HotbarSevenSlotsTests).
+
+---
 ## Сессия 2 (2026-11-22): NRE запуска + Comic/Outline
 
 ### Прогон запуска (Play Mode, batch, MainScene целиком)

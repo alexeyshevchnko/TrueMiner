@@ -1,5 +1,20 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## Мобильное управление (дополнение после ISSUE-5)
+- Джойстики — ассет Ultimate Joystick (внешний, `Assets/external/Ultimate Joystick`), два экземпляра префаба в сцене: `Joystick1` (движение, экземпляр с именем «Minimalist Joystick 00», dynamicPositioning=1) и `Joystick2` («Ultimate Joystick2», dynamicPositioning прописан 1 коммитом 260a74f), оба в «Ultimate UI Canvas» (ScreenSpaceOverlay, sortingOrder 0, GraphicRaycaster).
+- Канвас GameUi создаётся программно с `sortingOrder = -10` — ниже канваса джойстиков: джойстики рисуются поверх сумки/ячеек/HUD.
+- Структура префаба: корневой GO (обработчики IPointerDown/IDrag/IPointerUp + `UltimateJoystick`) → дочерний `JoystickSizeFolder` (весь визуал: Base, Joystick, 4 tension). Визуал можно прятать независимо от ввода.
+- Multi-touch: ассет хранит `_pointerId` пальца, начавшего касание; OnDrag/OnPointerUp с другим pointerId игнорируются; `joystickState` блокирует второй палец на том же джойстике. Два джойстика = два независимых пальца.
+- Hit-area: raycast идёт по Graphic — раньше это был визуал; теперь невидимый `TouchArea` (Image alpha 0, 160×160, raycastTarget=true) у корня; при открытой сумке его raycastTarget=false (новые касания не активируют джойстик, удерживаемый — продолжает: модуль держит pointerPress до pointerUp).
+- Регистрация: `UltimateJoystick.Awake` кладёт экземпляры в статический словарь по `joystickName`; `GetUltimateJoystick(name)` возвращает null, если нет.
+- `JoystickTouchVisibility` подключается в `GameUi.Start` (после всех Awake, чтобы реестр был заполнен).
+
+## Хотбар (дополнение после ISSUE-6)
+- `GameUi.Build`: hotbarSlots=7, hotbarScale=0.7; размеры панели из исходной формулы ×0.7 (365.4×54.6), ячейка 46.2, промежуток 4.2, отступы 8/4 (.RoundToInt(12*0.7) и др.).
+- Модель: `BagContext.Items` — 9 элементов (Number 1..9); UI-массив `hotbar` — 7 `Slot`; `SyncSlots(hotbar, p.Bag.Items)` маппит первые 7 элементов; сумка — 36 ячеек без изменений.
+- Выбор активного слота: `PlayerComtext.SelectItem(id)` (BgIcon=cellSelect) — работает на уровне модели для 1..9; отображается подсветка только для видимых ячеек.
+- Оформление количества масштабируется scale-параметром `MakeSlot/AddCountText`: шрифт 14 (=20×0.7), BestFit 7–14, Outline 1.05 (=1.5×0.7), rect поля цифр 36.4×16.8 у правого нижнего угла ячейки.
+
 ## IoC-инициализация и порядок Awake (дополнение после ISSUE-3)
 - Корень контейнера: `GameContext : UnityContext<Main>` на корневом объекте сцены MainScene (guid скрипта 6027da7a…). `UnityContext<T>.Awake()` создаёт `_applicationRoot = new T()` = `Main()`, который конструирует `IoC.UnityContainer` и все биндинги.
 - `MonoInjection.Inject(this MonoBehaviour)` — extension: `SendMessageUpwards("OnAdded", script)`. Сообщение поднимается по всем предкам, обработчики `OnAdded` срабатывают на каждом объекте-предке, где есть такой метод.
