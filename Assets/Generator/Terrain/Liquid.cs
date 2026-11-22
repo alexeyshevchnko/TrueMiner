@@ -274,7 +274,6 @@ public class Liquid : ILiquid,IoC.IInitialize {
     }
 
 
-    private int lastCount = 0;
 
     private bool ChackPos(Vector2Int pos) {
 
