@@ -592,21 +592,28 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     //Dictionary<int,short[,]>  rectsBuffer = new Dictionary<int, short[,]>();
     private short[,] rectsBuffer3;
     private short[,] rectsBuffer5;
-    short[,] GetRect(int size, Vector2 wirldPos, short layer, LayerData layerData) {
-        short[,] rez = null;
+    private Dictionary<int, short[,]> rectsBufferOther = new Dictionary<int, short[,]>();
+    short[,] GetRectBuffer(int size) {
         if (size == 3) {
             if (rectsBuffer3 == null) {
                 rectsBuffer3 = new short[size, size];
             }
-            rez = rectsBuffer3;
+            return rectsBuffer3;
         }
-
         if (size == 5) {
             if (rectsBuffer5 == null) {
                 rectsBuffer5 = new short[size, size];
             }
-            rez = rectsBuffer5;
+            return rectsBuffer5;
         }
+        if (!rectsBufferOther.ContainsKey(size)) {
+            rectsBufferOther.Add(size, new short[size, size]);
+        }
+        return rectsBufferOther[size];
+    }
+
+    short[,] GetRect(int size, Vector2 wirldPos, short layer, LayerData layerData) {
+        short[,] rez = GetRectBuffer(size);
 
         int offsetX = Mathf.CeilToInt(wirldPos.x / tileSize);
         int offsetY = Mathf.CeilToInt(wirldPos.y / tileSize);
@@ -678,27 +685,34 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     private TileInfoStructure[,] rectsStructureBuffer3;
     private TileInfoStructure[,] rectsStructureBuffer5;
    // Dictionary<int, TileInfoStructure[,]> rectsStructureBuffer = new Dictionary<int, TileInfoStructure[,]>();
+    private Dictionary<int, TileInfoStructure[,]> rectsStructureBufferOther = new Dictionary<int, TileInfoStructure[,]>();
+    TileInfoStructure[,] GetRectStructureBuffer(int size) {
+        if (size == 3) {
+            if (rectsStructureBuffer3 == null) {
+                rectsStructureBuffer3 = new TileInfoStructure[size, size];
+            }
+            return rectsStructureBuffer3;
+        }
+        if (size == 5) {
+            if (rectsStructureBuffer5 == null) {
+                rectsStructureBuffer5 = new TileInfoStructure[size, size];
+            }
+            return rectsStructureBuffer5;
+        }
+        if (!rectsStructureBufferOther.ContainsKey(size)) {
+            rectsStructureBufferOther.Add(size, new TileInfoStructure[size, size]);
+        }
+        return rectsStructureBufferOther[size];
+    }
+
     TileInfoStructure[,] GetRectStructure(int size, Vector2 wirldPos, short layer) {
-        TileInfoStructure[,] rez = null;
-       /* if (!rectsBuffer.ContainsKey(size)) {
+        TileInfoStructure[,] rez = GetRectStructureBuffer(size);
+        /* if (!rectsBuffer.ContainsKey(size)) {
             rez = new TileInfoStructure[size, size];
             rectsStructureBuffer.Add(size, rez);
         } else {
             rez = rectsStructureBuffer[size];
         }*/
-        if (size == 3) {
-            if (rectsStructureBuffer3 == null) {
-                rectsStructureBuffer3 = new TileInfoStructure[size, size];
-            }
-            rez = rectsStructureBuffer3;
-        }
-
-        if (size == 5) {
-            if (rectsStructureBuffer5 == null) {
-                rectsStructureBuffer5 = new TileInfoStructure[size, size];
-            }
-            rez = rectsStructureBuffer5;
-        }
 
 
         int offsetX = Mathf.CeilToInt(wirldPos.x / tileSize);
