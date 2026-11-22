@@ -16,6 +16,7 @@
   <Project Path="Unity.2D.Sprite.Editor.csproj" />
   <Project Path="Unity.Multiplayer.Center.Common.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="TrueMiner.GuiTests.csproj" />
   <Project Path="Unity.Timeline.Player.csproj" />
   <Project Path="UnityEngine.UI.Player.csproj" />
   <Project Path="Assembly-CSharp.Player.csproj" />
@@ -23,4 +24,5 @@
   <Project Path="Unity.TextMeshPro.Player.csproj" />
   <Project Path="Unity.Multiplayer.Center.Common.Player.csproj" />
   <Project Path="Assembly-CSharp-firstpass.Player.csproj" />
+  <Project Path="TrueMiner.GuiTests.Player.csproj" />
 </Solution>

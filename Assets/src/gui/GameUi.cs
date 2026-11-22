@@ -143,6 +143,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         var img = AddImage(parent, "Slot", new Color(1f, 1f, 1f, 0.16f));
         var btn = img.gameObject.AddComponent<Button>();
         btn.targetGraphic = img;
+        img.gameObject.AddComponent<DeselectOnClick>();
 
         Slot s = new Slot();
         s.bg = img;
@@ -262,7 +263,16 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         go.GetComponent<Image>().color = new Color(0.2f, 0.4f, 0.8f, 0.85f);
         var txt = AddText(go.transform, "Label", font, 20, TextAnchor.MiddleCenter, Color.white);
         Stretch(txt.rectTransform);
-        return go.GetComponent<Button>();
+        var btn = go.GetComponent<Button>();
+        // Navigation.None: uGUI не делает кнопку selected при pointer down, поэтому после
+        // клика мышью/тачем она не остаётся выбранной и пробел (Submit) больше не активирует
+        // её. Навигация остальных элементов интерфейса не затронута.
+        var nav = new Navigation();
+        nav.mode = Navigation.Mode.None;
+        btn.navigation = nav;
+        // Страховка: если выбор каким-то путём всё же установился — сбрасываем после клика.
+        btn.gameObject.AddComponent<DeselectOnClick>();
+        return btn;
     }
 
     static void Stretch(RectTransform rt)
