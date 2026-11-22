@@ -1,5 +1,13 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## Масштаб джойстиков и преобразование координат (дополнение после ISSUE-10)
+- Пользовательский коммит `ec5a1ea scale` ставит localScale 0.7 на оба экземпляра джойстиков (root 22473068). UltimateJoystick оперирует мировыми пикселями (Screen Space Overlay: world == screen), но размеры/смещения хранит в ЛОКАЛЬНЫХ единицах папки → любой микс даёт смещение `(1 − scale) × половина размера` (при 0.7: 23.54px — совпало с измерением).
+- Конвертация: `world = local × folder.lossyScale.x` (хелпер `GetFolderScale()`).
+- Точки применения: dynamicPositioning (`folder.position = touch − textureCenter × scale`) и `joystickCenter` (полразмер × scale) в `UpdateSizeAndPlacement`; OnPointerDown дополнительно центрирует Handle.
+- Чувствительность/скорость НЕ менялись: оси = `(handle − center)/radius` в мировых пикселях; `radius` остаётся локальным (`size × radiusModifier/10`).
+- Замечание (косметика, вне объёма): при полной отклонённости на 0.7-масштабном джойстике Handle может чуть выступать за видимый обод (обoд мировой = radius × 0.7, кламп — radius). Если потребуется идеальная посадка — уменьшить `joystickSize` (сценовый оверрайд, например 3.27 → 2.29) и убрать scale 0.7, тогда радиусы совпадут.
+- Параметр высоты зон: `JoystickTouchArea.touchAreaHeightPercent` (`[SerializeField, Range(10,100)]`, default 50) — в Inspector каждой зоны (TouchArea_Left/TouchArea_Right в Play Mode, объект → компонент JoystickTouchArea → «Touch Area Height Percent»). Геометрия пересчитывается в Awake и каждый Update: якорьMin.y=0, якорьMax.y=процент/100; горизонтальные якоря (0–0.5 / 0.5–1) задаются при создании.
+
 ## Мобильное управление (дополнение после ISSUE-7..9)
 - Ассет Ultimate Joystick: `UltimateJoystick` (IPointerDown/IDrag/IPointerUp на корневом GO), визуал — `JoystickSizeFolder` (pivot 0,0; Base/Joystick/Tension — stretch-дети). Ось = `(handle.position − joystickCenter)/radius`, БЕЗ проверки удержания → любое рассогласование хэндла и центра даёт постоянный дрейф персонажа.
 - `UltimateJoystickScreenSizeUpdater` (UIBehaviour на канвасе джойстиков) на `OnRectTransformDimensionsChange` запускает в конце кадра `UpdatePositioning` для всех джойстиков = `ResetJoystick` (по старому центру) → `UpdateSizeAndPlacement` (новый центр). Хэндл при этом не возвращался в центр — первопричина дрейфа при старте/ресайзе (ISSUE-7).
