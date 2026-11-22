@@ -16,17 +16,9 @@ public class GuiPool : GOPool {
 
     protected override void Awake() {
         guiPool = this;
-        Pool = this;
-        int amount = 0;
-        for (var i = 0; i < caches.Count; i++) {
-            caches[i].Initialize(this);
-            amount += caches[i].cacheSize;
-        }
-        activeCachedObjects = new Hashtable();
-       // Debug.LogError(gameObject.name);
-       // this.Inject();
-
-        OnInject();
+        // Runs the base lifecycle (cache initialisation and this.Inject()); the base OnInject is
+        // overridden here and does not register the pool, which ApplicationManager does.
+        base.Awake();
     }
 
 }
