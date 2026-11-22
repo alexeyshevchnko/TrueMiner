@@ -60,7 +60,7 @@ public class BufferItem
     public int Count = 0;
     public BufferItem(int size = 100)
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < size; i++)
         {
             Items.Add(new Vector2Int());
         }
@@ -75,7 +75,15 @@ public class BufferItem
 
     public void Add(Vector2Int val)
     {
-        Items[Count] = val;
+        // Grow instead of throwing when a query covers more tiles than the initial capacity.
+        if (Count == Items.Count)
+        {
+            Items.Add(val);
+        }
+        else
+        {
+            Items[Count] = val;
+        }
         Count++;
     }
 
