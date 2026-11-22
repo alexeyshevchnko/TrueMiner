@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -148,7 +148,6 @@ public class InfinityTileMapPixel : IInfinityTileMap {
         
     }
 
-    private bool b = false;
     //поменять ячейки местами
 
     private Color32 cacheIndexFrom;

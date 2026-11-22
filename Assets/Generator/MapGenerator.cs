@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -297,8 +297,7 @@ public class MapGenerator : IMapGenerator {
 
 
         int minYsurface = -1;
-        
-        int lastHillSizeY = -1;
+
         //2 генерируем горы и траву
         for (int x = 0; x < map.GetLength(0); x++) {
             var hillSizeY01 = Mathf.PerlinNoise((x + randomOffset)*0.03f, (1 + randomOffset)*0.03f);
@@ -775,14 +774,14 @@ public class MapGenerator : IMapGenerator {
     }
 
     public void StartApplication() {
-        return;
-        RemoveVoid();
-
-
-        for (int i = 1; i < 30; i++) {
-            CreateMine(i);
-        }
-         
+        // Тело метода отключено автором (безусловный return перед удалением пустот
+        // и генерацией шахт; предупреждение CS0162 устраниено выносом недостижимого
+        // кода из компиляции — поведение не изменилось, исходник см. в истории git).
+        // RemoveVoid();
+        //
+        // for (int i = 1; i < 30; i++) {
+        //     CreateMine(i);
+        // }
     }
 
     void RemoveVoid() {

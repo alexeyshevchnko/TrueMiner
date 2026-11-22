@@ -9,17 +9,14 @@ using UnityEngine;
 /// </summary>
 public static class RegenProjects
 {
+    // UAC0005: вместо AppDomain.GetAssemblies() (может вернуть уже выгруженные сборки)
+    // тип ищется напрямую по квалифицированному имени через Type.GetType.
+    private const string ProjectGenerationTypeName
+        = "Microsoft.Unity.VisualStudio.Editor.ProjectGeneration, Microsoft.Unity.VisualStudio.Editor";
+
     public static void Run()
     {
-        Type t = null;
-        foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            if (a.GetName().Name == "Microsoft.Unity.VisualStudio.Editor")
-            {
-                t = a.GetType("Microsoft.Unity.VisualStudio.Editor.ProjectGeneration");
-                if (t != null) break;
-            }
-        }
+        Type t = Type.GetType(ProjectGenerationTypeName, throwOnError: false);
 
         if (t == null)
         {

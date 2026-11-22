@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 //using UnityEditor;
 
 //на блоки вешается управляет физикой
 public class BlockItem : MonoBehaviourPhysicItem {
-    [IoC.Inject]
-    public IMapGenerator MapGenerator { set; protected get; }
+    // MapGenerator унаследован от MonoBehaviourPhysicItem (повторное свойство
+    // скрывало базовое — CS0108; внедрение IoC идёт по базовому свойству).
 
     public override void OnInject() {
         

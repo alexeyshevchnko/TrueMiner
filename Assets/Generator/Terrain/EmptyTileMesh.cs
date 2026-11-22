@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class EmptyTileMesh : IInfinityTileMap {
@@ -30,9 +30,9 @@ public class EmptyTileMesh : IInfinityTileMap {
         throw new System.NotImplementedException();
     }
 
-    LayerData IBaseInfinityTileMap.layerData {
-        get { throw new System.NotImplementedException(); }
-    }
+    // Явный дублирующий член IBaseInfinityTileMap.layerData (бросал NotImplementedException)
+    // удалён: свойство layerData ниже реализует единый слот интерфейса и возвращает
+    // LayerData.LightLayer — прежняя рабочая семантика сохранена.
 
     public void LoadMesh(GameObject go, int countHorizontal, int countVertical, float tileSize, LayerData layer) {
         

@@ -17,9 +17,11 @@ public class DeselectOnClick : MonoBehaviour, IPointerClickHandler
         var eventSystem = cachedEventSystem;
         if (eventSystem == null)
         {
-            // Единственный EventSystem игры; FindFirstObjectByType вместо статического
+            // Единственный EventSystem игры; FindAnyObjectByType вместо статического
             // EventSystem.current — надёжнее (current не всегда заполнен до первого Update).
-            eventSystem = cachedEventSystem = FindFirstObjectByType<EventSystem>();
+            // FindAnyObjectByType — рекомендованная замена FindFirstObjectByType в Unity 6000.6;
+            // для единственного EventSystem результат эквивалентен.
+            eventSystem = cachedEventSystem = FindAnyObjectByType<EventSystem>();
         }
 
         if (eventSystem != null && eventSystem.currentSelectedGameObject == gameObject)

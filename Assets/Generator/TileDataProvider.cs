@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     public float TileSize { get { return tileSize; } private set { tileSize = value; } }
     private ILiquid liquid;
     private Thread liquidUpdateThread;
-    private int sleepTime;
+    // private int sleepTime; // поток обновления жидкости отключён (см. LiquidUpdate)
     public void OnInject() {
         Container.Inject(mapGenerator);
 
@@ -71,7 +71,7 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
         mapGenerator.Generate(liquid);
 
         //liquidUpdateThread = new Thread(LiquidUpdate);
-        sleepTime = (int)(Time.fixedDeltaTime * 1000);
+        //sleepTime = (int)(Time.fixedDeltaTime * 1000); // поток отключён (см. LiquidUpdate)
         //liquidUpdateThread.Start();
     }
 
@@ -173,7 +173,6 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
                 return mapGenerator.GetMap()[offsetX, offsetY];
             }
         }
-        return TileInfoStructure.Free00;
     }
 
 
@@ -768,26 +767,26 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     }
 
     public void Update() {
-        return;
-        liquid.Update();
-     //   LightRenderer.Update();
-        
+        // Обновление жидкости отключено автором (безусловный return; CS0162 устранён
+        // вынесением недостижимого кода из компиляции — поведение не изменилось).
+        // liquid.Update();
+        //   LightRenderer.Update();
     }
      
 
 
     private void LiquidUpdate() {
-        return;
-        while (true) {
-            Thread.Sleep(sleepTime);
-            try {
-                liquid.Update();
-               // LightRenderer.Update();
-            }
-            catch (Exception ex) {
-                Debug.LogError(ex);
-            }
-        }
+        // Поток обновления жидкости отключён автором (создание потока закомментировано в Init).
+        // while (true) {
+        //     Thread.Sleep(sleepTime);
+        //     try {
+        //         liquid.Update();
+        //        // LightRenderer.Update();
+        //     }
+        //     catch (Exception ex) {
+        //         Debug.LogError(ex);
+        //     }
+        // }
     }
 
 }

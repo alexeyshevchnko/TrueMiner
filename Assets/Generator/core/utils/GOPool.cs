@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEngine;
 using System;
 using System.Collections;
@@ -103,6 +103,9 @@ public class GOPool : MonoBehaviour, IoC.IInitialize {
 
     public List<ObjectCache> caches;
 
+    // Рантайм-кэш активных объектов; Unity-сериализация Hashtable никогда не
+    // поддерживалась — [NonSerialized] делает это намеренным (UAC1009).
+    [System.NonSerialized]
     public Hashtable activeCachedObjects;
 
     public Action<GameObject> OnUnspawnGO;

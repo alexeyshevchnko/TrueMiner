@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using trasharia.weapons;
 
@@ -84,23 +84,19 @@ public class BlowBlockItem : BaseWeaponItem {
         switch (Type) {
             case (short)TileTypeEnum.Coal:
                 return "Уголь";
-                break;
 
             case (short)TileTypeEnum.Terrain0:
                 return "Грязь";
-                break;
+
             case (short)TileTypeEnum.TerrainGrass:
                 return "Трава";
-                break;
 
             case (short)TileTypeEnum.Gold:
                 return "Золото";
-                break;
 
             case (short)TileTypeEnum.TreeBody:
             case (short)TileTypeEnum.Wood:
                 return "Древесина";
-                break;
 
             case (short)TileTypeEnum.Brick:
                 return "Кирпич";

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -139,7 +139,6 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
     }
 
 
-    private int oldTime = -1;
     public static Vector2Int screenStart;
     public static Vector2Int screenEnd;
     private Vector3 p1;
@@ -442,7 +441,6 @@ public class TileRenderer : MonoBehaviour,IoC.IInitialize {
     private int countClick;
 	// Update is called once per frame
     //void LateUpdate() {
-    private int countFixedUpdate = -1;
     void Update() {
          
 	    if (LightUvProvider != null)

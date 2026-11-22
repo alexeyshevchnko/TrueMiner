@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEditor;
 
@@ -13,8 +13,7 @@ public class ParticleScaleEditor : Editor {
         if (particleScale == null) {
             return;
         }
-        string txt;
-        
+
         scale = EditorGUILayout.FloatField("value", scale);
         
             

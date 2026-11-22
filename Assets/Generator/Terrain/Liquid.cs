@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using Debug = UnityEngine.Debug;
 using  System.Linq;
@@ -27,15 +27,11 @@ public class Liquid : ILiquid,IoC.IInitialize {
     }
 
 
-    private int lastUpdateFrame = 0;
     public void Update() {
         if (mapGen.mapType == MapGenerator.MapType.home)
             return;
         //Debug.LogError("Update");
-   //     if (Time.frameCount - lastUpdateFrame > 100) {
-            UpdateWater();
-           // lastUpdateFrame = Time.frameCount;
-     //   }
+        UpdateWater();
     }
 
     private void ChackWater(Vector2Int pos, bool isWater) {
@@ -108,15 +104,9 @@ public class Liquid : ILiquid,IoC.IInitialize {
     private TileInfoStructure left;
     private TileInfoStructure right;
     private TileInfoStructure bottom;
-    private int maxWaterUpdate = 500;
     public void UpdateWater() {
       //  Debug.Log(string.Format("active = {0}, inactive = {1}", activePointIndex.Count, inactivePointIndex.Count));
-        int countUpdate = 0;
         for (int i = activePointIndex.Count - 1; i >= 0; i--) {
-           // countUpdate++;
-          //  if (Time.frameCount > 100&& countUpdate > maxWaterUpdate)
-           //     break;
-            
             posCenter = activePointIndex[i];
 
             if (!ChackPos(posCenter)) {

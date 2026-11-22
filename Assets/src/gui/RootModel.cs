@@ -5,6 +5,10 @@ public class RootModel : MonoBehaviour, IoC.IInitialize {
     public IoC.IContainer Container { set; protected get; }
 
     static public RootModel instance;
+    // Контекст создаётся только в рантайме (Awake/OnInject); Unity-сериализация для
+    // него не применяется — [NonSerialized] делает это намеренным (UAC1001 без
+    // изменения поведения сериализации).
+    [System.NonSerialized]
     public RootContext rootContext;
 
     void Awake() {

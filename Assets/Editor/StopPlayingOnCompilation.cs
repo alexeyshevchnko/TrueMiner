@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
@@ -13,25 +13,27 @@ public class StopPlayingOnCompilation
 
     static void OnEditorUpdate()
     {
-        if( ! waitingForStop 
-            && EditorApplication.isCompiling 
+        if( ! waitingForStop
+            && EditorApplication.isCompiling
             && EditorApplication.isPlaying )
         {
              EditorApplication.LockReloadAssemblies();
             EditorApplication.isPlaying = false;
-             EditorApplication.playmodeStateChanged
+             EditorApplication.playModeStateChanged
                   += PlaymodeChanged;
              waitingForStop = true;
         }
     }
 
-    static void PlaymodeChanged()
+    static void PlaymodeChanged(PlayModeStateChange state)
     {
-        if( EditorApplication.isPlaying )
+        // В 6000.6 у PlayModeStateChange нет ExitedPlayMode: выход из режима игры
+        // завершается переходом в EnteredEditMode (эквивалент прежней проверки !isPlaying).
+        if( state != PlayModeStateChange.EnteredEditMode )
              return;
-        
+
         EditorApplication.UnlockReloadAssemblies();
-        EditorApplication.playmodeStateChanged
+        EditorApplication.playModeStateChanged
              -= PlaymodeChanged;
         waitingForStop = false;
     }

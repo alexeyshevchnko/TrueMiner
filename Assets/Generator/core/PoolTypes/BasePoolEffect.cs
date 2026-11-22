@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using trasharia;
 
@@ -22,7 +22,7 @@ public class BasePoolEffect : MonoBehaviour, IBasePoolObject, IoC.IInitialize {
 
     public virtual void OnSpawn() {
         this.Inject();
-        CooldownManager.AddCooldown(MainParticle.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
+        CooldownManager.AddCooldown(MainParticle.main.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
     }
 
     public virtual void OnUnSpawn() {

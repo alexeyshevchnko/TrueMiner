@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour, IoC.IInitialize, ITargetBase {
     }
 
     private LightPoint lightPoint;
-    private bool isJamp = false;
 
     void Start() {
         viewReciver = GetComponent<UnitViewReciver>();

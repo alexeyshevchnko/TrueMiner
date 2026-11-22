@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 
@@ -57,6 +57,13 @@ public struct Vector2Int {
             return false;
         return ((Vector2Int) obj).IsEqual(this);
 
+    }
+
+    public override int GetHashCode() {
+        // CS0659/CS0661: Equals/== переопределены, GetHashCode обязан быть согласован.
+        unchecked {
+            return (x * 397) ^ y;
+        }
     }
 
 

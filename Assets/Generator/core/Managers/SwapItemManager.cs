@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Managers;
@@ -23,14 +23,11 @@ public class SwapItemManager : ISwapItemManager {
     //x - y - GameObject
     Dictionary<int,Dictionary<int,GameObject>> activeItems = new Dictionary<int, Dictionary<int, GameObject>>();
 
-    private TileInfoStructure[,] _map;
     private TileInfoStructure[,] Map {
         get {
-
+            // _map-кэш был удалён: присваивание стояло после безусловного return
+            // и никогда не выполнялось (источник предупреждения CS0162).
             return mapGenerator.GetMap();
-          //  if (_map == null)
-                _map = mapGenerator.GetMap();
-            return _map;
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,7 +9,10 @@ public class Shell : MonoBehaviourPhysicItem {
         }
     }
 
-    protected virtual void FixedUpdate() {
+    // FixedUpdate базового MonoBehaviourPhysicItem виртуальный — Shell должен
+    // переопределять его (override), а не скрывать (иначе ломается виртуальный
+    // вызов из базового типа; поведение Unity-магического вызова не меняется).
+    protected override void FixedUpdate() {
         if (Container == null)
             return;
 

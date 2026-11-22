@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public interface IInfinityTileMap : IBaseInfinityTileMap {
     void DrawMesh(Vector3 pos, Camera cam);
-    LayerData layerData { get; }
+    // layerData унаследован от IBaseInfinityTileMap (повторное объявление скрывало
+    // базовое свойство — CS0108; контракт не изменился).
     void ChangeTile(int x, int y, string tileName, int flameX = 0, int fameY = 0, int deltaHeight = 0);
     void ChangeColor(int x, int y, Color32 color);
     void ShiftCells(int deltaX, int deltaY);
@@ -12,7 +13,7 @@ public interface IInfinityTileMap : IBaseInfinityTileMap {
 }
 
 public interface IInfinityTileMapLight : IBaseInfinityTileMap {
-    LayerData layerData { get; }
+    // layerData унаследован от IBaseInfinityTileMap (см. комментарий выше).
 }
 
 public interface IBaseInfinityTileMap {

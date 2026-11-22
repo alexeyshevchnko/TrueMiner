@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,8 +58,6 @@ public class PhysicItem : IPhysicItem {
         }
     }
     public float maxRunSpeed = 3f;
-    private int jumpHeight = 15;
-    private float jumpSpeed = 5.01f;
     public Vector2 gravity = new Vector2(0, -2.4f);
 
     public Vector2 momentVector = new Vector2(0.9f, 0.99f);
@@ -264,8 +262,6 @@ public class PhysicItem : IPhysicItem {
     }
 
 
-    private bool trace = false;
-    
     ~PhysicItem() {
 
     }

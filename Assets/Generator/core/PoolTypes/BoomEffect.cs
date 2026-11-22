@@ -8,7 +8,7 @@ public class BoomEffect : BasePoolEffect {
         this.Inject();
         MainParticle.Play();
         OtherParticle.Play();
-        CooldownManager.AddCooldown(MainParticle.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
+        CooldownManager.AddCooldown(MainParticle.main.duration, null, UnSpawn, 0, Time.fixedDeltaTime);
 
        //GameObjectPoolManager.Spawn<LightBoomEffect>(transform.position, Quaternion.identity);
 

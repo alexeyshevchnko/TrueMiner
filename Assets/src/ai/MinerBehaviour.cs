@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using trasharia;
 using UnityEngine;
@@ -18,11 +18,7 @@ public class MinerBehaviour  : IAIBehaviour {
     private float direcr = 1;
     private float speed = 0.1f;
     private float lastJampPosX;
-    private int attemptJampCount = 4;
-    private float dirJamp = 15;
 
-
-    private int countTryJamp = 1;
     [IoC.Inject]
     public ICollision Collision { set; protected get; }
     [IoC.Inject]
