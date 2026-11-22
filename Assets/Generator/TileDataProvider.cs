@@ -355,6 +355,20 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
         }
     }
 
+    // Reads a tile as "part of a tree", treating everything outside the map as "no tree".
+    // The walk below can otherwise step past the map edge on a tree that grows at the border.
+    bool InsideMap(TileInfoStructure[,] map, int x, int y) {
+        return x >= 0 && y >= 0 && x < map.GetLength(0) && y < map.GetLength(1);
+    }
+
+    bool IsTreeAt(int x, int y) {
+        var map = mapGenerator.GetMap();
+        if (!InsideMap(map, x, y)) {
+            return false;
+        }
+        return map[x, y].IsTree();
+    }
+
     public void RemoveTree(Vector2Int offset) {
         var map = mapGenerator.GetMap();
         var delta = 0;
@@ -365,11 +379,11 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
             return;
 
         //если это корень то перемещаемся к стволу
-        if (!map[offset.x, offset.y + 1].IsTree() && map[offset.x, offset.y].randomTile < 100) {
-            if (map[offset.x + 1, offset.y + 1].IsTree()) {
+        if (!IsTreeAt(offset.x, offset.y + 1) && map[offset.x, offset.y].randomTile < 100) {
+            if (IsTreeAt(offset.x + 1, offset.y + 1)) {
                 offset.x += 1;
             } else {
-                if (map[offset.x - 1, offset.y + 1].IsTree()) {
+                if (IsTreeAt(offset.x - 1, offset.y + 1)) {
                     offset.x -= 1;
                 }
             }
@@ -381,18 +395,18 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
 
             int deltaX = 0; 
             int deltaY = 0;
-            if (map[offset.x, offset.y - 1].IsTree() && map[offset.x, offset.y - 1].randomTile >= 100) {
+            if (IsTreeAt(offset.x, offset.y - 1) && map[offset.x, offset.y - 1].randomTile >= 100) {
                 deltaY = -1;
             }
 
             //=>
-            while (map[offset.x + deltaX, offset.y + deltaY].IsTree()) {
+            while (IsTreeAt(offset.x + deltaX, offset.y + deltaY)) {
                 deltaX ++;
             }
             deltaX--;
-            if (map[offset.x + deltaX, offset.y + deltaY].IsTree() && map[offset.x + deltaX, offset.y + deltaY].randomTile >= 100) {
+            if (IsTreeAt(offset.x + deltaX, offset.y + deltaY) && map[offset.x + deltaX, offset.y + deltaY].randomTile >= 100) {
                 //=>
-                while (map[offset.x + deltaX, offset.y + deltaY].IsTree()) {
+                while (IsTreeAt(offset.x + deltaX, offset.y + deltaY)) {
                     deltaX--;
                 }
                 deltaX++;
@@ -405,26 +419,26 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
             
 
         //ищем начало дерева
-        while (map[offset.x, offset.y + delta].IsTree()) {
+        while (IsTreeAt(offset.x, offset.y + delta)) {
             delta--;
         }
 
         delta ++;
 
-        while (map[offset.x, offset.y + delta].IsTree()) {
+        while (IsTreeAt(offset.x, offset.y + delta)) {
             var deltaL = -1;
-            while (map[offset.x + deltaL, offset.y + delta].IsTree()) {
+            while (IsTreeAt(offset.x + deltaL, offset.y + delta)) {
                 SetTile(offset.x + deltaL, offset.y + delta, 0);
-                if (map[offset.x + deltaL, offset.y + delta + 1].IsTree()) {
+                if (IsTreeAt(offset.x + deltaL, offset.y + delta + 1)) {
                     SetTile(offset.x + deltaL, offset.y + delta + 1, 0);
                 }
                 deltaL--;
 
             }
             var deltaR = 1;
-            while (map[offset.x + deltaR, offset.y + delta].IsTree()) {
+            while (IsTreeAt(offset.x + deltaR, offset.y + delta)) {
                 SetTile(offset.x + deltaR, offset.y + delta, 0);
-                if (map[offset.x + deltaR, offset.y + delta + 1].IsTree()) {
+                if (IsTreeAt(offset.x + deltaR, offset.y + delta + 1)) {
                     SetTile(offset.x + deltaR, offset.y + delta + 1, 0);
                 }
 
@@ -440,6 +454,9 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     void SetTile(int x, int y, short type) {
 
         var map = mapGenerator.GetMap();
+        if (!InsideMap(map, x, y)) {
+            return;
+        }
         if (!mapGenerator.GetMap()[x, y].IsTreeTop() && mapGenerator.GetMap()[x, y].IsTree()) {
            
             var block = ItemManager.CreateBlock(new Vector2(x*TileSize - 2f*TileSize, y*TileSize - 2f*TileSize),
