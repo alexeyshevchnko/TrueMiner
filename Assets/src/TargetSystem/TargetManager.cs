@@ -151,6 +151,9 @@ public class TargetManager : ITargetManager{
     public void DestroyUnit(AiController unit) {
         // Every unit is tracked from its factory method, so removing it here always finds it.
         units.Remove(unit);
+        if (unit.behaviour is ZombieBehaviour zombie) {
+            zombie.Release();
+        }
         GameObject.Destroy(unit.gameObject);
     }
 

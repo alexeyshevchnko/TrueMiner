@@ -43,8 +43,15 @@ public class ZombieBehaviour : IAIBehaviour {
             pysicItem.Destroy();
         }
 
-        if (CooldownManager != null && cooldownItem!= null) {
+        Release();
+    }
+
+    // Called when the owning unit is destroyed: the cooldown re-arms itself every second,
+    // so it has to be removed explicitly or it keeps this behaviour alive.
+    public void Release() {
+        if (CooldownManager != null && cooldownItem != null) {
             CooldownManager.RemoveCooldown(cooldownItem);
+            cooldownItem = null;
         }
     }
 
