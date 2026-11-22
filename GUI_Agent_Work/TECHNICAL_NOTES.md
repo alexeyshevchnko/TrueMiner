@@ -1,5 +1,14 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## Мобильное управление (дополнение после ISSUE-7..9)
+- Ассет Ultimate Joystick: `UltimateJoystick` (IPointerDown/IDrag/IPointerUp на корневом GO), визуал — `JoystickSizeFolder` (pivot 0,0; Base/Joystick/Tension — stretch-дети). Ось = `(handle.position − joystickCenter)/radius`, БЕЗ проверки удержания → любое рассогласование хэндла и центра даёт постоянный дрейф персонажа.
+- `UltimateJoystickScreenSizeUpdater` (UIBehaviour на канвасе джойстиков) на `OnRectTransformDimensionsChange` запускает в конце кадра `UpdatePositioning` для всех джойстиков = `ResetJoystick` (по старому центру) → `UpdateSizeAndPlacement` (новый центр). Хэндл при этом не возвращался в центр — первопричина дрейфа при старте/ресайзе (ISSUE-7).
+- Патчи ассета (минимальные): `UpdateSizeAndPlacement` в конце центрирует хэндл; `Awake` (play mode) сразу вычисляет размещение; `OnApplicationFocus(false)/OnApplicationPause(true)` → `ResetJoystick` (анти-залипание).
+- Канвасы по порядку: TouchAreaCanvas (−20, кастомный `TouchAreaRaycaster`) → GameUi (−10) → Ultimate UI Canvas (0). TouchAreaRaycaster игнорирует мышь (pointerId<0) и возвращает левую/правую половины экрана (anchors 0–0.5 / 0.5–1, полная высота) для тач-пальцев; межканвасный raycast-приоритет EventSystem = sortingOrder → интерфейс всегда важнее зон; в свободных областях зоны получают события.
+- `JoystickTouchArea` (на зоне) пересылает PointerEventData (с fingerId) в целевой джойстик; multi-touch обеспечивает `_pointerId` ассета.
+- `JoystickTouchVisibility` — только видимость визуала по `GetJoystickState` (создание зоны/подавление при сумке удалены — не нужны при правильной маршрутизации).
+- Связь с персонажем: `KeyboardJoystick` читает `GetHorizontalAxis/GetVerticalAxis("Joystick1")` (движение) и `"Joystick2"` (прицел/огонь), `GetIsDown("Joystick1")`, огонь также по `Input.GetMouseButton(0)` с исключением `IsPointerOverGameObject()` (мышь в зоны не попадает — десктопное прицеливание не пострадало).
+
 ## Мобильное управление (дополнение после ISSUE-5)
 - Джойстики — ассет Ultimate Joystick (внешний, `Assets/external/Ultimate Joystick`), два экземпляра префаба в сцене: `Joystick1` (движение, экземпляр с именем «Minimalist Joystick 00», dynamicPositioning=1) и `Joystick2` («Ultimate Joystick2», dynamicPositioning прописан 1 коммитом 260a74f), оба в «Ultimate UI Canvas» (ScreenSpaceOverlay, sortingOrder 0, GraphicRaycaster).
 - Канвас GameUi создаётся программно с `sortingOrder = -10` — ниже канваса джойстиков: джойстики рисуются поверх сумки/ячеек/HUD.

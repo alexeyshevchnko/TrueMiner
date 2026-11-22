@@ -1,5 +1,33 @@
 # TEST_REPORT — результаты проверок
 
+## Сессия 4 (2026-11-22): мобильное управление и TouchArea
+
+### Прогон Play Mode, MainScene целиком (`touch_results.xml`) — 5/5 Passed
+Ключевые новые проверки в `GameStartSmokeTests`:
+| Проверка | Результат |
+|---|---|
+| ISSUE-7: все 4 оси обоих джойстиков нейтральны (±0.02) без касаний | Passed |
+| ISSUE-7: после отпускания пальца оси возвращаются в нейтраль | Passed |
+| ISSUE-8: Base (центр JoystickSizeFolder) == точка начала касания (допуск 4px), для обоих джойстиков, в реальных screen-координатах окна Unity | Passed |
+| ISSUE-9: TouchAreaCanvas sortingOrder −20 < GameUi −10 < Ultimate 0; зоны — половины экрана (левая 0–50%, правая 50–100%), вся высота, прозрачные | Passed |
+| ISSUE-9: TouchAreaRaycaster — мышь (pointerId −1) не даёт попаданий; палец 1 → TouchArea_Left, палец 2 → TouchArea_Right | Passed |
+| Multi-touch: PointerDown прямо в зоны (форвардинг JoystickTouchArea → джойстики) — оба удерживаются одновременно; отпускание первого не сбрасывает второй; визуалы появляются/скрываются независимо | Passed |
+| Handle после отпускания/перестроек в центре (следствие фикса UpdateSizeAndPlacement) | Passed |
+| Регрессия: кнопки 3/3, хотбар 7×0.7 | Passed |
+
+### EditMode-регрессия (`editmode_final4.xml`) — 6/6 Passed.
+
+### Лог прогона `unity_touch_tests.log`: ошибок нет.
+
+### Что осталось непроверенным
+- Живой сенсорный экран/эмулятор с реальными двумя пальцами: multitouch проверен событиями uGUI (PointerEventData с pointerId 1/2 через ExecuteEvents и прямым вызовом raycaster) — механика ассета покрыта, физический touch-стек устройства нет.
+- Ручной прогон потери фокуса/паузы на устройстве (OnApplicationFocus/Pause → ResetJoystick добавлены в ассет; автотест на это не написан).
+- «Быстрые повторные касания» — покрыты косвенно (сброс `_pointerId` в OnPointerUp и ResetJoystick), отдельного стресс-теста нет.
+
+### Коммит
+1. `Fix mobile joystick input and touch areas` (ассет + TouchAreaRaycaster/JoystickTouchArea/TouchAreaCanvas + JoystickTouchVisibility упрощение + smoke-тест).
+
+---
 ## Сессия 3 (2026-11-22): джойстики + хотбар 7×0.7
 
 ### Прогон Play Mode, MainScene целиком (`mobile_results.xml`) — 5/5 Passed
