@@ -75,62 +75,6 @@ public class TerrariaTreeTileShema : ITileShema {
         }
     }
 
-    private FrameStructure BranchLeftRez1 = new FrameStructure(5, 1);
-    private FrameStructure BranchLeftRez2 = new FrameStructure(5, 2);
-    private FrameStructure BranchLeftRez3 = new FrameStructure(5, 3);
-    private FrameStructure GetBranchLeft() {
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return BranchLeftRez1;
-            case 2:
-                return BranchLeftRez2;
-            default:
-                return BranchLeftRez3;
-        }
-    }
-
- 
-    private FrameStructure GetBranchLeftCenter() {
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return CenterRez1;
-            case 2:
-                return CenterRez2;
-            case 5:
-                return CenterRez5;
-            default:
-                return CenterRez3;
-        }
-    }
-
-    private FrameStructure BranchRightRez1 = new FrameStructure(7, 0);
-    private FrameStructure BranchRightRez2 = new FrameStructure(7, 1);
-    private FrameStructure BranchRightRez3 = new FrameStructure(7, 2);
-    private FrameStructure GetBranchRight() {
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return BranchRightRez1;
-            case 2:
-                return BranchRightRez2;
-            default:
-                return BranchRightRez3;
-        }
-    }
-
-    private FrameStructure GetBranchRightCenter() {
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return CenterRez1;
-            case 2:
-                return CenterRez2;
-            case 5:
-                return CenterRez5;
-            default:
-                return CenterRez3;
-        }
-    }
-
-
     bool ChackMap(short[,] mapTemplate, short[,] map, TileInfoStructure info) {
         // 0 пусто
         // 1 тогоже типа
@@ -171,10 +115,6 @@ public class TerrariaTreeTileShema : ITileShema {
     private short[,] mapRootBottomRight;
     private short[,] mapCenter;
     private short[,] mapTop;
-    private short[,] mapBranchLeft;
-    private short[,] mapBranchRight;
-    private short[,] mapBranchLeftCenter;
-    private short[,] mapBranchRightCenter;
     public FrameStructure GetShema(short[,] map, TileInfoStructure info) {
         currentTileInfo = info;
        // return GetCenter();
