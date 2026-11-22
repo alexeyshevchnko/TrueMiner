@@ -150,7 +150,5 @@ public class Cave {
         }
         
         return false;
-        
-        return true;
     }
 }
