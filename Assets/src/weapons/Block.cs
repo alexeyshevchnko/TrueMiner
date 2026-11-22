@@ -11,7 +11,7 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
     [IoC.Inject]
     public IPhysicsManager PhysicsManager { set; protected get; }
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
 
     
     [IoC.Inject]

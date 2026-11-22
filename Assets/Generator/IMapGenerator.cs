@@ -18,6 +18,7 @@ public interface IMapGenerator {
     bool IsGenerated { get; }
     int SizeX { get; }
     int SizeY { get; }
+    bool IsValidPoint(Vector2Int pos, int maxX = -1, int maxY = -1);
 
     int GetSurfaceMaxY { get; }
     int GetSurfaceMinY { get; }

@@ -9,7 +9,7 @@ public class Torch : MonoBehaviour, IWeapon, IoC.IInitialize {
     [IoC.Inject]
     public ITileDataProvider tileDataProvider { set; protected get; }
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
 
     private int countTileMapX;
     private int countTileMapY;
