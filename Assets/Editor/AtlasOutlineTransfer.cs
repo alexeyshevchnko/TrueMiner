@@ -2,17 +2,20 @@
 // Меню: Tools → Atlas Outline Transfer.
 // Гарантии:
 //  - Исходный атлас НИКОГДА не изменяется (только чтение пикселей как данных).
-//  - Все пиксели целевого атласа, не являющиеся обнаруженной обводкой, остаются нетронутыми.
+//  - Все пиксели целевого атласа, не являющиеся обнаруженной обводкой (в том числе
+//    маркерные/отмеченные пользователем цвета), остаются нетронутыми.
 //  - Перед записью создаётся резервная копия файла целевого атласа.
 //  - Обводка только ОБНАРУЖИВАЕТСЯ в исходнике и копируется пиксель в пиксель
 //    (без масштабирования, смещения, выравнивания и без генерации новой обводки).
 // Обнаружение: чёрные (в пределах допуска) непрозрачные пиксели, лежащие не глубже
-// заданной толщины от прозрачно-окаймлённого края непрозрачной области (внешний контур).
-// Внутренние чёрные детали (глубже края) НЕ считаются обводкой и не копируются.
+// заданной толщины от края непрозрачной области. Служебные (маркерные) цвета
+// (например, розовый #F777F9) НЕ считаются ни обводкой, ни преградой: они исключаются
+// из маски-барьера, поэтому обводка, «прижатая» к маркерам, не считается попадающей
+// глубже толщины и не теряется. Внутренние чёрные детали (глубже края) НЕ копируются.
 
 using System.Collections.Generic;
 using System.IO;
-using P = System.IO.Path;      // без конфликта имён, т.к. using System.IO уже подключён через P
+using P = System.IO.Path;   // псевдоним Path (System.IO подключён)
 using UnityEditor;
 using UnityEngine;
 
@@ -31,6 +34,11 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private int outlineThickness = 2;        // толщина внешней обводки, px
     private float alphaThreshold = 0.03f;    // пиксели с меньшей альфой считаются прозрачными
 
+    // маркерный (служебный) цвет: не обводка и не преграда; исключается из маски-барьера.
+    // По умолчанию — розовый #F777F9, используемый в атласах проекта как служебная разметка.
+    private Color markerColor = new Color32(247, 119, 249, 255);
+    private bool excludeMarkers = true;
+
     // состояние
     private bool analyzed;
     private string summary;
@@ -40,7 +48,8 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private readonly List<Color32> outlineColors = new List<Color32>();
     private int internalBlackCount;
     private int outlineRegionCount;
-
+    private int markerCount;
+    private int transferCount;      // сколько из обнаруженных реально отличается от цели
     private bool lastTransferOk;
     private string lastResultPath;
     private string lastBackupPath;
@@ -48,8 +57,13 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private Vector2 scroll;
     private Texture2D previewTexture;
 
+    private enum PreviewMode { ResultOverlay = 0, DetectedMask = 1, SourceOutline = 2 }
+    private static readonly string[] PreviewModeLabels =
+        { "Наложение на цель", "Обнаруженная маска", "Обводка исходника" };
+    private PreviewMode previewMode = PreviewMode.ResultOverlay;
+
     private static readonly GUIContent DefaultsHint =
-        new GUIContent("По умолчанию: чёрный, 2 px, допуск 0.12 — соответствует 2-пиксельной чёрной обводке блоков");
+        new GUIContent("По умолчанию: чёрный, 2 px, допуск 0.12, маркер #F777F9 исключается — проверено на тестовых атласах outline_transfer");
 
     [MenuItem(MenuPath)]
     public static void ShowWindow()
@@ -73,6 +87,8 @@ public class AtlasOutlineTransferWindow : EditorWindow
         summary = null;
         internalBlackCount = 0;
         outlineRegionCount = 0;
+        markerCount = 0;
+        transferCount = 0;
         lastTransferOk = false;
         lastResultPath = null;
         lastBackupPath = null;
@@ -110,6 +126,15 @@ public class AtlasOutlineTransferWindow : EditorWindow
         colorTolerance = EditorGUILayout.Slider(new GUIContent("Color Tolerance"), colorTolerance, 0f, 0.5f);
         outlineThickness = EditorGUILayout.IntSlider(new GUIContent("Outline Thickness (px)"), outlineThickness, 1, 4);
         alphaThreshold = EditorGUILayout.Slider(new GUIContent("Transparent Alpha <"), alphaThreshold, 0f, 0.5f);
+        excludeMarkers = EditorGUILayout.ToggleLeft(
+            new GUIContent(
+                "Exclude Marker Color (не обводка и не преграда)",
+                "Служебный цвет в исходном атласе (например розовый #F777F9) исключается из маски — обводка, прижатая к маркерам, не считается глубиной > толщины."),
+            excludeMarkers);
+        using (new EditorGUI.DisabledScope(!excludeMarkers))
+        {
+            markerColor = EditorGUILayout.ColorField(new GUIContent("Marker Color"), markerColor, false, false, false);
+        }
 
         EditorGUILayout.Space();
         using (new EditorGUILayout.HorizontalScope())
@@ -152,9 +177,26 @@ public class AtlasOutlineTransferWindow : EditorWindow
         }
         if (previewTexture != null)
         {
-            EditorGUILayout.HelpBox(
-                "Preview: целевой атлас с наложенной обводкой (только во временной текстуре окна — ассеты не изменены).",
-                MessageType.None);
+            var shownMode = (PreviewMode)GUILayout.Toolbar((int)previewMode, PreviewModeLabels);
+            if (shownMode != previewMode)
+            {
+                previewMode = shownMode;
+                BuildPreview();
+            }
+            string modeText;
+            switch (previewMode)
+            {
+                case PreviewMode.DetectedMask:
+                    modeText = "Preview: только обнаруженная маска обводки (на прозрачном фоне). Всё, что здесь видно, при Transfer переносится; разрывы здесь = пропуски обнаружения.";
+                    break;
+                case PreviewMode.SourceOutline:
+                    modeText = "Preview: чёрные пиксели исходного атласа в его координатах (эталон обводки).";
+                    break;
+                default:
+                    modeText = "Preview: целевой атлас с наложенной обводкой (только во временной текстуре окна — ассеты не изменены).";
+                    break;
+            }
+            EditorGUILayout.HelpBox(modeText, MessageType.None);
             var rect = GUILayoutUtility.GetRect(200, 220, GUILayout.ExpandWidth(true));
             EditorGUI.DrawPreviewTexture(rect, previewTexture, null, ScaleMode.ScaleToFit);
         }
@@ -313,36 +355,66 @@ public class AtlasOutlineTransferWindow : EditorWindow
                 $"Найдено {internalBlackCount} чёрных пикселей глубже {outlineThickness} px от края " +
                 "(внутренние детали текстур) — они не считаются обводкой и не переносятся.");
 
+        // сколько из обнаруженных реально отличается от цели (это и будет записано)
         if (detected > 0)
         {
             int same = 0;
+            transferCount = 0;
             for (int k = 0; k < outlineIndices.Count; k++)
+            {
                 if (ColorsEqual(dst[outlineIndices[k]], outlineColors[k])) same++;
+                else transferCount++;
+            }
             if (same == detected)
                 AddWarning("Все обнаруженные пиксели уже совпадают с целевым атласом (возможно, перенос уже выполнялся). " +
-                           "Повторный перенос безопасен.");
+                           "Перенос ничего не изменит — повторный запуск безопасен.");
         }
 
         summary =
             $"Source: {sourceAtlas.width}×{sourceAtlas.height}; Destination: {destAtlas.width}×{destAtlas.height}; " +
             "совпадение размеров: OK.\n" +
             $"Обнаружено пикселей обводки: {detected}.\n" +
-            $"Связных непрозрачных областей/блоков в исходнике: {outlineRegionCount}.\n" +
-            $"Чёрных внутренних пикселей (исключено): {internalBlackCount}.";
+            $"Из них внутри (глубже толщины) исключено: {internalBlackCount}.\n" +
+            $"Обнаруженных областей/блоков: {outlineRegionCount}.\n" +
+            $"Маркерных пикселей (исключены из маски): {markerCount} (не трогаются).\n" +
+            $"Будет перенесено (несовпадающих с целью): {transferCount}.\n" +
+            $"Настройки: цвет {OutlineColorHex(outlineColor)}, допуск {colorTolerance:0.##} (~±{Mathf.RoundToInt(colorTolerance * 255f)}), " +
+            $"толщина {outlineThickness}px, alpha-порог {alphaThreshold:0.###}, исключение маркера: {(excludeMarkers ? $"да ({MarkerColorHex(markerColor)})" : "нет")}.";
         ShowLog();
     }
 
+    private static string OutlineColorHex(Color c)
+        => $"#{Mathf.RoundToInt(c.r * 255f):X2}{Mathf.RoundToInt(c.g * 255f):X2}{Mathf.RoundToInt(c.b * 255f):X2}";
+
+    private static string MarkerColorHex(Color c)
+        => OutlineColorHex(c);
+
     /// <summary>
     /// Обнаружение внешней обводки в исходном атласе.
-    /// mask = непрозрачные пиксели; BFS от прозрачного края даёт глубину d каждого непрозрачного
-    /// пикселя; обводка = чёрные (в допуске) непрозрачные пиксели с d <= thickness.
+    /// mask = непрозрачные пиксели, КРОЕ маркерного цвета (если исключение включено):
+    /// маркеры — служебная разметка между блоками, а не часть графики, поэтому
+    /// не считаются ни обводкой, ни преградой. BFS от такого «края» даёт глубину d;
+    /// обводка = чёрные (в допуске) непрозрачные пиксели с d &lt;= thickness.
     /// </summary>
     private void AnalyzeOutline(Color32[] src, int w, int h)
     {
         int n = w * h;
         var mask = new bool[n];
+        markerCount = 0;
+        byte mr = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.r, 0f, 1f) * 255f);
+        byte mg = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.g, 0f, 1f) * 255f);
+        byte mb = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.b, 0f, 1f) * 255f);
         for (int i = 0; i < n; i++)
-            mask[i] = src[i].a / 255f > alphaThreshold;
+        {
+            var c = src[i];
+            if (c.a / 255f <= alphaThreshold) continue;                  // прозрачные вне маски
+            if (excludeMarkers && c.r == mr && c.g == mg && c.b == mb)   // маркер: преградой не является
+            {
+                markerCount++;
+                continue;
+            }
+            mask[i] = true;
+        }
 
         // глубина от прозрачного края (4-связность), послойный BFS
         var dist = new ushort[n];
@@ -596,19 +668,58 @@ public class AtlasOutlineTransferWindow : EditorWindow
             ShowLog();
             return;
         }
-        Color32[] dst;
-        if (!TryReadPixels(destAtlas, "Destination Atlas", errors, out dst))
+
+        try
         {
-            ShowLog();
-            return;
+            var preview = new Texture2D(destAtlas.width, destAtlas.height, TextureFormat.RGBA32, false, true);
+            Color32[] px;
+            switch (previewMode)
+            {
+                case PreviewMode.DetectedMask:
+                {
+                    // маска обнаруженной обводки на прозрачном фоне — что именно будет перенесено
+                    px = new Color32[destAtlas.width * destAtlas.height];
+                    for (int k = 0; k < outlineIndices.Count; k++)
+                        px[outlineIndices[k]] = outlineColors[k];
+                    break;
+                }
+                case PreviewMode.SourceOutline:
+                {
+                    // чистые чёрные пиксели исходника в его координатах (эталон)
+                    Color32[] src;
+                    if (!TryReadPixels(sourceAtlas, "Source Outline Atlas", errors, out src))
+                    {
+                        Object.DestroyImmediate(preview);
+                        ShowLog();
+                        return;
+                    }
+                    px = src;
+                    break;
+                }
+                default:
+                {
+                    // наложение обнаруженной обводки на целевой атлас
+                    Color32[] dst;
+                    if (!TryReadPixels(destAtlas, "Destination Atlas", errors, out dst))
+                    {
+                        Object.DestroyImmediate(preview);
+                        ShowLog();
+                        return;
+                    }
+                    px = dst;
+                    for (int k = 0; k < outlineIndices.Count; k++)
+                        px[outlineIndices[k]] = outlineColors[k];
+                    break;
+                }
+            }
+            preview.SetPixels32(px);
+            preview.Apply(false, false);
+            previewTexture = preview;
         }
-        var preview = new Texture2D(destAtlas.width, destAtlas.height, TextureFormat.RGBA32, false, true);
-        for (int k = 0; k < outlineIndices.Count; k++)
-            dst[outlineIndices[k]] = outlineColors[k];
-        preview.SetPixels32(dst);
-        preview.Apply(false, false);
-        previewTexture = preview;
-        Repaint();
+        finally
+        {
+            Repaint();
+        }
     }
 
     private void ReleasePreview()
