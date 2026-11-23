@@ -1,4 +1,5 @@
-# TECHNICAL_NOTES — устройство GUI проекта TrueMiner
+﻿# TECHNICAL_NOTES — устройство GUI проекта TrueMiner
+
 
 ## FPS-счётчик (дополнение после сессии 9)
 - Единственный счётчик — `GameUi` (текст "Fps": зелёный, верх-право, anchor (1,1), size 110×20, raycastTarget=false, шрифт LegacyRuntime; создаётся в `Build()`; никаких вторых счётчиков/сериализации FPS в сцене нет — `GameUi` создаётся рантаймом из `RootModel.Awake`).
