@@ -26,8 +26,8 @@ public class TouchAreaRaycaster : BaseRaycaster
     // - Высота: нижняя часть экрана высотой TOUCH_AREA_HEIGHT_PERCENT от низа
     //   (значение по умолчанию в JoystickTouchArea; в Play Mode его можно
     //   переопределить в Inspector каждой зоны без изменения константы).
-    public const float TOUCH_AREA_WIDTH_PERCENT = 50f;
-    public const float TOUCH_AREA_HEIGHT_PERCENT = 50f;
+    public const float TOUCH_AREA_WIDTH_PERCENT = 30f;
+    public const float TOUCH_AREA_HEIGHT_PERCENT = 30f;
 
     private Canvas canvas;
     private Canvas Canvas
