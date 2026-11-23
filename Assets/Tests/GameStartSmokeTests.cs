@@ -323,7 +323,7 @@ public class GameStartSmokeTests
         yield return new WaitForSeconds(0.5f);
         Assert.True((bool)isShowBag.GetValue(player, null), "сумка должна быть открыта");
 
-        ScreenCapture.CaptureScreenshot("GUI_Agent_Work/preview/playmode_smoke.png");
+        ScreenCapture.CaptureScreenshot("Agent_Works/GUI_Agent_Work/preview/playmode_smoke.png");
         yield return new WaitForSeconds(1.5f);
         // В batch-среде скриншот может не записаться — это не падение теста:
         // существование файла проверяется вне теста и фиксируется в TEST_REPORT.

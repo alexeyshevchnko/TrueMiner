@@ -94,7 +94,7 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 	}
 
 	// Восстановление нейтрального состояния при потере фокуса приложения или паузе,
-	// чтобы после возврата в игру не оставался «залипший» ввод (GUI_Agent_Work/ISSUE-7).
+	// чтобы после возврата в игру не оставался «залипший» ввод (Agent_Works/GUI_Agent_Work/ISSUE-7).
 	void OnApplicationFocus ( bool focusStatus )
 	{
 		if( focusStatus == false && joystickState == true )
@@ -182,7 +182,7 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		{
 			// Перевод локального размера папки в мировые пиксели с учётом масштаба
 			// экземпляра (экземпляры джойстиков в сцене могут быть отскейлены —
-			// GUI_Agent_Work/ISSUE-10): world = local * lossyScale.
+			// Agent_Works/GUI_Agent_Work/ISSUE-10): world = local * lossyScale.
 			float placementScale = GetFolderScale();
 
 			// Then move the joystickSizeFolder to the position of the touch.
@@ -762,7 +762,7 @@ public class UltimateJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler
 		// UpdatePositioning (OnRectTransformDimensionsChange) вызывает ResetJoystick по
 		// СТАРОМУ центру, а затем пересчитывает центр — ручка остаётся в старой точке,
 		// GetHorizontalAxis/GetVerticalAxis возвращают постоянное смещение, и персонаж
-		// «съезжает» без касаний (GUI_Agent_Work/ISSUE-7).
+		// «съезжает» без касаний (Agent_Works/GUI_Agent_Work/ISSUE-7).
 		joystick.position = joystickCenter;
 
 		// If the user wants to fade, and the joystickGroup is unassigned, find the CanvasGroup.

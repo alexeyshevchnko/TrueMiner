@@ -61,7 +61,9 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     /// <summary>
     /// Подключает динамическую видимость к существующим джойстикам Ultimate Joystick
     /// (Joystick1 — движение, Joystick2 — прицел) и создаёт зоны TouchArea:
-    /// каждая — половина экрана по ширине и вся высота, на канвасе ниже всех
+    /// каждая — симметричная зона шириной TOUCH_AREA_WIDTH_PERCENT (константа
+    /// TouchAreaRaycaster, по умолчанию половина экрана) и нижняя часть экрана
+    /// по высоте (TouchAreaHeightPercent), на канвасе ниже всех
     /// игровых канвасов (routing: интерфейс всегда выигрывает raycast — зоны не
     /// блокируют кнопки/сумку/ячейки). Сами джойстики не пересоздаются; система
     /// управления не изменяется, меняется только отображение и маршрутизация касаний.
@@ -94,9 +96,11 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
             var area = new GameObject(left ? "TouchArea_Left" : "TouchArea_Right", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             area.transform.SetParent(touchCanvasGo.transform, false);
             var areaRect = (RectTransform)area.transform;
-            // Половина экрана по X, вся высота по Y.
-            areaRect.anchorMin = new Vector2(left ? 0f : 0.5f, 0f);
-            areaRect.anchorMax = new Vector2(left ? 0.5f : 1f, 1f);
+            // Ширина зон — от TOUCH_AREA_WIDTH_PERCENT (константы TouchAreaRaycaster),
+            // симметрично от краёв экрана; высота зон задаётся JoystickTouchArea.
+            var areaWidth = Mathf.Clamp01(TouchAreaRaycaster.TOUCH_AREA_WIDTH_PERCENT / 100f);
+            areaRect.anchorMin = new Vector2(left ? 0f : 1f - areaWidth, 0f);
+            areaRect.anchorMax = new Vector2(left ? areaWidth : 1f, 1f);
             areaRect.offsetMin = Vector2.zero;
             areaRect.offsetMax = Vector2.zero;
 

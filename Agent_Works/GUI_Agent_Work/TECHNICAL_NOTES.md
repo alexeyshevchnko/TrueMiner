@@ -1,7 +1,7 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
 ## Единый источник активации джойстиков (дополнение после ISSUE-11)
-- Цепочка активации: палец/мышь (мышь — только в редакторе) → `TouchAreaRaycaster` (TouchAreaCanvas, sortingOrder −20; зоны TouchArea_Left 0–50%, TouchArea_Right 50–100% ширины, нижние `TouchAreaHeightPercent`% высоты) → `JoystickTouchArea` (IPointerDown/IDrag/IPointerUp/IPointerEnter) → форвардинг того же PointerEventData в UltimateJoystick (Joystick1/Joystick2).
+- Цепочка активации: палец/мышь (мышь — только в редакторе) → `TouchAreaRaycaster` (TouchAreaCanvas, sortingOrder −20; зоны TouchArea_Left и TouchArea_Right симметрично от краёв шириной `TouchAreaRaycaster.TOUCH_AREA_WIDTH_PERCENT`% — по умолчанию 50: 0–50% и 50–100%, нижние `TouchAreaHeightPercent`% высоты) → `JoystickTouchArea` (IPointerDown/IDrag/IPointerUp/IPointerEnter) → форвардинг того же PointerEventData в UltimateJoystick (Joystick1/Joystick2).
 - Собственная графика джойстиков (Base, Joystick/Handle, Highlight, Tension) — `raycastTarget = false` (ставит `JoystickTouchVisibility.Awake`): их прямоугольники больше не зона активации; касание обрабатывается ровно один раз — зоной.
 - Мышь над зоной: `OnPointerEnter` обнуляет `eventData.pointerEnter` (pointerId < 0) → `IsPointerOverGameObject(-1) == false` → прицел мышью работает в мировых областях; над UI pointerEnter остаётся → guard (KeyboardJoystick) блокирует выстрел. В билдах (`!Application.isEditor`) TouchAreaRaycaster мышь полностью игнорирует.
 - Захват драга: module pointerPress = TouchArea → drag/pointerUp приходят в зону даже при уходе пальца за её границы → форвардинг продолжает работать; `_pointerId` ассета не меняется (multi-touch независим).
@@ -13,7 +13,7 @@
 - Точки применения: dynamicPositioning (`folder.position = touch − textureCenter × scale`) и `joystickCenter` (полразмер × scale) в `UpdateSizeAndPlacement`; OnPointerDown дополнительно центрирует Handle.
 - Чувствительность/скорость НЕ менялись: оси = `(handle − center)/radius` в мировых пикселях; `radius` остаётся локальным (`size × radiusModifier/10`).
 - Замечание (косметика, вне объёма): при полной отклонённости на 0.7-масштабном джойстике Handle может чуть выступать за видимый обод (обoд мировой = radius × 0.7, кламп — radius). Если потребуется идеальная посадка — уменьшить `joystickSize` (сценовый оверрайд, например 3.27 → 2.29) и убрать scale 0.7, тогда радиусы совпадут.
-- Параметр высоты зон: `JoystickTouchArea.touchAreaHeightPercent` (`[SerializeField, Range(10,100)]`, default 50) — в Inspector каждой зоны (TouchArea_Left/TouchArea_Right в Play Mode, объект → компонент JoystickTouchArea → «Touch Area Height Percent»). Геометрия пересчитывается в Awake и каждый Update: якорьMin.y=0, якорьMax.y=процент/100; горизонтальные якоря (0–0.5 / 0.5–1) задаются при создании.
+- Параметр высоты зон: `JoystickTouchArea.touchAreaHeightPercent` (`[SerializeField, Range(10,100)]`; значение по умолчанию — константа `TouchAreaRaycaster.TOUCH_AREA_HEIGHT_PERCENT`, 50) — в Inspector каждой зоны (TouchArea_Left/TouchArea_Right в Play Mode, объект → компонент JoystickTouchArea → «Touch Area Height Percent»). Геометрия пересчитывается в Awake и каждый Update: якорьMin.y=0, якорьMax.y=процент/100. Ширина зон — константа `TouchAreaRaycaster.TOUCH_AREA_WIDTH_PERCENT` (по умолчанию 50), задаётся при создании зон в `GameUi`: `anchorMin.x = 1−w` / `anchorMax.x = w` симметрично от краёв (константа 50 → 0–0.5 / 0.5–1).
 
 ## Мобильное управление (дополнение после ISSUE-7..9)
 - Ассет Ultimate Joystick: `UltimateJoystick` (IPointerDown/IDrag/IPointerUp на корневом GO), визуал — `JoystickSizeFolder` (pivot 0,0; Base/Joystick/Tension — stretch-дети). Ось = `(handle.position − joystickCenter)/radius`, БЕЗ проверки удержания → любое рассогласование хэндла и центра даёт постоянный дрейф персонажа.
@@ -78,4 +78,7 @@
 - Ultimate Joystick / TouchJoystick — мобильное управление, отдельный canvas.
 
 ## Проверка компиляции
-- Unity 6000.0.60f1 установлена в `D:\Unity\6000.0.60f1\Editor\Unity.exe`. Проверка: `Unity.exe -batchmode -quit -projectPath D:\projects\TrueMiner -logFile ...` и анализ лога на ошибки компиляции.
+- Unity 6000.6.10f1 установлена в `D:\Unity\6000.6.10f1\Editor\Unity.exe`. Проверка: `Unity.exe -batchmode -quit -projectPath D:\projects\TrueMiner -logFile ...` и анализ лога на ошибки компиляции. Пока проект открыт в редакторе, batch-прогон недоступен; альтернатива — `dotnet msbuild` по Unity-сгенерированным csproj (использовано в сессии 7).
+
+## Расположение документации
+- С 2026-11-23 документация всех задач перенесена в `Agent_Works/`: `Agent_Works/GUI_Agent_Work` (GUI и TouchAreaRaycaster — основная), `Agent_Works/Unity_InputSystem_Work`, `Agent_Works/Unity_Migration_Work`, `Agent_Works/Unity_Warnings_Work`. Новые отчёты GUI пишутся только здесь.

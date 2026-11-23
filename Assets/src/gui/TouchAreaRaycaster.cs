@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Лучепроектировщик для канваса TouchArea (см. GUI_Agent_Work/ISSUE-7..9).
+/// Лучепроектировщик для канваса TouchArea (см. Agent_Works/GUI_Agent_Work/ISSUE-7..9).
 /// Отвечает за маршрутизацию касаний:
 /// - зоны TouchArea находятся на канвасе с sortingOrder ниже всех игровых канвасов,
 ///   поэтому любые элементы интерфейса (сумка, ячейки, хотбар, кнопки) всегда
@@ -17,6 +17,18 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class TouchAreaRaycaster : BaseRaycaster
 {
+    // Размеры зон TouchArea в процентах экрана — единая точка настройки.
+    // Значения читаются при создании зон (GameUi.AttachJoystickTouchVisibility —
+    // ширина) и в JoystickTouchArea (высота зон). Изменяются вручную здесь,
+    // поиск по коду не требуется.
+    // - Ширина: зоны симметричны от краёв экрана; при значении 50 левая зона
+    //   занимает 0–50% ширины, правая — 50–100% (разделение ровно посередине).
+    // - Высота: нижняя часть экрана высотой TOUCH_AREA_HEIGHT_PERCENT от низа
+    //   (значение по умолчанию в JoystickTouchArea; в Play Mode его можно
+    //   переопределить в Inspector каждой зоны без изменения константы).
+    public const float TOUCH_AREA_WIDTH_PERCENT = 50f;
+    public const float TOUCH_AREA_HEIGHT_PERCENT = 50f;
+
     private Canvas canvas;
     private Canvas Canvas
     {

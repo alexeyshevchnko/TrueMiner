@@ -2,23 +2,29 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Зона TouchArea для мобильного управления (GUI_Agent_Work/ISSUE-9/10).
+/// Зона TouchArea для мобильного управления (Agent_Works/GUI_Agent_Work/ISSUE-9/10).
 /// Стоит на канвасе ниже всех игровых канвасов: элементы интерфейса выигрывают
 /// raycast, а зона получает касания только в свободных областях экрана.
 /// Полученные события пересылаются в целевой Ultimate Joystick с тем же
 /// PointerEventData (сохраняется fingerId) — multi-touch и независимость
 /// джойстиков обеспечивает сам UltimateJoystick (_pointerId).
 ///
-/// Геометрия: ровно половина ширины экрана (левая 0–50% / правая 50–100%)
-/// и нижняя часть экрана высотой TouchAreaHeightPercent (Inspector,
-/// Range 10–100, по умолчанию 50 — нижняя половина). Якоря пересчитываются
+/// Геометрия: ширина экрана задаётся константой
+/// TouchAreaRaycaster.TOUCH_AREA_WIDTH_PERCENT симметрично от краёв
+/// (по умолчанию 50 — левая 0–50% / правая 50–100%) и нижняя часть экрана
+/// высотой TouchAreaHeightPercent (Inspector, Range 10–100; значение по
+/// умолчанию — константа TOUCH_AREA_HEIGHT_PERCENT, 50 — нижняя половина).
+/// Якоря пересчитываются
 /// каждый кадр из параметра, поэтому изменение значения в Inspector сразу
 /// меняет размер зоны; разрешение/соотношение сторон учитываются якорями.
 /// </summary>
 public class JoystickTouchArea : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IPointerEnterHandler
 {
+    // Значение по умолчанию — из константы TOUCH_AREA_HEIGHT_PERCENT
+    // (TouchAreaRaycaster): единая точка настройки размеров зон TouchArea.
+    // В Inspector зону можно переопределить отдельно, не меняя константу.
     [SerializeField, Range(10f, 100f)]
-    private float touchAreaHeightPercent = 50f;
+    private float touchAreaHeightPercent = TouchAreaRaycaster.TOUCH_AREA_HEIGHT_PERCENT;
 
     private UltimateJoystick target;
     private RectTransform rect;

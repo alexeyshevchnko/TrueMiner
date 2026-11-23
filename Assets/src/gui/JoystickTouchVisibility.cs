@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Жизненный цикл видимости Ultimate Joystick (GUI_Agent_Work/ISSUE-8/10):
+/// Жизненный цикл видимости Ultimate Joystick (Agent_Works/GUI_Agent_Work/ISSUE-8/10):
 /// визуальная часть (дочерний JoystickSizeFolder) скрыта, пока джойстик не
 /// удерживается, и появляется на время касания (dynamicPositioning переносит
 /// визуал в точку касания).
