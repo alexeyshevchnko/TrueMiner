@@ -25,8 +25,14 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private const string BackupRoot = "Agent_Works/Atlas_Sprites_Work/backup";
 
     // ------------------------------------------------------------------ входы
+    // Source Outline Atlas и Edit Atlas — ТОЛЬКО источники данных (никогда не изменяются).
+    // Весь результат пишется только в Result Atlas.
     private Texture2D sourceAtlas;
-    private Texture2D destAtlas;
+    private Texture2D editAtlas;
+    private Texture2D resultAtlas;
+
+    // опциональная обрезка пикселей за внешней границей обводки (только альфа-канал)
+    private bool removePixelsOutsideOutline = false;
 
     // настройки обнаружения обводки
     private Color outlineColor = Color.black;
@@ -49,11 +55,13 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private int internalBlackCount;
     private int outlineRegionCount;
     private int markerCount;
-    private int transferCount;      // сколько из обнаруженных реально отличается от цели
+    private int transferCount;      // сколько из обнаруженных реально отличается от Edit Atlas
+    private int clippedCount;       // сколько пикселей Edit будет удалено (alpha=0) при обрезке
     private bool lastTransferOk;
     private string lastResultPath;
     private string lastBackupPath;
     private int lastTransferredCount;
+    private int lastClipCount;
     private Vector2 scroll;
     private Texture2D previewTexture;
 
@@ -89,10 +97,12 @@ public class AtlasOutlineTransferWindow : EditorWindow
         outlineRegionCount = 0;
         markerCount = 0;
         transferCount = 0;
+        clippedCount = 0;
         lastTransferOk = false;
         lastResultPath = null;
         lastBackupPath = null;
         lastTransferredCount = 0;
+        lastClipCount = 0;
         ReleasePreview();
     }
 
@@ -103,7 +113,7 @@ public class AtlasOutlineTransferWindow : EditorWindow
     {
         scroll = EditorGUILayout.BeginScrollView(scroll);
 
-        EditorGUILayout.LabelField("Атласы", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Атласы (Source и Edit — только источники, никогда не изменяются)", EditorStyles.boldLabel);
         using (new EditorGUILayout.HorizontalScope())
         {
             var prev = sourceAtlas;
@@ -113,10 +123,32 @@ public class AtlasOutlineTransferWindow : EditorWindow
         }
         using (new EditorGUILayout.HorizontalScope())
         {
-            var prev = destAtlas;
-            destAtlas = (Texture2D)EditorGUILayout.ObjectField("Destination Atlas", destAtlas, typeof(Texture2D), false);
-            EditorGUILayout.LabelField(TextureInfo(destAtlas), EditorStyles.miniLabel, GUILayout.Width(110));
-            if (prev != destAtlas) ResetRunState();
+            var prev = editAtlas;
+            editAtlas = (Texture2D)EditorGUILayout.ObjectField("Edit Atlas", editAtlas, typeof(Texture2D), false);
+            EditorGUILayout.LabelField(TextureInfo(editAtlas), EditorStyles.miniLabel, GUILayout.Width(110));
+            if (prev != editAtlas) ResetRunState();
+        }
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            var prev = resultAtlas;
+            resultAtlas = (Texture2D)EditorGUILayout.ObjectField("Result Atlas", resultAtlas, typeof(Texture2D), false);
+            EditorGUILayout.LabelField(TextureInfo(resultAtlas), EditorStyles.miniLabel, GUILayout.Width(110));
+            if (prev != resultAtlas) ResetRunState();
+        }
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Обработка", EditorStyles.boldLabel);
+        var prevClip = removePixelsOutsideOutline;
+        removePixelsOutsideOutline = EditorGUILayout.ToggleLeft(
+            new GUIContent(
+                "Remove Pixels Outside Outline",
+                "При включении пиксели Edit Atlas, находящиеся за внешней границей обводки, становятся прозрачными (Alpha=0). Меняется только альфа-канал; сами обводочные пиксели и содержимое внутри контура сохраняются."),
+            removePixelsOutsideOutline);
+        if (prevClip != removePixelsOutsideOutline)
+        {
+            // настройка меняет итог: старый Preview и статус переноса больше не отражают текущий режим
+            ReleasePreview();
+            lastTransferOk = false;
         }
 
         EditorGUILayout.Space();
@@ -154,7 +186,7 @@ public class AtlasOutlineTransferWindow : EditorWindow
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Результат анализа", EditorStyles.boldLabel);
         if (!analyzed)
-            EditorGUILayout.HelpBox("Назначьте оба атласа и нажмите Analyze.", MessageType.Info);
+            EditorGUILayout.HelpBox("Назначьте все три атласа и нажмите Analyze.", MessageType.Info);
         else if (!string.IsNullOrEmpty(summary))
             EditorGUILayout.HelpBox(summary, MessageType.None);
 
@@ -193,7 +225,9 @@ public class AtlasOutlineTransferWindow : EditorWindow
                     modeText = "Preview: чёрные пиксели исходного атласа в его координатах (эталон обводки).";
                     break;
                 default:
-                    modeText = "Preview: целевой атлас с наложенной обводкой (только во временной текстуре окна — ассеты не изменены).";
+                    modeText = removePixelsOutsideOutline
+                        ? "Preview: ОБРЕЗАННЫЙ Edit Atlas с наложенной обводкой (только во временной текстуре окна — ассеты не изменены)."
+                        : "Preview: Edit Atlas с наложенной обводкой, без обрезки (только во временной текстуре окна — ассеты не изменены).";
                     break;
             }
             EditorGUILayout.HelpBox(modeText, MessageType.None);
@@ -204,7 +238,8 @@ public class AtlasOutlineTransferWindow : EditorWindow
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Последний перенос", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("Статус", analyzed ? (lastTransferOk ? "OK" : "не выполнялся") : "-");
-        EditorGUILayout.LabelField("Записано пикселей", lastTransferOk ? lastTransferredCount.ToString() : "-");
+        EditorGUILayout.LabelField("Записано пикселей обводки", lastTransferOk ? lastTransferredCount.ToString() : "-");
+        EditorGUILayout.LabelField("Удалено обрезкой", lastTransferOk && removePixelsOutsideOutline ? lastClipCount.ToString() : "-");
         EditorGUILayout.LabelField("Файл результата", string.IsNullOrEmpty(lastResultPath) ? "-" : lastResultPath);
         EditorGUILayout.LabelField("Резервная копия", string.IsNullOrEmpty(lastBackupPath) ? "-" : lastBackupPath);
         if (GUILayout.Button("Открыть папку backup"))
@@ -243,12 +278,14 @@ public class AtlasOutlineTransferWindow : EditorWindow
     }
 
     // ------------------------------------------------- проверки корректности
-    private bool SizesKnown => sourceAtlas != null && destAtlas != null;
+    private bool AllAtlasesKnown => sourceAtlas != null && editAtlas != null && resultAtlas != null;
 
     private bool IsValidForAnalyze()
     {
-        if (!SizesKnown) return false;
-        if (sourceAtlas.width != destAtlas.width || sourceAtlas.height != destAtlas.height) return false;
+        if (!AllAtlasesKnown) return false;
+        int w = sourceAtlas.width, h = sourceAtlas.height;
+        if (editAtlas.width != w || editAtlas.height != h) return false;
+        if (resultAtlas.width != w || resultAtlas.height != h) return false;
         return true;
     }
 
@@ -319,65 +356,81 @@ public class AtlasOutlineTransferWindow : EditorWindow
         errors.Clear();
         warnings.Clear();
 
-        if (!SizesKnown)
+        if (!AllAtlasesKnown)
         {
-            AddError("Назначьте оба атласа (Source Outline Atlas и Destination Atlas) перед анализом.");
+            AddError("Назначьте все три атласа (Source Outline Atlas, Edit Atlas и Result Atlas) перед анализом.");
             ShowLog();
             return;
         }
 
-        if (sourceAtlas.width != destAtlas.width || sourceAtlas.height != destAtlas.height)
+        int w = sourceAtlas.width, h = sourceAtlas.height;
+        if (editAtlas.width != w || editAtlas.height != h || resultAtlas.width != w || resultAtlas.height != h)
         {
             AddError(
                 $"Размеры атласов не совпадают: Source {sourceAtlas.width}×{sourceAtlas.height}, " +
-                $"Destination {destAtlas.width}×{destAtlas.height}. Перенос выполняется строго по координатам " +
-                "пикселей — атласы должны быть одинакового размера (без масштабирования/смещения).");
+                $"Edit {editAtlas.width}×{editAtlas.height}, Result {resultAtlas.width}×{resultAtlas.height}. " +
+                "Перенос выполняется строго по координатам пикселей — атласы должны быть одинакового размера " +
+                "(без масштабирования/смещения).");
             ShowLog();
             return;
         }
 
-        Color32[] src, dst;
+        Color32[] src, edit;
         if (!TryReadPixels(sourceAtlas, "Source Outline Atlas", errors, out src) ||
-            !TryReadPixels(destAtlas, "Destination Atlas", errors, out dst))
+            !TryReadPixels(editAtlas, "Edit Atlas", errors, out edit))
         {
             ShowLog();
             return;
         }
 
-        AnalyzeOutline(src, sourceAtlas.width, sourceAtlas.height);
+        AnalyzeOutline(src, w, h);
         analyzed = true;
+        clippedCount = 0;
 
         int detected = outlineIndices.Count;
         if (detected == 0)
-            AddWarning("Обводка не обнаружена с текущими настройками. Проверьте цвет/допуск/толщину. Перенос заблокирован.");
-        else if (internalBlackCount > 0)
-            AddWarning(
-                $"Найдено {internalBlackCount} чёрных пикселей глубже {outlineThickness} px от края " +
-                "(внутренние детали текстур) — они не считаются обводкой и не переносятся.");
-
-        // сколько из обнаруженных реально отличается от цели (это и будет записано)
-        if (detected > 0)
         {
+            AddWarning("Обводка не обнаружена с текущими настройками. Проверьте цвет/допуск/толщину. Перенос заблокирован.");
+        }
+        else
+        {
+            if (internalBlackCount > 0)
+                AddWarning(
+                    $"Найдено {internalBlackCount} чёрных пикселей глубже {outlineThickness} px от края " +
+                    "(внутренние детали текстур) — они не считаются обводкой и не переносятся.");
+
+            // сколько из обнаруженных реально отличается от Edit Atlas (это и будет записано)
             int same = 0;
             transferCount = 0;
             for (int k = 0; k < outlineIndices.Count; k++)
             {
-                if (ColorsEqual(dst[outlineIndices[k]], outlineColors[k])) same++;
+                if (ColorsEqual(edit[outlineIndices[k]], outlineColors[k])) same++;
                 else transferCount++;
             }
             if (same == detected)
-                AddWarning("Все обнаруженные пиксели уже совпадают с целевым атласом (возможно, перенос уже выполнялся). " +
+                AddWarning("Все обнаруженные пиксели уже совпадают с Edit Atlas (возможно, перенос уже выполнялся). " +
                            "Перенос ничего не изменит — повторный запуск безопасен.");
+
+            if (removePixelsOutsideOutline)
+            {
+                var outside = ComputeOutside(w, h, src);
+                clippedCount = CountClippedPixels(edit, w, h, outside);
+                if (clippedCount == 0)
+                    AddWarning("Обрезка включена, но пикселей Edit Atlas за внешней границей обводки (у обведённых блоков) не найдено.");
+            }
         }
 
         summary =
-            $"Source: {sourceAtlas.width}×{sourceAtlas.height}; Destination: {destAtlas.width}×{destAtlas.height}; " +
-            "совпадение размеров: OK.\n" +
+            $"Source: {sourceAtlas.width}×{sourceAtlas.height}; Edit: {editAtlas.width}×{editAtlas.height}; " +
+            $"Result: {resultAtlas.width}×{resultAtlas.height}; совпадение размеров: OK.\n" +
             $"Обнаружено пикселей обводки: {detected}.\n" +
             $"Из них внутри (глубже толщины) исключено: {internalBlackCount}.\n" +
-            $"Обнаруженных областей/блоков: {outlineRegionCount}.\n" +
+            $"Обнаруженных блоков: {outlineRegionCount}.\n" +
             $"Маркерных пикселей (исключены из маски): {markerCount} (не трогаются).\n" +
-            $"Будет перенесено (несовпадающих с целью): {transferCount}.\n" +
+            $"Будет перенесено (несовпадающих с Edit): {transferCount}.\n" +
+            (removePixelsOutsideOutline
+                ? $"Обрезка: ВКЛ — станет прозрачными {clippedCount} пикселей Edit Atlas за границей обводки.\n"
+                : "Обрезка: ВЫКЛ — пиксели Edit Atlas сохраняются целиком.\n") +
             $"Настройки: цвет {OutlineColorHex(outlineColor)}, допуск {colorTolerance:0.##} (~±{Mathf.RoundToInt(colorTolerance * 255f)}), " +
             $"толщина {outlineThickness}px, alpha-порог {alphaThreshold:0.###}, исключение маркера: {(excludeMarkers ? $"да ({MarkerColorHex(markerColor)})" : "нет")}.";
         ShowLog();
@@ -509,6 +562,102 @@ public class AtlasOutlineTransferWindow : EditorWindow
     private static bool ColorsEqual(Color32 a, Color32 b)
         => a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 
+    // -------------------------------------------- обрезка по границе обводки
+    /// <summary>
+    /// OUT = связная область «снаружи» от обводочного контура: фlood от границ рамки
+    /// через пиксели, НЕ являющиеся преградой. Препятствия: обнаруженная обводка Source
+    /// и маркерные пиксели (служебная разметка). Внутренность блоков (IN) = всё,
+    /// что не OUT и не преграда.
+    /// </summary>
+    private bool[] ComputeOutside(int w, int h, Color32[] src)
+    {
+        int n = w * h;
+        var wall = new bool[n];
+        foreach (int i in outlineIndices) wall[i] = true;
+        // маркеры — непроницаемы (защищают блоки и задают «карманы» между ними)
+        if (excludeMarkers)
+        {
+            byte mr = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.r, 0f, 1f) * 255f);
+            byte mg = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.g, 0f, 1f) * 255f);
+            byte mb = (byte)Mathf.RoundToInt(Mathf.Clamp(markerColor.b, 0f, 1f) * 255f);
+            for (int i = 0; i < n; i++)
+            {
+                var c = src[i];
+                if (c.a / 255f > alphaThreshold && c.r == mr && c.g == mg && c.b == mb) wall[i] = true;
+            }
+        }
+        var outside = new bool[n];
+        var queue = new Queue<int>();
+        for (int x = 0; x < w; x++) { Seed(x, 0); Seed(x, h - 1); }
+        for (int y = 0; y < h; y++) { Seed(0, y); Seed(w - 1, y); }
+        while (queue.Count > 0)
+        {
+            int i = queue.Dequeue();
+            int y = i / w, x = i % w;
+            TryTouch(x + 1, y);
+            TryTouch(x - 1, y);
+            TryTouch(x, y - 1);
+            TryTouch(x, y + 1);
+        }
+        void Seed(int x, int y)
+        {
+            int i = y * w + x;
+            if (!wall[i] && !outside[i]) { outside[i] = true; queue.Enqueue(i); }
+        }
+        void TryTouch(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= w || y >= h) return;
+            int j = y * w + x;
+            if (!wall[j] && !outside[j]) { outside[j] = true; queue.Enqueue(j); }
+        }
+        return outside;
+    }
+
+    /// <summary>
+    /// Число пикселей Edit Atlas, которые станут прозрачными при обрезке:
+    /// OUT-пиксели тех связных компонент Edit, которые напрямую примыкают к чёрной
+    /// обводке Source. Компоненты без контакта с обводкой (блоки без обводки)
+    /// не трогаются — для них контур не определён.
+    /// </summary>
+    private int CountClippedPixels(Color32[] edit, int w, int h, bool[] outside)
+    {
+        int n = w * h;
+        var isOutline = new bool[n];
+        foreach (int i in outlineIndices) isOutline[i] = true;
+        // альфа-порог Edit как в узлавлении «прозрачный»
+        float aThr = alphaThreshold * 255f;
+
+        var comp = new int[n];
+        var stack = new Stack<int>();
+        int nextId = 0;
+        var clippedComps = new HashSet<int>();
+        int clipped = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (edit[i].a <= aThr || comp[i] != 0) continue;
+            nextId++;
+            comp[i] = nextId;
+            stack.Push(i);
+            bool touchesOutline = false;
+            var members = new List<int>();
+            while (stack.Count > 0)
+            {
+                int j = stack.Pop();
+                members.Add(j);
+                int y = j / w, x = j % w;
+                if (isOutline[j]) touchesOutline = true;
+                if (x > 0) { int k = j - 1; if (edit[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (x < w - 1) { int k = j + 1; if (edit[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (y > 0) { int k = j - w; if (edit[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (y < h - 1) { int k = j + w; if (edit[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+            }
+            if (!touchesOutline) continue;
+            foreach (int j in members)
+                if (outside[j] && edit[j].a > 0) clipped++;
+        }
+        return clipped;
+    }
+
     // -------------------------------------------------------------- перенос
     private void RunTransfer()
     {
@@ -528,28 +677,28 @@ public class AtlasOutlineTransferWindow : EditorWindow
             return;
         }
 
-        Color32[] dst;
-        if (!TryReadPixels(destAtlas, "Destination Atlas", errors, out dst))
+        // База результата — Edit Atlas (никогда не изменяется сам по себе: копия пикселей).
+        Color32[] edit;
+        Color32[] src;
+        if (!TryReadPixels(editAtlas, "Edit Atlas", errors, out edit) ||
+            !TryReadPixels(sourceAtlas, "Source Outline Atlas", errors, out src))
         {
             ShowLog();
             return;
         }
 
-        string destPath = AssetDatabase.GetAssetPath(destAtlas);
-        string absDest = P.GetFullPath(destPath);
-        string ext = P.GetExtension(absDest).ToLowerInvariant();
+        int w = editAtlas.width, h = editAtlas.height;
+        var result = (Color32[])edit.Clone();
 
-        // -------- резервная копия целевого атласа (обязательна, до любых изменений)
-        lastBackupPath = CreateBackup(absDest);
-        if (lastBackupPath == null)
+        // -------- опциональная обрезка: только альфа-канал OUT-пикселей обведённых блоков
+        int removed = 0;
+        if (removePixelsOutsideOutline)
         {
-            AddError("Перенос отменён: резервная копия не создана.");
-            ShowLog();
-            return;
+            var outside = ComputeOutside(w, h, src);
+            ApplyClip(result, w, h, outside, edit, out removed);
         }
 
-        // -------- формирование результата: только пиксели обводки заменяются
-        var result = dst;
+        // -------- обводка поверх обработанной текстуры (никогда не удаляется обрезкой)
         int written = 0;
         for (int k = 0; k < outlineIndices.Count; k++)
         {
@@ -559,9 +708,22 @@ public class AtlasOutlineTransferWindow : EditorWindow
             written++;
         }
 
-        // -------- сохранение
-        string tmpTexPath = null;
-        var tmpTexture = new Texture2D(destAtlas.width, destAtlas.height, TextureFormat.RGBA32, false, true);
+        string resultPath = AssetDatabase.GetAssetPath(resultAtlas);
+        string absDest = P.GetFullPath(resultPath);
+        string ext = P.GetExtension(absDest).ToLowerInvariant();
+
+        // -------- резервная копия Result Atlas (обязательна, до любых изменений)
+        lastBackupPath = CreateBackup(absDest);
+        if (lastBackupPath == null)
+        {
+            AddError("Перенос отменён: резервная копия не создана.");
+            ShowLog();
+            return;
+        }
+
+        // -------- сохранение (только Result Atlas)
+        string sidecarPath = null;
+        var tmpTexture = new Texture2D(w, h, TextureFormat.RGBA32, false, true);
         try
         {
             tmpTexture.SetPixels32(result);
@@ -570,19 +732,19 @@ public class AtlasOutlineTransferWindow : EditorWindow
 
             if (ext == ".png")
             {
-                // целевой атлас PNG: обновляем его файл in-place (импорт-настройки и .meta остаются)
+                // Result Atlas PNG: обновляем его файл in-place (импорт-настройки и .meta остаются)
                 if (!WriteAllBytesSafe(absDest, png))
                 {
-                    AddError($"Не удалось записать результат в {destPath}. Целевой файл не изменён; резервная копия: {lastBackupPath}.");
+                    AddError($"Не удалось записать результат в {resultPath}. Result Atlas не изменён; резервная копия: {lastBackupPath}.");
                     ShowLog();
                     return;
                 }
-                lastResultPath = destPath;
+                lastResultPath = resultPath;
             }
             else
             {
-                // целевой файл в формате, который нельзя безопасно перезаписать PNG-данными:
-                // сохраняем результат отдельным PNG-ассетом рядом с целевым
+                // формат результата нельзя безопасно перезаписать PNG-данными:
+                // сохраняем отдельным PNG рядом
                 string dir = P.GetDirectoryName(absDest);
                 string baseName = P.GetFileNameWithoutExtension(absDest);
                 string sidecar = P.Combine(dir, baseName + "_outlined.png");
@@ -599,7 +761,7 @@ public class AtlasOutlineTransferWindow : EditorWindow
                     return;
                 }
                 lastResultPath = "Assets/" + sidecar.Replace(P.GetFullPath(Application.dataPath), "Assets").Replace('\\', '/');
-                tmpTexPath = lastResultPath;
+                sidecarPath = lastResultPath;
             }
         }
         finally
@@ -611,15 +773,63 @@ public class AtlasOutlineTransferWindow : EditorWindow
         AssetDatabase.ImportAsset(lastResultPath, ImportAssetOptions.ForceUpdate);
 
         lastTransferredCount = written;
+        lastClipCount = removed;
         lastTransferOk = true;
-        summary += $"\nПеренос выполнен: записано {written} пикселей обводки (пиксель в пиксель). " +
-                   $"Результат: {lastResultPath}. Резервная копия: {lastBackupPath}";
-        if (tmpTexPath != null)
+        summary += $"\nПеренос выполнен: записано {written} пикселей обводки (пиксель в пиксель); " +
+                   $"обрезка: {(removePixelsOutsideOutline ? $"удалено {removed} пикселей Edit (alpha=0)" : "выключена")}. " +
+                   $"Результат: {lastResultPath}. Резервная копия: {lastBackupPath}. Source и Edit не изменяются.";
+        if (sidecarPath != null)
             AddWarning(
-                $"Целевой атлас был в формате '{ext}' — результат сохранён отдельным PNG: {lastResultPath}. " +
-                "Оригинальный файл целевого атласа не изменён.");
-        Debug.Log($"[Outline Transfer] Готово. Записано {written} пикселей. Результат: {lastResultPath}. Backup: {lastBackupPath}");
+                $"Result Atlas был в формате '{ext}' — результат сохранён отдельным PNG: {lastResultPath}. " +
+                "Оригинальный файл Result Atlas не изменён.");
+        Debug.Log($"[Outline Transfer] Готово. Обводка: {written} пикс.; обрезка: {removed}. Результат: {lastResultPath}. Backup: {lastBackupPath}");
         ShowLog();
+    }
+
+    /// <summary>
+    /// Реальная обрезка: OUT-пиксели компонентов Edit Atlas, примыкающих к обводке,
+    /// получают Alpha=0 (только альфа-канал). Компоненты без контакта с обводкой,
+    /// сама обводка и внутренность блоков не затрагиваются.
+    /// </summary>
+    private void ApplyClip(Color32[] target, int w, int h, bool[] outside, Color32[] editReference, out int removed)
+    {
+        removed = 0;
+        int n = w * h;
+        var isOutline = new bool[n];
+        foreach (int i in outlineIndices) isOutline[i] = true;
+        float aThr = alphaThreshold * 255f;
+
+        var comp = new int[n];
+        var stack = new Stack<int>();
+        int nextId = 0;
+        var clipComps = new HashSet<int>();
+        for (int i = 0; i < n; i++)
+        {
+            if (editReference[i].a <= aThr || comp[i] != 0) continue;
+            nextId++;
+            comp[i] = nextId;
+            stack.Push(i);
+            bool touchesOutline = false;
+            var members = new List<int>();
+            while (stack.Count > 0)
+            {
+                int j = stack.Pop();
+                members.Add(j);
+                int y = j / w, x = j % w;
+                if (isOutline[j]) touchesOutline = true;
+                if (x > 0) { int k = j - 1; if (editReference[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (x < w - 1) { int k = j + 1; if (editReference[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (y > 0) { int k = j - w; if (editReference[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+                if (y < h - 1) { int k = j + w; if (editReference[k].a > aThr && comp[k] == 0) { comp[k] = nextId; stack.Push(k); } if (isOutline[k]) touchesOutline = true; }
+            }
+            if (!touchesOutline) continue;
+            foreach (int j in members)
+                if (outside[j] && target[j].a > 0)
+                {
+                    target[j].a = 0;  // удаление только через альфа-канал
+                    removed++;
+                }
+        }
     }
 
     private static bool WriteAllBytesSafe(string path, byte[] bytes)
@@ -671,14 +881,15 @@ public class AtlasOutlineTransferWindow : EditorWindow
 
         try
         {
-            var preview = new Texture2D(destAtlas.width, destAtlas.height, TextureFormat.RGBA32, false, true);
+            var preview = new Texture2D(editAtlas.width, editAtlas.height, TextureFormat.RGBA32, false, true);
             Color32[] px;
+            Color32[] edit;
             switch (previewMode)
             {
                 case PreviewMode.DetectedMask:
                 {
                     // маска обнаруженной обводки на прозрачном фоне — что именно будет перенесено
-                    px = new Color32[destAtlas.width * destAtlas.height];
+                    px = new Color32[editAtlas.width * editAtlas.height];
                     for (int k = 0; k < outlineIndices.Count; k++)
                         px[outlineIndices[k]] = outlineColors[k];
                     break;
@@ -698,15 +909,21 @@ public class AtlasOutlineTransferWindow : EditorWindow
                 }
                 default:
                 {
-                    // наложение обнаруженной обводки на целевой атлас
-                    Color32[] dst;
-                    if (!TryReadPixels(destAtlas, "Destination Atlas", errors, out dst))
+                    // итог: Edit Atlas (опционально обрезанный) + обводка
+                    Color32[] src;
+                    if (!TryReadPixels(sourceAtlas, "Source Outline Atlas", errors, out src) ||
+                        !TryReadPixels(editAtlas, "Edit Atlas", errors, out edit))
                     {
                         Object.DestroyImmediate(preview);
                         ShowLog();
                         return;
                     }
-                    px = dst;
+                    px = (Color32[])edit.Clone();
+                    if (removePixelsOutsideOutline)
+                    {
+                        var outside = ComputeOutside(editAtlas.width, editAtlas.height, src);
+                        ApplyClip(px, editAtlas.width, editAtlas.height, outside, edit, out _);
+                    }
                     for (int k = 0; k < outlineIndices.Count; k++)
                         px[outlineIndices[k]] = outlineColors[k];
                     break;
