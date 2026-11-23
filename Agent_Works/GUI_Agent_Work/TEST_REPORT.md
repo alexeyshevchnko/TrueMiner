@@ -1,5 +1,33 @@
 # TEST_REPORT — результаты проверок
 
+## Сессия 8 (2026-11-23): масштаб сумки 0.7 + Drag & Drop
+
+### Компиляция
+- `Assembly-CSharp.csproj` — без ошибок; `TrueMiner.GuiTests.csproj` (с новым `BagDragDropTests.cs`) — без ошибок (dotnet msbuild).
+
+### Новый PlayMode-тест `BagDragDropTests` (7 проверок)
+| Проверка (требование задания) | Тест |
+|---|---|
+| Ячейка/промежутки/п поля/панель сумки ×0.7; панель по центру поверх хотбара | `BagPanelScaledToSeventyPercent` |
+| Перемещение предмета между пустыми ячейками (модель: ключ 10 → 13, исходная пустая) | `DragMovesItemBetweenEmptySlots` |
+| Отпускание вне ячеек → предмет возвращается (модель не изменена) | `DragOutsideSlotRestoresItem` |
+| Отпускание в исходную ячейку → предмет остаётся | `DragBackToSourceKeepsItem` |
+| Отпускание в занятую → обмен без перезаписи/потери (объекты IItem уточняются адресно) | `DragToOccupiedSlotSwapsWithoutLoss` |
+| Короткое нажатие без переноса: предмет из модели не перемещается; Click() прежнее назначение (MoveItem) | `ShortClickDoesNotDrag` |
+| Второй палец (pointerId 2) не прерывает драг первого (pointerId 1) | `SecondFingerDoesNotStealDrag` |
+| Отсутствие двойных событий (Click после драга) проверено подавлением с двух условий (dragMoved / кадр) — в тестах ShortClick/DragMoves | — |
+
+Методика: события указателя имитируются через `ExecuteEvents` (pointerDown/drag/pointerUp/pointerClick) с `position` = реальные центры ячеек (`GetWorldCorners`, ScreenSpaceOverlay: мир == экран); модель проверяется по словарю `Bag.items` через рефлексию; визуальные факты (призрак, `dragHidden`, raycastTarget=false) — по состоянию GameUi.
+
+### Ограничения (честно)
+- Unity-редактор (6000.6.10f1) удерживал проект во время работы — batch-перепрогон PlayMode-тестов невозможен (тот же лимит, что и сессий 1/7); все проверки новых сценариев запечатлены тестами выше — прогнать после его закрытия.
+- Живой touch-стек устройства и ручная визуальная приёмка масштаба 0.7 — за ручным запуском (механика идента mouse/touch: Overlay-координаты и pointerId).
+- Разрешения: масштаб привязан к reference-размеру 1024×768 как весь остальной UI (CanvasScaler ScaleWithScreenSize) — панели не выходят за экран на любых пропорциях; точечная проверка нестандартных портретных разрешений не проводилась.
+
+### Коммит
+1. `Improve bag UI scaling and implement drag and drop`.
+
+---
 ## Сессия 7 (2026-11-23): константы размеров TouchArea
 
 ### Компиляция

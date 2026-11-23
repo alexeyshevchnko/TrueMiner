@@ -65,6 +65,7 @@ public class PlayerComtext : IoC.IInitialize {
         } else {
             view.Empty = true;
         }
+        view.Number = i + 1;
     }
 
     public void SelectItem(int id) {

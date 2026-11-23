@@ -24,6 +24,21 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     private Slot[] hotbar;
     private Slot[] bagSlots;
 
+    // Масштаб интерфейса сумки — как у нижней панели быстрого доступа (0.7).
+    internal const float BagScale = 0.7f;
+
+    // ---- Drag & Drop предметов сумки (ISSUE-13) ----
+    // Визуальный «призрак» перетаскиваемого предмета: последний ребёнок канваса
+    // (поверх сумки и хотбара), raycastTarget=false — не перехватывает raycast,
+    // поэтому ячейка под курсором всегда определяется.
+    private Image dragGhost;
+    private RectTransform canvasRect;
+    private Slot dragFromSlot;   // исходная ячейка (назначается в PointerDown)
+    private BagItemContext dragCtx;  // контекст перетаскиваемого предмета
+    private int dragPointerId = int.MinValue; // pointerId (мышь −1 / палец): чужие касания не прерывают драг
+    private bool dragMoved;      // превышен ли порог перетаскивания EventSystem (короткое нажатие — не драг)
+    private int lastDragEndFrame = -1; // кадр завершения драга: onClick в этом кадре подавляется
+
     private float fpsFrames;
     private float fpsTimer;
     // Last HP text inputs: the label is rebuilt only when one of them changes.
@@ -37,6 +52,8 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         public Image icon;
         public Text count;
         public BagItemContext context;
+        public int modelKey;    // номер слота в Bag.items (хотбар 1–9, сумка 10–45)
+        public bool dragHidden; // предмет этой ячейки сейчас перетаскивается — не рисовать его здесь
     }
 
     public static void EnsureCreated()
@@ -201,14 +218,24 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         }
 
         // Bag panel — toggled, above the hotbar (36 slots).
+        // Масштаб BagScale (0.7) — как у хотбара: применяем один коэффициент ко ВСЕМ
+        // размерам интерфейса сумки (ячейки, промежутки, поля, цифры, размер панели),
+        // а не к отдельным элементам. Панель остаётся якорённой к низу центра экрана
+        // (0.5, 0) с союзным отступом 92 — расположение относительно хотбара/экрана
+        // сохранено; при любом разрешении панели не выходят за экран (491.4×225.4 при
+        // reference 1024×768).
+        float bagCell = 66f * BagScale;    // 46.2
+        float bagSpacing = 6f * BagScale;  // 4.2
         var bp = AddImage(canvasGo.transform, "BagPanel", new Color(0.05f, 0.05f, 0.05f, 0.75f));
         bagPanel = bp.gameObject;
-        SetAnchored(bp.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(9f * 70f + 8f * 6f + 24f, 4f * 70f + 3f * 6f + 24f));
+        SetAnchored(bp.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2((9f * 70f + 8f * 6f + 24f) * BagScale, (4f * 70f + 3f * 6f + 24f) * BagScale));
         bp.rectTransform.pivot = new Vector2(0.5f, 0f);
         var bgrid = bagPanel.AddComponent<GridLayoutGroup>();
-        bgrid.cellSize = new Vector2(66f, 66f);
-        bgrid.spacing = new Vector2(6f, 6f);
-        bgrid.padding = new RectOffset(12, 12, 12, 12);
+        bgrid.cellSize = new Vector2(bagCell, bagCell);
+        bgrid.spacing = new Vector2(bagSpacing, bagSpacing);
+        bgrid.padding = new RectOffset(
+            Mathf.RoundToInt(12f * BagScale), Mathf.RoundToInt(12f * BagScale),
+            Mathf.RoundToInt(12f * BagScale), Mathf.RoundToInt(12f * BagScale));
         bgrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         bgrid.constraintCount = 9;
         bgrid.childAlignment = TextAnchor.MiddleCenter;
@@ -216,9 +243,15 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
         bagSlots = new Slot[36];
         for (int i = 0; i < 36; i++)
         {
-            bagSlots[i] = MakeSlot(bagPanel.transform, countFont, 1f);
+            bagSlots[i] = MakeSlot(bagPanel.transform, countFont, BagScale);
+            bagSlots[i].modelKey = i + 10; // модель: слоты сумки 10–45
         }
+        for (int i = 0; i < hotbar.Length; i++)
+            hotbar[i].modelKey = i + 1;   // модель: хотбар 1–9
         bagPanel.SetActive(false);
+
+        canvasRect = canvasGo.GetComponent<RectTransform>();
+        CreateDragGhost();
     }
 
     Slot MakeSlot(Transform parent, Font font, float scale)
@@ -236,7 +269,22 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
 
         s.count = AddCountText(img.transform, font, scale);
 
-        btn.onClick.AddListener(() => { if (s.context != null) s.context.Click(); });
+        // Drag & Drop (ISSUE-13): короткое нажатие остаётся на Click() (кнопка работает
+        // как раньше); drag, превышающий порог EventSystem, обрабатывает BagSlotDrag.
+        var drag = img.gameObject.AddComponent<BagSlotDrag>();
+        drag.ui = this;
+        drag.slot = s;
+        btn.onClick.AddListener(() =>
+        {
+            // Порядок доставки OnPointerUp и OnPointerClick в uGUI не гарантирован,
+            // подавление устойчиво для обоих:
+            // - отпускание после фактического переноса (dragMoved) — предмет уже
+            //   перемещён в OnSlotPointerUp или переместится в нём;
+            // - кадр завершённого драга — перенос уже применён.
+            if (dragCtx != null && dragMoved) return;
+            if (Time.frameCount == lastDragEndFrame) return;
+            if (s.context != null) s.context.Click();
+        });
         return s;
     }
 
@@ -298,10 +346,152 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
             var s = slots[i];
             var ctx = (list != null && i < list.Count) ? list[i] : null;
             s.context = ctx;
-            if (s.count != null) s.count.text = (ctx != null && !ctx.Empty) ? ctx.Count.ToString() : "";
-            if (s.icon != null) UpdateIcon(s, ctx);
+            // Ячейка-источник драга не рисует предмет (и его количество) —
+            // визуального дублирования «в ячейке + под курсором» нет.
+            if (s.count != null) s.count.text = (ctx != null && !ctx.Empty && !s.dragHidden) ? ctx.Count.ToString() : "";
+            if (s.icon != null) UpdateIcon(s, s.dragHidden ? null : ctx);
             if (s.bg != null) s.bg.color = (ctx != null && ctx.BgIcon == "cellSelect") ? new Color(1f, 0.9f, 0.2f, 0.5f) : new Color(1f, 1f, 1f, 0.16f);
         }
+    }
+
+    // ---- Drag & Drop предметов (ISSUE-13) ----
+    // Перетаскивание работает только поверх существующей модели: при отпускании
+    // вызывается прежняя операция Bag.Move(from, to) + UpdateBag. Никакого
+    // второго хранилища предметов не создаётся; «призрак» — только визуал.
+
+    /// <summary>Слой «призрака»: последний ребёнок канваса — рисуется поверх сумки и хотбара;
+    /// raycastTarget=false, поэтому ячейка под курсором определяется без перехвата.</summary>
+    void CreateDragGhost()
+    {
+        var go = new GameObject("DragGhost", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        go.transform.SetParent(canvasRect, false);
+        var img = go.GetComponent<Image>();
+        img.raycastTarget = false;
+        img.color = Color.white;
+        var rt = img.rectTransform;
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(66f * BagScale, 66f * BagScale); // размер ячейки сумки — иконка в натуральной пропорции
+        go.SetActive(false);
+        dragGhost = img;
+    }
+
+    void LiftGhost(Slot source, Vector2 screenPos)
+    {
+        dragGhost.sprite = GuiAtlas.Get(dragCtx.Icon);
+        dragGhost.color = Color.white;
+        dragGhost.rectTransform.anchoredPosition = ScreenPointToCanvasLocal(screenPos);
+        dragGhost.gameObject.SetActive(true);
+        source.dragHidden = true; // предмет в исходной ячейке скрывается на время драга
+    }
+
+    Vector2 ScreenPointToCanvasLocal(Vector2 screenPos)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, null, out var local);
+        return local;
+    }
+
+    void MoveGhost(Vector2 screenPos)
+    {
+        if (dragGhost != null && dragGhost.gameObject.activeSelf)
+            dragGhost.rectTransform.anchoredPosition = ScreenPointToCanvasLocal(screenPos);
+    }
+
+    /// <summary>Ячейка под точкой отпускания (прямоугольники слотов; призрак был raycastTarget=false,
+    /// но проверяем геометрию напрямую — надёжнее независимо от порядка канвасов).</summary>
+    Slot FindSlotUnder(Vector2 screenPos)
+    {
+        if (hotbar != null)
+            foreach (var s in hotbar)
+                if (s != null && s.bg != null && RectTransformUtility.RectangleContainsScreenPoint(s.bg.rectTransform, screenPos, null))
+                    return s;
+        if (bagPanel != null && bagPanel.activeSelf && bagSlots != null)
+            foreach (var s in bagSlots)
+                if (s != null && s.bg != null && RectTransformUtility.RectangleContainsScreenPoint(s.bg.rectTransform, screenPos, null))
+                    return s;
+        return null;
+    }
+
+    internal void OnSlotPointerDown(Slot s, PointerEventData e)
+    {
+        // Перетаскивание возможно только при открытой сумке и непустой ячейке:
+        // при закрытой сумке короткое нажатие на хотбар имеет собственное назначение
+        // (использовать предмет) и не должно поднимать предмет.
+        var p = (RootContext.Instance != null) ? RootContext.Instance.Player : null;
+        if (p == null || !p.IsShowBag || s.context == null || s.context.Empty)
+            return;
+        if (dragCtx != null)
+            return; // уже идёт захват первого указателя — второй палец не перебивает драг
+        dragFromSlot = s;
+        dragCtx = s.context;
+        dragPointerId = e.pointerId; // mouse −1 или fingerId: чужие касания игнорируются
+        dragMoved = false;
+    }
+
+    internal void OnSlotDrag(Slot s, PointerEventData e)
+    {
+        if (dragCtx == null || s != dragFromSlot || e.pointerId != dragPointerId)
+            return; // чужое касание / не источник — драг не прерывается
+        if (!dragMoved)
+        {
+            dragMoved = true; // порог перетаскивания EventSystem (pixelDragThreshold) превышен — предмет «поднимается»
+            LiftGhost(s, e.position);
+        }
+        MoveGhost(e.position);
+    }
+
+    internal void OnSlotPointerUp(Slot s, PointerEventData e)
+    {
+        // Отпускание чужого пальца не завершает чужой драг
+        if (dragCtx == null || e.pointerId != dragPointerId)
+            return;
+        var screenPos = e.position;
+        var srcSlot = dragFromSlot;
+        var moved = dragMoved;
+        if (moved)
+            lastDragEndFrame = Time.frameCount; // погасить onClick этого же отпускания (обоих порядков доставки)
+
+        // Полный сброс состояния драга и визуала: при любом сценарии (отпускание мимо,
+        // в исходную ячейку, отмена) источник возвращает предмет — модель не тронута.
+        if (srcSlot != null) srcSlot.dragHidden = false;
+        if (dragGhost != null) dragGhost.gameObject.SetActive(false);
+        dragCtx = null;
+        dragFromSlot = null;
+        dragPointerId = int.MinValue;
+        dragMoved = false;
+
+        if (!moved)
+            return; // короткое нажатие без переноса: обычный Click() обрабатывается кнопкой как раньше
+
+        var p = (RootContext.Instance != null) ? RootContext.Instance.Player : null;
+        if (p == null || s != srcSlot)
+            return;
+
+        var target = FindSlotUnder(screenPos);
+        if (target == null || target == srcSlot)
+            return; // вне допустимой ячейки или в исходную — предмет остаётся на месте
+
+        if (target.context == null)
+            return; // нет контекста ячейки — не рискуем моделью
+
+        // Перемещение той же модельной операцией, что и раньше (обмен слотов 1–45);
+        // занятая ячейка обменивается содержимым — прежнее правило Bag.Move сохранено.
+        var bag = (Bag)p.TargetManager.PlayerController.GetModel().GetBag();
+        bag.Move(srcSlot.modelKey, target.modelKey);
+        p.UpdateBag(bag); // SyncSlots отрисует новое содержимое обеих ячеек
+    }
+
+    /// <summary>Компонент ячейки: передаёт события указателя в GameUi. Button остаётся —
+    /// короткое нажатие (ниже порога drag'а) обрабатывается прежним Click().</summary>
+    sealed class BagSlotDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    {
+        public GameUi ui;
+        public Slot slot;
+
+        public void OnPointerDown(PointerEventData e) { ui.OnSlotPointerDown(slot, e); }
+        public void OnDrag(PointerEventData e) { ui.OnSlotDrag(slot, e); }
+        public void OnPointerUp(PointerEventData e) { ui.OnSlotPointerUp(slot, e); }
     }
 
     void UpdateIcon(Slot s, BagItemContext ctx)

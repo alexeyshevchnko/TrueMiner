@@ -1,5 +1,16 @@
 # TECHNICAL_NOTES — устройство GUI проекта TrueMiner
 
+## Drag & Drop предметов сумки (дополнение после ISSUE-13)
+- Компонент `GameUi.BagSlotDrag` (вложенный, на каждой ячейке сумки И хотбаре, ставится в `MakeSlot`): IPointerDownHandler/IDragHandler/IPointerUpHandler — передаёт события в `GameUi.OnSlotPointerDown/OnSlotDrag/OnSlotPointerUp`. Button остаётся: OnPointerClick срабатывает только для короткого нажатия (ниже порога `pixelDragThreshold`); после фактического переноса Click подавляется (проверки: `dragCtx != null && dragMoved` и `Time.frameCount == lastDragEndFrame` — устойчиво к обоим порядкам доставки OnPointerUp/OnPointerClick в uGUI).
+- «Призрак»: `GameUi.dragGhost` (Image, последний ребёнок канваса, raycastTarget=false, размер = ячейка сумки 46.2, спрайт `GuiAtlas.Get(Icon)`); позиция — `RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, pos, null)` (ScreenSpaceOverlay → камера null); работает мышью и touch идентично.
+- Жизненный цикл: PointerDown (открытая сумка + непустая ячейка + свободный указатель) запоминает pointerId и ячейку; Drag (порог uGUI Модуля превышен и модуль начал слать drag-события) поднимает призрак и скрывает иконку+количество источника (`Slot.dragHidden` учитывается в `SyncSlots`); PointerUp — целевая ячейка определяется `FindSlotUnder` (прямоугольники слотов, hotbar → bag).
+- Завершение: пустая ячейка → `Bag.Move(srcKey, dstKey)` + `UpdateBag`; занятая — тот же Move (обмен слотов — существующее правило); исходная/вне ячеек/отмена — состояние сброшено, модель не тронута (предмет не теряется никогда; источник восстановлен).
+- Concurrency: захват pointerId первого нажатия (мышь −1, палец ≥0); drag/up другого указателя игнорируются; новый PointerDown при активном драге отклоняется.
+- Слоты → модель: `Slot.modelKey` (хотбар 1–9, сумка 10–45) — явная карта; `BagItemContext.Number` теперь тоже назначается в `UpdateCell` (раньше был 0 — Click/Set использовали неверный ключ; фикс возвращает и семантику двухэтапного переноса кликом и использование хотбара кликом).
+
+## Масштаб интерфейсов
+- Хотбар: `hotbarScale = 0.7` (сессия 3), сумка: `BagScale = 0.7` (сессия 8) — применяются ко всем размерам панели (ячейки/промежутки/поля/цифры/размер панелей). Панель сумки (0.5,0), y=92, поверх хотбара; при reference 1024×768 внутри экрана (491.4×225.4).
+
 ## Единый источник активации джойстиков (дополнение после ISSUE-11)
 - Цепочка активации: палец/мышь (мышь — только в редакторе) → `TouchAreaRaycaster` (TouchAreaCanvas, sortingOrder −20; зоны TouchArea_Left и TouchArea_Right симметрично от краёв шириной `TouchAreaRaycaster.TOUCH_AREA_WIDTH_PERCENT`% — по умолчанию 50: 0–50% и 50–100%, нижние `TouchAreaHeightPercent`% высоты) → `JoystickTouchArea` (IPointerDown/IDrag/IPointerUp/IPointerEnter) → форвардинг того же PointerEventData в UltimateJoystick (Joystick1/Joystick2).
 - Собственная графика джойстиков (Base, Joystick/Handle, Highlight, Tension) — `raycastTarget = false` (ставит `JoystickTouchVisibility.Awake`): их прямоугольники больше не зона активации; касание обрабатывается ровно один раз — зоной.
