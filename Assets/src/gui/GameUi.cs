@@ -39,6 +39,10 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     private bool dragMoved;      // превышен ли порог перетаскивания EventSystem (короткое нажатие — не драг)
     private int lastDragEndFrame = -1; // кадр завершения драга: onClick в этом кадре подавляется
 
+    // FPS: интервал обновления текста (сек) — единственная точка настройки частоты;
+    // сам расчёт выполняется каждый кадр по фактическому времени между кадрами.
+    internal const float FpsUpdateInterval = 0.5f;
+
     private float fpsFrames;
     private float fpsTimer;
     // Last HP text inputs: the label is rebuilt only when one of them changes.
@@ -328,11 +332,18 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
             ToggleBag();
         }
 
+        // FPS — среднее число кадров в секунду за окно FpsUpdateInterval:
+        // каждый кадр считаем Update() и суммируем фактическое время между кадрами.
+        // Time.unscaledDeltaTime — не зависит от Time.timeScale: при паузе игрового
+        // времени (timeScale == 0) счётчик продолжает работать корректно.
+        // Текст обновляется раз в FpsUpdateInterval (не каждый кадр — без лишних
+        // выделений строк и перестроек UI); деление на ноль исключено guard'ом.
         fpsFrames += 1f;
         fpsTimer += Time.unscaledDeltaTime;
-        if (fpsTimer >= 0.5f)
+        if (fpsTimer >= FpsUpdateInterval)
         {
-            if (fpsText != null) fpsText.text = Mathf.RoundToInt(fpsFrames / fpsTimer) + " fps";
+            if (fpsText != null && fpsTimer > 0f)
+                fpsText.text = Mathf.RoundToInt(fpsFrames / fpsTimer) + " fps";
             fpsFrames = 0f;
             fpsTimer = 0f;
         }
