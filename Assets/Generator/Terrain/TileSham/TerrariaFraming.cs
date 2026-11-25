@@ -557,77 +557,77 @@ public static class TerrariaFraming {
 
         // --- Блок 3: общий набор кадров по 4 сторонам и диагоналям ---
         if (!selected) {
-            if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
+            if (IsConnected(up) && IsConnected(down) && IsConnected(left) && IsConnected(right)) {
                 // Внутренний тайл: варианты без границ, с внутренними углами по диагоналям.
-                if (upLeft != SlotSelf && upRight != SlotSelf) {
+                if (!IsConnected(upLeft) && !IsConnected(upRight)) {
                     frameX = 108 + 18 * v; // (108..144, 18)
                     frameY = 18;
-                } else if (downLeft != SlotSelf && downRight != SlotSelf) {
+                } else if (!IsConnected(downLeft) && !IsConnected(downRight)) {
                     frameX = 108 + 18 * v; // (108..144, 36)
                     frameY = 36;
-                } else if (upLeft != SlotSelf && downLeft != SlotSelf) {
+                } else if (!IsConnected(upLeft) && !IsConnected(downLeft)) {
                     frameX = 180; // (180, 0..36)
                     frameY = 18 * v;
-                } else if (upRight != SlotSelf && downRight != SlotSelf) {
+                } else if (!IsConnected(upRight) && !IsConnected(downRight)) {
                     frameX = 198; // (198, 0..36)
                     frameY = 18 * v;
                 } else {
                     frameX = 18 + 18 * v; // (18..54, 18)
                     frameY = 18;
                 }
-            } else if (up != SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
+            } else if (!IsConnected(up) && IsConnected(down) && IsConnected(left) && IsConnected(right)) {
                 // Верхний край: (18..54, 0)
                 frameX = 18 + 18 * v;
                 frameY = 0;
-            } else if (up == SlotSelf && down != SlotSelf && left == SlotSelf && right == SlotSelf) {
+            } else if (IsConnected(up) && !IsConnected(down) && IsConnected(left) && IsConnected(right)) {
                 // Нижний край: (18..54, 36)
                 frameX = 18 + 18 * v;
                 frameY = 36;
-            } else if (up == SlotSelf && down == SlotSelf && left != SlotSelf && right == SlotSelf) {
+            } else if (IsConnected(up) && IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
                 // Левый край: (0, 0..36)
                 frameX = 0;
                 frameY = 18 * v;
-            } else if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right != SlotSelf) {
+            } else if (IsConnected(up) && IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
                 // Правый край: (72, 0..36)
                 frameX = 72;
                 frameY = 18 * v;
-            } else if (up != SlotSelf && down == SlotSelf && left != SlotSelf && right == SlotSelf) {
+            } else if (!IsConnected(up) && IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
                 // Внешний угол сверху-слева: (0..72, 54)
                 frameX = 36 * v;
                 frameY = 54;
-            } else if (up != SlotSelf && down == SlotSelf && left == SlotSelf && right != SlotSelf) {
+            } else if (!IsConnected(up) && IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
                 // Внешний угол сверху-справа: (18..90, 54)
                 frameX = 18 + 36 * v;
                 frameY = 54;
-            } else if (up == SlotSelf && down != SlotSelf && left != SlotSelf && right == SlotSelf) {
+            } else if (IsConnected(up) && !IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
                 // Внешний угол снизу-слева: (0..72, 72)
                 frameX = 36 * v;
                 frameY = 72;
-            } else if (up == SlotSelf && down != SlotSelf && left == SlotSelf && right != SlotSelf) {
+            } else if (IsConnected(up) && !IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
                 // Внешний угол снизу-справа: (18..90, 72)
                 frameX = 18 + 36 * v;
                 frameY = 72;
-            } else if (up == SlotSelf && down == SlotSelf && left != SlotSelf && right != SlotSelf) {
+            } else if (IsConnected(up) && IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
                 // Горизонтальная полоса: (90, 0..36)
                 frameX = 90;
                 frameY = 18 * v;
-            } else if (up != SlotSelf && down != SlotSelf && left == SlotSelf && right == SlotSelf) {
+            } else if (!IsConnected(up) && !IsConnected(down) && IsConnected(left) && IsConnected(right)) {
                 // Вертикальная полоса: (108..144, 72)
                 frameX = 108 + 18 * v;
                 frameY = 72;
-            } else if (up != SlotSelf && down == SlotSelf && left != SlotSelf && right != SlotSelf) {
+            } else if (!IsConnected(up) && IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
                 // «Шапка» сверху: (108..144, 0)
                 frameX = 108 + 18 * v;
                 frameY = 0;
-            } else if (up == SlotSelf && down != SlotSelf && left != SlotSelf && right != SlotSelf) {
+            } else if (IsConnected(up) && !IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
                 // «Шапка» снизу: (108..144, 54)
                 frameX = 108 + 18 * v;
                 frameY = 54;
-            } else if (up != SlotSelf && down != SlotSelf && left != SlotSelf && right == SlotSelf) {
+            } else if (!IsConnected(up) && !IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
                 // Полоса, открытая сверху, снизу и слева: (162, 0..36)
                 frameX = 162;
                 frameY = 18 * v;
-            } else if (up != SlotSelf && down != SlotSelf && left == SlotSelf && right != SlotSelf) {
+            } else if (!IsConnected(up) && !IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
                 // Полоса, открытая сверху, снизу и справа: (216, 0..36)
                 frameX = 216;
                 frameY = 18 * v;
@@ -646,22 +646,26 @@ public static class TerrariaFraming {
         }
 
         // --- Флаги слияния для взаимной проверки земли с камнем ---
-        // Пиксельная сверка атласа: merge-кадры (Block 1/2) — чистая текстура
-        // камня с лёгкой тенью на merge-сторонах, ЧЁРНОЙ РАМКИ к соседям-земле
-        // в них нет. Поэтому флаг выставляется для КАЖДОЙ стороны со значением
-        // SlotMerge: все соседи-земля вокруг merge-кадра проходят взаимную
-        // проверку и рисуют себя без края (иначе непокрытые стороны combo
-        // давали чёрные линии земли поверх бесшовного перехода — видимые
-        // разрывы у пятен камня у пещер).
-        // Generic-кадры (Block 3) имеют чёрную рамку на всех не-Self сторонах —
-        // флаги не выставляются (поведение оригинала).
-        bool mergeFamily = selected && (frameY >= 90 || frameX >= 234);
-        if (mergeFamily) {
-            mergeUp = up == SlotMerge;
-            mergeDown = down == SlotMerge;
-            mergeLeft = left == SlotMerge;
-            mergeRight = right == SlotMerge;
-        }
+        // В оригинале Terraria: любой сосед merge_type (для камня — земля, для
+        // земли — камень после взаимной проверки) считается «своим» — рисуется
+        // бесшовно. Поэтому флаг выставляется для КАЖДОЙ стороны со значением
+        // SlotMerge, независимо от того, какой кадр (merge или generic) выбран.
+        // Это гарантирует, что все соседи-земля вокруг камня проходят взаимную
+        // проверку и не рисуют свои края.
+        mergeUp = up == SlotMerge;
+        mergeDown = down == SlotMerge;
+        mergeLeft = left == SlotMerge;
+        mergeRight = right == SlotMerge;
+    }
+
+    /// <summary>
+    /// Сторона считается «соединённой» если сосед — Self (тот же материал)
+    /// ИЛИ Merge (другой материал, с которым есть кадры слияния).
+    /// В оригинале Terraria dirt-mergeable типы рисуют бесшовное соединение
+    /// и с соседями своего типа, и с соседями merge-типа.
+    /// </summary>
+    private static bool IsConnected(int slot) {
+        return slot == SlotSelf || slot == SlotMerge;
     }
 
     private static bool Contains(short[] types, short type) {
