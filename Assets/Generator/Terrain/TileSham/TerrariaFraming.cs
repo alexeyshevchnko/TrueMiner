@@ -382,10 +382,13 @@ public static class TerrariaFraming {
                         mergeDown = true;
                         selected = true;
                     } else if (up == SlotMerge && down == SlotMerge) {
-                        // Оба слияния, лево открыто, право соединено
+                        // Оба слияния, лево открыто, право соединено.
+                        // Кадры (126, 144..180) рисуют землю и сверху, и снизу —
+                        // поэтому оба флага: земля с обеих сторон убирает свой край.
                         frameX = 126;
                         frameY = 144 + 18 * v; // (126, 144..180)
                         mergeUp = true;
+                        mergeDown = true;
                         selected = true;
                     }
                 }
@@ -402,9 +405,11 @@ public static class TerrariaFraming {
                         mergeDown = true;
                         selected = true;
                     } else if (up == SlotMerge && down == SlotMerge) {
+                        // Кадры (108, 144..180) рисуют землю сверху и снизу — оба флага.
                         frameX = 108;
                         frameY = 144 + 18 * v; // (108, 144..180)
                         mergeUp = true;
+                        mergeDown = true;
                         selected = true;
                     }
                 }

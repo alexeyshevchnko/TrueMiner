@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -90,6 +90,21 @@ namespace Managers {
                 isChangeLight = true;
             }
             
+        }
+
+        // Область 5x5: кадр террейн-тайла зависит от блоков на расстоянии 2
+        // (окно 5x5 + взаимная проверка слияния с кардинальным соседом-камнем),
+        // поэтому при изменении блока перерисовываются все затронутые кадры.
+        public void RedrawWorldTile5X(int layer, int worldOffsetX, int worldOffsetY) {
+            for (int i = -2; i <= 2; i++) {
+                for (int j = -2; j <= 2; j++) {
+                    RedrawWorldTile(layer, worldOffsetX + i, worldOffsetY + j);
+                }
+            }
+
+            if (TryAddUpdateLightPoint(worldOffsetX, worldOffsetY)) {
+                isChangeLight = true;
+            }
         }
 
 

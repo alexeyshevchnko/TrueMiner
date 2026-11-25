@@ -470,7 +470,8 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
 
         map[x, y].type = type;
 
-        ScreenUpdateManager.RedrawWorldTile3X(0, x, y);
+        // Террейн (слой 0): кадр зависит от окна 5x5 — перерисовка 5x5.
+        ScreenUpdateManager.RedrawWorldTile5X(0, x, y);
         ScreenUpdateManager.RedrawWorldTile3X(1, x, y);
         ScreenUpdateManager.RedrawWorldTile3X(2, x, y);
         ScreenUpdateManager.RedrawWorldTile3X(4, x, y);
@@ -550,10 +551,11 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
                     map[offsetX, offsetY].type = tileType;
                     map[offsetX, offsetY].layer = layer;
                     //map[offsetX, offsetY].count = 0;
-                     
-                    ScreenUpdateManager.RedrawWorldTile3X(1, offsetX, offsetY);
 
-                    ScreenUpdateManager.RedrawWorldTile3X(0, offsetX, offsetY);
+                    // Террейн (слой 0): кадр зависит от окна 5x5 — перерисовка 5x5.
+                    // Остальные слои (вода, свет, фон) — прежняя область 3x3.
+                    ScreenUpdateManager.RedrawWorldTile5X(0, offsetX, offsetY);
+                    ScreenUpdateManager.RedrawWorldTile3X(1, offsetX, offsetY);
                     ScreenUpdateManager.RedrawWorldTile3X(2, offsetX, offsetY);
                     ScreenUpdateManager.RedrawWorldTile3X(4, offsetX, offsetY);
                 } else {

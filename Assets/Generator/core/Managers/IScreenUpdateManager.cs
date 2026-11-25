@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,10 @@ namespace Managers {
         void Init(int sixeX, int sizeY);
         void RedrawWorldTile(int layer, int worldOffsetX, int worldOffsetY);
         void RedrawWorldTile3X(int layer, int worldOffsetX, int worldOffsetY);
+        // Террейн-кадрирование (TerrainTileShema) использует окно 5x5 и взаимную
+        // проверку соседей: кадр тайла зависит от блоков на расстоянии 2, поэтому
+        // после изменения блока требуется перерисовка области 5x5.
+        void RedrawWorldTile5X(int layer, int worldOffsetX, int worldOffsetY);
         void EndDrawScreenTile(int layer, int screenOffsetX, int screenOffsetY);
         bool IsUpdateOffset(int x, int y);
         bool IsUpdate(int layerId, int x, int y);
