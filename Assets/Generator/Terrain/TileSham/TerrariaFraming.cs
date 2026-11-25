@@ -492,6 +492,52 @@ public static class TerrariaFraming {
                         selected = true;
                     }
                 }
+                // --- 2д: два слияния (верх+низ) при открытых леве и праве ---
+                if (!selected && up == SlotMerge && down == SlotMerge && left == SlotEdge && right == SlotEdge) {
+                    // Слияние сверху и снизу при открытых леве и праве: (108, 216..252)
+                    frameX = 108;
+                    frameY = 216 + 18 * v;
+                    mergeUp = true;
+                    mergeDown = true;
+                    selected = true;
+                } else if (!selected && up == SlotMerge && down == SlotMerge && left != SlotEdge && right == SlotEdge) {
+                    // Слияние сверху и снизу при открытом праве, слева соединена: (126, 144..180)
+                    frameX = 126;
+                    frameY = 144 + 18 * v;
+                    mergeUp = true;
+                    mergeDown = true;
+                    selected = true;
+                } else if (!selected && up == SlotMerge && down == SlotMerge && left == SlotEdge && right != SlotEdge) {
+                    // Слияние сверху и снизу при открытом леве, справа соединена: (108, 144..180)
+                    frameX = 108;
+                    frameY = 144 + 18 * v;
+                    mergeUp = true;
+                    mergeDown = true;
+                    selected = true;
+                }
+                // --- 2е: два слияния (лево+право) при открытых верхе и низе ---
+                else if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotMerge) {
+                    // Слияние слева и справа при открытых верхе и низе: (162..198, 198)
+                    frameX = 162 + 18 * v;
+                    frameY = 198;
+                    mergeLeft = true;
+                    mergeRight = true;
+                    selected = true;
+                } else if (!selected && up != SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotMerge) {
+                    // Слияние слева и справа при открытом низу, сверху соединена: (162, 144..180)
+                    frameX = 162;
+                    frameY = 144 + 18 * v;
+                    mergeLeft = true;
+                    mergeRight = true;
+                    selected = true;
+                } else if (!selected && up == SlotEdge && down != SlotEdge && left == SlotMerge && right == SlotMerge) {
+                    // Слияние слева и справа при открытом верхе, снизу соединена: (162, 90..126)
+                    frameX = 162;
+                    frameY = 90 + 18 * v;
+                    mergeLeft = true;
+                    mergeRight = true;
+                    selected = true;
+                }
                 // --- 2г: одно слияние, остальные открыты ---
                 if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotEdge) {
                     // Слияние слева при открытых остальных сторонах: (0..36, 234)
@@ -597,6 +643,24 @@ public static class TerrariaFraming {
         if (!selected) {
             frameX = 18 + 18 * v;
             frameY = 18;
+        }
+
+        // --- Флаги слияния для взаимной проверки земли с камнем ---
+        // Пиксельная сверка атласа: merge-кадры (Block 1/2) — чистая текстура
+        // камня с лёгкой тенью на merge-сторонах, ЧЁРНОЙ РАМКИ к соседям-земле
+        // в них нет. Поэтому флаг выставляется для КАЖДОЙ стороны со значением
+        // SlotMerge: все соседи-земля вокруг merge-кадра проходят взаимную
+        // проверку и рисуют себя без края (иначе непокрытые стороны combo
+        // давали чёрные линии земли поверх бесшовного перехода — видимые
+        // разрывы у пятен камня у пещер).
+        // Generic-кадры (Block 3) имеют чёрную рамку на всех не-Self сторонах —
+        // флаги не выставляются (поведение оригинала).
+        bool mergeFamily = selected && (frameY >= 90 || frameX >= 234);
+        if (mergeFamily) {
+            mergeUp = up == SlotMerge;
+            mergeDown = down == SlotMerge;
+            mergeLeft = left == SlotMerge;
+            mergeRight = right == SlotMerge;
         }
     }
 

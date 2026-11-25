@@ -24,9 +24,10 @@ public class Bag : IBag {
         items[3] = new GrenadeItem() { Count = 999 };
         items[4] = new PickItem() { Count = 1 };
         items[5] = new TorchItem() { Count = 100 };
-        items[6] = new BlowBlockItem(0, 2) { Count = 10 };
+        items[6] = new BlowBlockItem(0,  (short)TileTypeEnum.Stone) { Count = 100 };
+        items[7] = new BlowBlockItem(0, 2) { Count = 100 };
         
-        items[7] = new AxeItem() { Count = 1 };
+        //items[7] = new AxeItem() { Count = 1 };
 
         items[8] = new BlowBlockItem( 0, (short)TileTypeEnum.Brick) { Count = 100 };
         items[9] = new BlowBlockItem(0, (short)TileTypeEnum.Stairs) { Count = 1000 };
