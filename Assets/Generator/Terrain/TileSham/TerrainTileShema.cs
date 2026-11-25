@@ -57,18 +57,14 @@ public class TerrainTileShema : ITileShema {
             left = ResolveMutualSlot(map, size, c, c, -1, 0, left, rules);
             right = ResolveMutualSlot(map, size, c, c, 1, 0, right, rules);
 
-            // Диагональные соседи: в оригинале dirt-mergeable диагональ всегда «свой».
-            if (IsMutualCheckType(map[c - 1, c - 1], rules)) {
-                upLeft = TerrariaFraming.SlotSelf;
-            }
-            if (IsMutualCheckType(map[c + 1, c - 1], rules)) {
-                upRight = TerrariaFraming.SlotSelf;
-            }
-            if (IsMutualCheckType(map[c - 1, c + 1], rules)) {
-                downLeft = TerrariaFraming.SlotSelf;
-            }
-            if (IsMutualCheckType(map[c + 1, c + 1], rules)) {
-                downRight = TerrariaFraming.SlotSelf;
+            // Диагональные соседи из MutualMergeCheckTypes: считаются «своими» без
+            // встречной проверки, если MutualMergeCheckDiagonalIsSelf включён
+            // (в оригинале Terraria диагональ dirt-mergeable соседа не запускает TileFrame).
+            if (rules.MutualMergeCheckDiagonalIsSelf) {
+                if (IsMutualCheckType(map[c - 1, c - 1], rules)) { upLeft = TerrariaFraming.SlotSelf; }
+                if (IsMutualCheckType(map[c + 1, c - 1], rules)) { upRight = TerrariaFraming.SlotSelf; }
+                if (IsMutualCheckType(map[c - 1, c + 1], rules)) { downLeft = TerrariaFraming.SlotSelf; }
+                if (IsMutualCheckType(map[c + 1, c + 1], rules)) { downRight = TerrariaFraming.SlotSelf; }
             }
         }
 
