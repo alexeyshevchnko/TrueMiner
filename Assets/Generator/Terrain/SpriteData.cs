@@ -1,11 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public class SpriteData {
     public static Dictionary<string,SpriteData>  Sprites = new Dictionary<string, SpriteData>();
     public static Dictionary<short, SpriteData> SpritesByTypeId = new Dictionary<short, SpriteData>();
-    private static ITileShema terrainShema = new TerrainTileShema();
+    // Прежняя упрощённая схема — для тайлсетов старого пользовательского формата
+    // (уголь, золото, дерево, кирпич и т.д.), нарезанных под неё.
+    private static ITileShema legacyTerrainShema = new LegacyTerrainTileShema();
+
+    // Система кадрирования Terraria для тайлсетов оригинальной структуры
+    // (Tiles_0 — земля, Tiles_1 — камень). SquareSizeByShema = 5: земле необходимо
+    // окно 5x5 для взаимной проверки слияния с камнем (см. TerrainTileShema).
+    private static readonly TerrainTileShema terrainFramingDirt = new TerrainTileShema(TerrariaTilesetRules.Dirt);
+    private static readonly TerrainTileShema terrainFramingStone = new TerrainTileShema(TerrariaTilesetRules.Stone);
     private static ITileShema grassTerrainTileShema = new GrassTerrainTileShema();
     private static ITileShema terrainBgShema = new TerrainBGTileShema();
     
@@ -30,31 +38,31 @@ public class SpriteData {
     public static SpriteData Tree_Tops_Naked = new SpriteData("Tree_top_leaves", 5, 5, treeCapShema, 5, (short)TileTypeEnum.TreeTopNaked);
 
     public static SpriteData Tiles_bg = new SpriteData("Tiles_bg", 1, 1, terrainBgShema, 3, (short)TileTypeEnum.Bg);
-    public static SpriteData Tiles_0 = new SpriteData(/*"Tiles_light2"*/"Tiles_0", 1, 1, terrainShema, 3, (short)TileTypeEnum.Terrain0);//Terrain0);
-    public static SpriteData Tiles_coal = new SpriteData("Tiles_coal", 1, 1, terrainShema, 3, (short)TileTypeEnum.Coal);
-    public static SpriteData Tiles_gold = new SpriteData("Tiles_gold", 1, 1, terrainShema, 3, (short)TileTypeEnum.Gold);
+    public static SpriteData Tiles_0 = new SpriteData(/*"Tiles_light2"*/"Tiles_0", 1, 1, terrainFramingDirt, 5, (short)TileTypeEnum.Terrain0);//Terrain0);
+    public static SpriteData Tiles_coal = new SpriteData("Tiles_coal", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Coal);
+    public static SpriteData Tiles_gold = new SpriteData("Tiles_gold", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Gold);
 
-    public static SpriteData Tiles_wood = new SpriteData("TILES_wood", 1, 1, terrainShema, 3, (short)TileTypeEnum.Wood);
+    public static SpriteData Tiles_wood = new SpriteData("TILES_wood", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Wood);
 
-    public static SpriteData TILES_brick = new SpriteData("TILES_brick", 1, 1, terrainShema, 3, (short)TileTypeEnum.Brick);
-    public static SpriteData Tiles_bone = new SpriteData("Tiles_kost", 1, 1, terrainShema, 3, (short)TileTypeEnum.Bone);
-    public static SpriteData Tiles_meat = new SpriteData("Tiles_meat", 1, 1, terrainShema, 3, (short)TileTypeEnum.Meat);
-    public static SpriteData Tiles_med = new SpriteData("Tiles_med", 1, 1, terrainShema, 3, (short)TileTypeEnum.Med);
-    public static SpriteData Tiles_iron = new SpriteData("Tiles_stal", 1, 1, terrainShema, 3, (short)TileTypeEnum.Iron);
-    public static SpriteData Tiles_stone = new SpriteData(/*"Tiles_stone"*/"Tiles_1", 1, 1, terrainShema, 3, (short)TileTypeEnum.Stone);
+    public static SpriteData TILES_brick = new SpriteData("TILES_brick", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Brick);
+    public static SpriteData Tiles_bone = new SpriteData("Tiles_kost", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Bone);
+    public static SpriteData Tiles_meat = new SpriteData("Tiles_meat", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Meat);
+    public static SpriteData Tiles_med = new SpriteData("Tiles_med", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Med);
+    public static SpriteData Tiles_iron = new SpriteData("Tiles_stal", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Iron);
+    public static SpriteData Tiles_stone = new SpriteData(/*"Tiles_stone"*/"Tiles_1", 1, 1, terrainFramingStone, 5, (short)TileTypeEnum.Stone);
 
 
     public static SpriteData Liquid_000 = new SpriteData("Liquid_000", 1, 1, liquidShema, 3,-10);
 
     public static SpriteData Tiles_2 = new SpriteData("Tiles_2", 1, 1, grassTerrainTileShema, 3, (short)TileTypeEnum.TerrainGrass);
-    public static SpriteData Tiles_6 = new SpriteData("Tiles_6", 1, 1, terrainShema, 3, (short)TileTypeEnum.Terrain6);
+    public static SpriteData Tiles_6 = new SpriteData("Tiles_6", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Terrain6);
 
-    public static SpriteData Tiles_118 = new SpriteData("Tiles_118", 1, 1, terrainShema, 3, -1);
-    public static SpriteData Tiles_146 = new SpriteData("Tiles_146", 1, 1, terrainShema, 3, -2);
-    public static SpriteData Tiles_147 = new SpriteData("Tiles_147", 1, 1, terrainShema, 3, -3);
-    public static SpriteData Tiles_153 = new SpriteData("Tiles_153", 1, 1, terrainShema, 3, -4);
-    public static SpriteData Tiles_154 = new SpriteData("Tiles_154", 1, 1, terrainShema, 3, -5);
-    public static SpriteData Tiles_193 = new SpriteData("Tiles_193", 1, 1, terrainShema, 3, -6);
+    public static SpriteData Tiles_118 = new SpriteData("Tiles_118", 1, 1, legacyTerrainShema, 3, -1);
+    public static SpriteData Tiles_146 = new SpriteData("Tiles_146", 1, 1, legacyTerrainShema, 3, -2);
+    public static SpriteData Tiles_147 = new SpriteData("Tiles_147", 1, 1, legacyTerrainShema, 3, -3);
+    public static SpriteData Tiles_153 = new SpriteData("Tiles_153", 1, 1, legacyTerrainShema, 3, -4);
+    public static SpriteData Tiles_154 = new SpriteData("Tiles_154", 1, 1, legacyTerrainShema, 3, -5);
+    public static SpriteData Tiles_193 = new SpriteData("Tiles_193", 1, 1, legacyTerrainShema, 3, -6);
 
     
     public static SpriteData Liquid_0 = new SpriteData("Liquid_0", 1, 0, liquidShema, 3, -8);//, 16);

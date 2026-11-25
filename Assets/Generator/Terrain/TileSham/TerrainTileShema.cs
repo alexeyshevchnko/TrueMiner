@@ -1,315 +1,139 @@
-﻿using UnityEngine;
-using System.Collections;
+using System;
 
-
+/// <summary>
+/// Автотайлинг (tile framing) по принципу оригинальной Terraria.
+///
+/// Заменяет прежнюю упрощённую схему (выбор из ~20 кадров по 4 соседям) на полную
+/// систему оригинала: кадр подбирается по 8 соседям (4 стороны + 4 диагонали) из
+/// тайлсета Terraria-структуры — Tiles_0 (земля), Tiles_1 (камень) и любых будущих
+/// наборов того же формата.
+///
+/// Как это работает:
+///  1. TileDataProvider передаёт сюда окно карты (short[,]) 5x5 (центр — сам тайл)
+///     и описание тайла. Значения окна — типы блоков (0 — пусто), отфильтрованные
+///     по слою рендера.
+///  2. 8 соседей классифицируются правилами TerrariaTilesetRules: «свой» /
+///     «запрос слияния» / «граница». Пустота, деревья, лестницы, декор и вода
+///     считаются границей, как неактивные тайлы в оригинале.
+///  3. Для «земли» соседи-«камень» по сторонам проходят взаимную проверку, как
+///     в оригинальном WorldGen.TileFrame: камень считается «своим», только если
+///     он сам при кадрировании сливается в нашу сторону (для этого и нужно окно
+///     5x5 — оно покрывает окрестность соседа). Диагональный камень, как и в
+///     оригинале, считается «своим» без проверки.
+///  4. TerrariaFraming.Solve повторяет ветвление оригинала (сверено с декомпиляцией
+///     1.3.5.3 и 1.4.4.9): кадры слияния → частичные слияния → общий набор
+///     (края, внешние/внутренние углы, полосы, одиночный тайл) → безопасный вариант.
+///  5. Координаты кадра в пикселях листа переводятся в индексы сетки 18 px —
+///     именно их ожидает UvProvider (16 px кадр + 2 px паддинг).
+///
+/// Класс не хранит состояния и не создаёт объектов в GetShema — безопасно вызывается
+/// для каждого тайла при генерации и при локальных перерисовках (RedrawWorldTile3X
+/// уже обновляет окрестность изменённого блока).
+/// </summary>
 public class TerrainTileShema : ITileShema {
-    private TileInfoStructure currentTileInfo = new TileInfoStructure(0, 0);
+    private readonly TerrariaTilesetRules rules;
 
-    private FrameStructure CenterRez1 = new FrameStructure(1, 1);
-    private FrameStructure CenterRez2 = new FrameStructure(2, 1);
-    private FrameStructure CenterRez3 = new FrameStructure(3, 1);
-    private FrameStructure GetCenter() {
-       // Debug.Log(currentTileInfo.randomTile);
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return CenterRez1;
-            case 2:
-                return CenterRez2;
-            default:
-                //UnityEngine.Debug.LogError(currentTileInfo.randomTile);
-                return CenterRez3;
-        }
+    public TerrainTileShema(TerrariaTilesetRules rules) {
+        this.rules = rules ?? TerrariaTilesetRules.Dirt;
     }
-
-    private FrameStructure TopCenterRez1 = new FrameStructure(1, 0);
-    private FrameStructure TopCenterRez2 = new FrameStructure(2, 0);
-    private FrameStructure TopCenterRez3 = new FrameStructure(3, 0);
-    private FrameStructure GetTopCenter() {
-        //return new FrameStructure(1, 0);
-        switch (currentTileInfo.randomTile) {
-            case 1:
-                return TopCenterRez1;
-            case 2:
-                return TopCenterRez2;
-            default:
-                return TopCenterRez3;
-        }
-    }
-
-    private FrameStructure TopLeftRez = new FrameStructure(0, 3);
-    private FrameStructure GetTopLeft() {
-        return TopLeftRez;
-       
-    }
-
-    private FrameStructure TopRightRez = new FrameStructure(1, 3);
-    private FrameStructure GetTopRight() {
-        return TopRightRez;
-    }
-
-    private FrameStructure BottomCenterRez = new FrameStructure(1, 2);
-    private FrameStructure GetBottomCenter() {
-        return BottomCenterRez;
-    }
-
-    private FrameStructure BottomLeftRez = new FrameStructure(0, 4);
-    private FrameStructure GetBottomLeft() {
-        return BottomLeftRez;
-    }
-
-    private FrameStructure BottomRightRez = new FrameStructure(1, 4);
-    private FrameStructure GetBottomRight() {
-        return BottomRightRez;
-    }
-
-    private FrameStructure CenterLeftRez = new FrameStructure(0, 0);
-    private FrameStructure GetCenterLeft() {
-        return CenterLeftRez;
-    }
-
-    private FrameStructure CenterRightRez = new FrameStructure(4, 0);
-    private FrameStructure GetCenterRight() {
-        return CenterRightRez;
-    }
-
-    private FrameStructure OneRez = new FrameStructure(9, 3);
-    private FrameStructure GetOne() {
-        return OneRez;
-    }
-
-    private FrameStructure OneHorizontalCenterRez = new FrameStructure(6, 4);
-    private FrameStructure GetOneHorizontalCenter() {
-        return OneHorizontalCenterRez;
-    }
-
-    private FrameStructure OneHorizontalLeftRez = new FrameStructure(9, 0);
-    private FrameStructure GetOneHorizontalLeft() {
-        return OneHorizontalLeftRez;
-    }
-
-    private FrameStructure OneHorizontalRightRez = new FrameStructure(12, 0);
-    private FrameStructure GetOneHorizontalRight() {
-        return OneHorizontalRightRez;
-    }
-
-    private FrameStructure OneVerticalCenterRez = new FrameStructure(5, 0);
-    private FrameStructure GetOneVerticalCenter() {
-        return OneVerticalCenterRez;
-    }
-
-    private FrameStructure OneVerticalTopRez = new FrameStructure(6, 0);
-    private FrameStructure GetOneVerticalTop() {
-        return OneVerticalTopRez;
-    }
-
-    private FrameStructure OneVerticalBottomRez = new FrameStructure(6, 3);
-    private FrameStructure GetOneVerticalBottom() {
-        return OneVerticalBottomRez;
-    }
-
-    private FrameStructure InnerCornerTopLefrRez = new FrameStructure(2, 5);
-    private FrameStructure GetInnerCornerTopLefr() {
-        return InnerCornerTopLefrRez;
-    }
-
-    private FrameStructure InnerCornerTopRightRez = new FrameStructure(3, 5);
-    private FrameStructure GetInnerCornerTopRight() {
-        return InnerCornerTopRightRez;
-    }
-
-    private FrameStructure InnerCornerBottomLefrRez = new FrameStructure(2, 6);
-    private FrameStructure GetInnerCornerBottomLefr() {
-        return InnerCornerBottomLefrRez;
-    }
-
-    private FrameStructure InnerCornerBottomRightRez = new FrameStructure(3, 6);
-    private FrameStructure GetInnerCornerBottomRight() {
-        return InnerCornerBottomRightRez;
-    }
-
-
-    FrameStructure topCenter = new FrameStructure(1, 0);
-    FrameStructure topLeft = new FrameStructure(0, 0);
-    FrameStructure topRight = new FrameStructure(2, 0);
-    FrameStructure bottomCenter = new FrameStructure(1, 2);
-    FrameStructure bottomLeft = new FrameStructure(0, 2);
-    FrameStructure bottomRight = new FrameStructure(2, 2);
-    FrameStructure leftCenter = new FrameStructure(0, 1);
-    FrameStructure rightCenter = new FrameStructure(2, 1);
 
     public FrameStructure GetShema(short[,] map, TileInfoStructure info) {
-        currentTileInfo = info;
+        int size = map.GetLength(0);
+        int c = size / 2;
 
-        //GetOneHorizontalCenter();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0) {
-            return GetOneHorizontalCenter();
-        }
-        //GetOneHorizontalLeft();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0 &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != info.type
-            ) {
-            return GetOneHorizontalLeft();
-        }
-        //GetOneHorizontalRight();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0) {
-            return GetOneHorizontalRight();
-        }
-        //GetOneVerticalCenter();
-        if (map[leftCenter.FrameX, leftCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0) {
-            return GetOneVerticalCenter();
-        }
-        //GetOneVerticalTop();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != info.type) {
-            return GetOneVerticalTop();
+        TerrariaFraming.ClassifyNeighbors(
+            map, c, c, rules,
+            out int up, out int down, out int left, out int right,
+            out int upLeft, out int upRight, out int downLeft, out int downRight);
+
+        if (rules.MutualMergeCheckTypes.Length > 0) {
+            // Стороны: сосед «своего» типа по взаимной проверке (в оригинале —
+            // tileMergeDirt-сосед земли, который сам слился в нашу сторону).
+            up = ResolveMutualSlot(map, size, c, c, 0, -1, up, rules);
+            down = ResolveMutualSlot(map, size, c, c, 0, 1, down, rules);
+            left = ResolveMutualSlot(map, size, c, c, -1, 0, left, rules);
+            right = ResolveMutualSlot(map, size, c, c, 1, 0, right, rules);
+
+            // Диагонали: в оригинале такой сосед считается «своим» без проверки.
+            if (rules.MutualMergeCheckDiagonalIsSelf) {
+                if (IsMutualCheckType(map[c - 1, c - 1], rules)) {
+                    upLeft = TerrariaFraming.SlotSelf;
+                }
+                if (IsMutualCheckType(map[c + 1, c - 1], rules)) {
+                    upRight = TerrariaFraming.SlotSelf;
+                }
+                if (IsMutualCheckType(map[c - 1, c + 1], rules)) {
+                    downLeft = TerrariaFraming.SlotSelf;
+                }
+                if (IsMutualCheckType(map[c + 1, c + 1], rules)) {
+                    downRight = TerrariaFraming.SlotSelf;
+                }
+            }
         }
 
-        //GetOneVerticalBottom();
-        if (map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != info.type) {
-            return GetOneVerticalBottom();
+        // Вариант текстуры 0..2 — как tile.frameNumber() в оригинале.
+        int variant = info.randomTile % 3;
+
+        TerrariaFraming.Solve(
+            up, down, left, right,
+            upLeft, upRight, downLeft, downRight,
+            variant, rules,
+            out int frameX, out int frameY,
+            out _, out _, out _, out _);
+
+        // Пиксельные координаты листа → индексы сетки 18 px для UvProvider.
+        return new FrameStructure(
+            frameX / TerrariaFraming.FrameStride,
+            frameY / TerrariaFraming.FrameStride);
+    }
+
+    /// <summary>
+    /// Взаимная проверка кардинального соседа: он считается «своим», только если
+    /// при собственном кадрировании он сливается в нашу сторону.
+    /// </summary>
+    private static int ResolveMutualSlot(
+        short[,] map, int size, int cx, int cy, int dx, int dy, int slot, TerrariaTilesetRules rules) {
+        short neighborType = map[cx + dx, cy + dy];
+        if (slot == TerrariaFraming.SlotSelf || !IsMutualCheckType(neighborType, rules)) {
+            return slot;
         }
 
-        //GetTopCenter();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0 &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0) {
-            return GetTopCenter();
+        TerrariaTilesetRules neighborRules = rules.MutualMergeCheckRules;
+        if (neighborRules == null || size < 5) {
+            // Окрестность соседа недоступна (нужно окно 5x5) — безопасная граница.
+            return TerrariaFraming.SlotEdge;
         }
 
-        //GetBottomCenter();
-        if (map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0) {
-            return GetBottomCenter();
+        TerrariaFraming.ClassifyNeighbors(
+            map, cx + dx, cy + dy, neighborRules,
+            out int nUp, out int nDown, out int nLeft, out int nRight,
+            out int nUpLeft, out int nUpRight, out int nDownLeft, out int nDownRight);
+
+        TerrariaFraming.Solve(
+            nUp, nDown, nLeft, nRight,
+            nUpLeft, nUpRight, nDownLeft, nDownRight,
+            0, neighborRules,
+            out _, out _,
+            out bool nMergeUp, out bool nMergeDown, out bool nMergeLeft, out bool nMergeRight);
+
+        // Сосед сверху должен слиться вниз, снизу — вверх, слева — вправо, справа — влево
+        // (в оригинале: TileFrame соседа + проверка WorldGen.mergeDown/Up/Left/Right).
+        bool mergedTowardUs =
+            (dy == -1 && nMergeDown) ||
+            (dy == 1 && nMergeUp) ||
+            (dx == -1 && nMergeRight) ||
+            (dx == 1 && nMergeLeft);
+
+        return mergedTowardUs ? TerrariaFraming.SlotSelf : TerrariaFraming.SlotEdge;
+    }
+
+    private static bool IsMutualCheckType(short type, TerrariaTilesetRules rules) {
+        short[] types = rules.MutualMergeCheckTypes;
+        for (int i = 0; i < types.Length; i++) {
+            if (types[i] == type) {
+                return true;
+            }
         }
-
-        //GetCenterLeft();
-        if (map[leftCenter.FrameX, leftCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0 &&
-           map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-           map[bottomCenter.FrameX, bottomCenter.FrameY] != 0) {
-            return GetCenterLeft();
-        }
-
-        //GetCenterRight();
-        if (map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0) {
-            return GetCenterRight();
-        }
-
-        //GetTopLeft();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] == 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0 &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0) {
-                return GetTopLeft();
-        }
-
-        //GetTopRight();
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0) {
-                return GetTopRight();
-        }
-
-        //GetBottomLeft();
-        if (map[leftCenter.FrameX, leftCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0 &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != 0  ) {
-                return GetBottomLeft();
-        }
-
-        //GetBottomRight();
-        if (map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0) {
-                return GetBottomRight();
-        } 
-
-        //GetInnerCornerTopLefr()
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[topRight.FrameX, topRight.FrameY] != info.type &&
-            map[topLeft.FrameX, topLeft.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] == info.type &&
-            map[bottomRight.FrameX, bottomRight.FrameY] != info.type &&
-            map[bottomLeft.FrameX, bottomLeft.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] == info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type) {
-            return GetInnerCornerTopLefr();
-        }
-
-        //GetInnerCornerTopRight()
-        if (map[topCenter.FrameX, topCenter.FrameY] != info.type &&
-            map[topRight.FrameX, topRight.FrameY] != info.type &&
-            map[topLeft.FrameX, topLeft.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] == info.type &&
-            map[bottomRight.FrameX, bottomRight.FrameY] != info.type &&
-            map[bottomLeft.FrameX, bottomLeft.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] == info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type) {
-            return GetInnerCornerTopRight();
-        }
-
-        //GetInnerCornerBottomLefr()
-        if (map[topCenter.FrameX, topCenter.FrameY] == info.type &&
-            map[topRight.FrameX, topRight.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[bottomLeft.FrameX, bottomLeft.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] == info.type) {
-            return GetInnerCornerBottomLefr();
-        }
-
-
-        //GetInnerCornerBottomRight()
-        if (map[topCenter.FrameX, topCenter.FrameY] == info.type &&
-            map[topLeft.FrameX, topLeft.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[bottomRight.FrameX, bottomRight.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] == info.type &&
-            map[rightCenter.FrameX, rightCenter.FrameY] != info.type) {
-            return GetInnerCornerBottomRight();
-        }
-
-        //GetOne();
-        if (map[rightCenter.FrameX, rightCenter.FrameY] != info.type &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != info.type &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != info.type &&
-            map[topCenter.FrameX, topCenter.FrameY] != info.type) {
-                return GetOne();
-        }
-
-        //GetCenter
-        if (map[rightCenter.FrameX, rightCenter.FrameY] != 0 &&
-            map[bottomCenter.FrameX, bottomCenter.FrameY] != 0 &&
-            map[leftCenter.FrameX, leftCenter.FrameY] != 0 &&
-            map[topCenter.FrameX, topCenter.FrameY] != 0 )  {
-            return GetCenter();
-        }
-
-        return GetOne();
+        return false;
     }
 }
