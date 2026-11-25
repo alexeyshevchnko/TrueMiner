@@ -96,7 +96,7 @@ public sealed class TerrariaTilesetRules {
     /// </summary>
     public static readonly TerrariaTilesetRules Stone = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Stone },
-        mergeTypes: new[] { (short) TileTypeEnum.Terrain0 },
+        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
         mutualMergeCheckTypes: null,
         mutualMergeCheckRules: null,
         participatesInMergeBlocks: true,
