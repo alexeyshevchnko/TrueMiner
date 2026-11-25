@@ -12,7 +12,7 @@ public class TileDataProvider : ITileDataProvider,IoC.IInitialize {
     [IoC.Inject]
     public IContainer Container { set; protected get; }
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
     [IoC.Inject]
     public ILightShema LightShema { set; protected get; }
     //[IoC.Inject]

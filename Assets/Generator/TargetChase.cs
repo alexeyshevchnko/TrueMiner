@@ -3,7 +3,7 @@ using System.Collections;
 
 public class TargetChase : MonoBehaviour {
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
     [IoC.Inject]
     public ICooldownManager CooldownManager { set; protected get; }
 

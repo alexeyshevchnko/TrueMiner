@@ -23,7 +23,7 @@ public class Main : IContextRoot {
         container.Bind<ICooldownManager>().AsSingle<CooldownManager>();
         container.Bind<ITileDataProvider>().AsSingle<TileDataProvider>();
         container.Bind<ICollision>().AsSingle<Collision>();
-        container.Bind<IMapGenerator>().AsSingle<MapGenerator>();
+        container.Bind<IMapGenerator>().AsSingle<TestMapGenerator>();
        // container.Bind<ILightRendererOld>().AsSingle<LightRendererOldOld>();
         container.Bind<ILightRenderer>().AsSingle<LightRenderer>();
         container.Bind<IOverlayLightShema>().AsSingle<OverlayLightShema>();

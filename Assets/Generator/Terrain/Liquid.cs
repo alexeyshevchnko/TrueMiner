@@ -13,9 +13,9 @@ public class Liquid : ILiquid,IoC.IInitialize {
     [IoC.Inject]
     public IScreenUpdateManager ScreenUpdateManager { set; protected get; }
 
-    private MapGenerator mapGen;
+    private IMapGenerator mapGen;
 
-    public Liquid(MapGenerator mapGen) {
+    public Liquid(IMapGenerator mapGen) {
         Application.runInBackground = true;
         this.mapGen = mapGen; 
     }

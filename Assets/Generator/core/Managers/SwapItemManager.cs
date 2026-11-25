@@ -10,7 +10,7 @@ public class SwapItemManager : ISwapItemManager {
     [IoC.Inject]
     public IGOPoolManager Pool { set; protected get; }
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
     [IoC.Inject]
     public ITileDataProvider tileDataProvider { set; protected get; }
     [IoC.Inject]

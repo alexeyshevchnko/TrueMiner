@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class LightRenderer : ILightRenderer,IoC.IInitialize {
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
     [IoC.Inject]
     public IScreenUpdateManager ScreenUpdateManager { set; protected get; }
 

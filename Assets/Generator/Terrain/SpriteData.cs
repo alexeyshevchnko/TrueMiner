@@ -30,7 +30,7 @@ public class SpriteData {
     public static SpriteData Tree_Tops_Naked = new SpriteData("Tree_top_leaves", 5, 5, treeCapShema, 5, (short)TileTypeEnum.TreeTopNaked);
 
     public static SpriteData Tiles_bg = new SpriteData("Tiles_bg", 1, 1, terrainBgShema, 3, (short)TileTypeEnum.Bg);
-    public static SpriteData Tiles_0 = new SpriteData("Tiles_light2", 1, 1, terrainShema, 3, (short)TileTypeEnum.Terrain0);//Terrain0);
+    public static SpriteData Tiles_0 = new SpriteData(/*"Tiles_light2"*/"Tiles_0", 1, 1, terrainShema, 3, (short)TileTypeEnum.Terrain0);//Terrain0);
     public static SpriteData Tiles_coal = new SpriteData("Tiles_coal", 1, 1, terrainShema, 3, (short)TileTypeEnum.Coal);
     public static SpriteData Tiles_gold = new SpriteData("Tiles_gold", 1, 1, terrainShema, 3, (short)TileTypeEnum.Gold);
 
@@ -41,7 +41,7 @@ public class SpriteData {
     public static SpriteData Tiles_meat = new SpriteData("Tiles_meat", 1, 1, terrainShema, 3, (short)TileTypeEnum.Meat);
     public static SpriteData Tiles_med = new SpriteData("Tiles_med", 1, 1, terrainShema, 3, (short)TileTypeEnum.Med);
     public static SpriteData Tiles_iron = new SpriteData("Tiles_stal", 1, 1, terrainShema, 3, (short)TileTypeEnum.Iron);
-    public static SpriteData Tiles_stone = new SpriteData("Tiles_stone", 1, 1, terrainShema, 3, (short)TileTypeEnum.Stone);
+    public static SpriteData Tiles_stone = new SpriteData(/*"Tiles_stone"*/"Tiles_1", 1, 1, terrainShema, 3, (short)TileTypeEnum.Stone);
 
 
     public static SpriteData Liquid_000 = new SpriteData("Liquid_000", 1, 1, liquidShema, 3,-10);

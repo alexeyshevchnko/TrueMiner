@@ -7,7 +7,7 @@ public class SetColor : MonoBehaviour ,IInitialize{
     [Inject]
     public ITileDataProvider TileDataProvider { set; protected get; }
     [IoC.Inject]
-    public MapGenerator mapGenerator { set; protected get; }
+    public IMapGenerator mapGenerator { set; protected get; }
     [IoC.Inject]
     public IScreenUpdateManager ScreenUpdateManager { set; protected get; }
 

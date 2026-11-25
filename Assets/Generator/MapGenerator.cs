@@ -15,7 +15,8 @@ public class MapGenerator : IMapGenerator {
     }
 
     public MapType mapType = MapType.world;
-
+    MapType IMapGenerator.mapType { get => mapType; set => mapType = value; }
+    
     public const float rightWorld = 16800;//67200;  //16800;// 134400f; 
     public const float bottomWorld = 4800;//19200; //4800;// 38400f;
     public const int maxTilesX = (int)rightWorld / 16 + 1;
@@ -122,6 +123,7 @@ public class MapGenerator : IMapGenerator {
         }
     }
 
+    
 
     public TileInfoStructure[,] GetMap() {
         if (mapType == MapType.world) {
