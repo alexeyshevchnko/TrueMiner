@@ -1,55 +1,51 @@
-﻿using System;
+using System;
 
 /// <summary>
-/// РџСЂР°РІРёР»Р° СЃРѕРµРґРёРЅРµРЅРёСЏ (tile framing) РѕРґРЅРѕРіРѕ С‚Р°Р№Р»СЃРµС‚Р° РѕСЂРёРіРёРЅР°Р»СЊРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹ Terraria.
+/// Правила соединения (tile framing) одного тайлсета оригинальной структуры Terraria.
 ///
-/// РўР°Р№Р»СЃРµС‚С‹ Tiles_0 (Р·РµРјР»СЏ) Рё Tiles_1 (РєР°РјРµРЅСЊ) СѓСЃС‚СЂРѕРµРЅС‹ С‚Р°Рє Р¶Рµ, РєР°Рє РІ Terraria:
-/// РєР°РґСЂ 16x16 px Р»РµР¶РёС‚ РІ СЃРµС‚РєРµ СЃ С€Р°РіРѕРј 18 px (2 px РїР°РґРґРёРЅРіР°), РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°РґСЂР° вЂ”
-/// (frameX, frameY) РІ РїРёРєСЃРµР»СЏС… Р»РёСЃС‚Р°. РћРґРёРЅ Рё С‚РѕС‚ Р¶Рµ Р»РёСЃС‚ СЃРѕРґРµСЂР¶РёС‚:
-///   вЂў Р±Р°Р·РѕРІС‹Рµ РєР°РґСЂС‹ РєСЂР°С‘РІ/СѓРіР»РѕРІ/С†РµРЅС‚СЂР° (Y = 0..89);
-///   вЂў РєР°РґСЂС‹ РІРЅСѓС‚СЂРµРЅРЅРёС… СѓРіР»РѕРІ (X = 108/180/198, Y = 18/36/72);
-///   вЂў РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ СЃ РґСЂСѓРіРёРј РјР°С‚РµСЂРёР°Р»РѕРј (Y = 90..252) вЂ” РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ, РєРѕРіРґР° СЃРѕСЃРµРґ
-///     СЏРІР»СЏРµС‚СЃСЏ В«Р·Р°РїСЂРѕСЃРѕРј СЃР»РёСЏРЅРёСЏВ» (РІ РѕСЂРёРіРёРЅР°Р»Рµ вЂ” РјР°СЂРєРµСЂ -2).
+/// Тайлсеты Tiles_0 (земля) и Tiles_1 (камень) устроены так же, как в Terraria:
+/// кадр 16x16 px лежит в сетке с шагом 18 px (2 px паддинга), координаты кадра —
+/// (frameX, frameY) в пикселях листа.
 ///
-/// РЎРµРјР°РЅС‚РёРєР° РѕСЂРёРіРёРЅР°Р»Р° РґР»СЏ РїР°СЂС‹ Р·РµРјР»СЏ/РєР°РјРµРЅСЊ:
-///   вЂў Р—РµРјР»СЏ (dirt, tileMergeDirt[0] = false) РќР• СѓС‡Р°СЃС‚РІСѓРµС‚ РІ merge-Р±Р»РѕРєР°С…: Р·РµРјР»СЏ-Р·РµРјР»СЏ
-///     в†’ SlotSelf (РѕР±С‹С‡РЅС‹Рµ РІРЅСѓС‚СЂРµРЅРЅРёРµ РєР°РґСЂС‹), РєР°РјРµРЅСЊ в†’ SlotEdge (РѕР±С‹С‡РЅС‹Р№ РєСЂР°Р№ Р·РµРјР»Рё;
-///     Р±РµСЃС€РѕРІРЅРѕСЃС‚СЊ РЅР° РіСЂР°РЅРёС†Рµ РґР°С‘С‚СЃСЏ merge-РєР°РґСЂР°РјРё РєР°РјРЅСЏ).
-///   вЂў РљР°РјРµРЅСЊ (tileMergeDirt[1] = true) СѓС‡Р°СЃС‚РІСѓРµС‚: РєР°РјРµРЅСЊ-РєР°РјРµРЅСЊ в†’ SlotSelf,
-///     Р·РµРјР»СЏ в†’ SlotMerge (РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ РєР°РјРЅСЏ РІ Р·РµРјР»СЋ).
-///   вЂў MutualMergeCheckTypes вЂ” СЃРѕСЃРµРґ, РєРѕС‚РѕСЂС‹Р№ РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РЅР° В«РІСЃС‚СЂРµС‡РЅРѕРµВ» СЃР»РёСЏРЅРёРµ:
-///     Р·РµРјР»СЏ РїСЂРѕРІРµСЂСЏРµС‚ РєР°РјРµРЅСЊ Рё, РµСЃР»Рё РєР°РјРµРЅСЊ СЂРёСЃСѓРµС‚ merge-РєР°РґСЂ РІ РµС‘ СЃС‚РѕСЂРѕРЅСѓ,
-///     СЃС‡РёС‚Р°РµС‚ РµРіРѕ В«СЃРІРѕРёРјВ» (СѓР±РёСЂР°РµС‚ СЃРІРѕР№ РєСЂР°Р№ вЂ” РёРЅР°С‡Рµ РІРёРґРЅР° РґРІРѕР№РЅР°СЏ СЂР°РјРєР°).
+/// Классификация соседей (три слота), как в WorldGen.TileFrame:
+///   • SlotSelf  — сосед того же типа (в оригинале значение == num);
+///   • SlotMerge — сосед-«запрос слияния» (в оригинале маркер -2);
+///   • SlotEdge  — пустота/инородный тип (в оригинале -1).
+///
+/// Для пары земля/камень в оригинале Terraria 1.4.4.9:
+///   • земля (type 0) — ветка TileID.Sets.Dirt: камень НЕ слияние, а проверяется
+///     взаимно (TileMergeAttemptFrametest): земля считает камень «своим» только
+///     если камень сам сливается в её сторону;
+///   • камень (type 1) — ветка Main.tileMergeDirt: земля становится -2 (слияние).
 /// </summary>
 public sealed class TerrariaTilesetRules {
-    /// <summary>РўРёРїС‹, РєРѕС‚РѕСЂС‹Рµ СЃС‡РёС‚Р°СЋС‚СЃСЏ В«СЃРІРѕРёРјРёВ» (SlotSelf: Р±РµР· РіСЂР°РЅРёС†С‹ РјРµР¶РґСѓ СЃРѕР±РѕР№).</summary>
+    /// <summary>Типы, которые считаются «своими» (SlotSelf: без границы между собой).</summary>
     public readonly short[] SelfTypes;
 
-    /// <summary>РўРёРїС‹-СЃРѕСЃРµРґРё, Р·Р°РїСЂР°С€РёРІР°СЋС‰РёРµ СЃР»РёСЏРЅРёРµ (SlotMerge: РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ).</summary>
+    /// <summary>Типы-соседи, запрашивающие слияние (SlotMerge: кадры слияния).</summary>
     public readonly short[] MergeTypes;
 
     /// <summary>
-    /// РўРёРїС‹-СЃРѕСЃРµРґРё, РґР»СЏ РєРѕС‚РѕСЂС‹С… РЅСѓР¶РЅР° РІР·Р°РёРјРЅР°СЏ РїСЂРѕРІРµСЂРєР°: СЃРѕСЃРµРґ СЃС‡РёС‚Р°РµС‚СЃСЏ В«СЃРІРѕРёРјВ»,
-    /// С‚РѕР»СЊРєРѕ РµСЃР»Рё РѕРЅ СЃР°Рј РїСЂРё РєР°РґСЂРёСЂРѕРІР°РЅРёРё СЃР»РёРІР°РµС‚СЃСЏ РІ РЅР°С€Сѓ СЃС‚РѕСЂРѕРЅСѓ.
-    /// Р’ РѕСЂРёРіРёРЅР°Р»Рµ вЂ” TileMergeAttemptFrametest/TileFrame РґР»СЏ dirt-mergeable СЃРѕСЃРµРґРµР№.
+    /// Типы-соседи, для которых нужна взаимная проверка: сосед считается «своим»,
+    /// только если он сам при кадрировании сливается в нашу сторону
+    /// (в оригинале — TileMergeAttemptFrametest для dirt-ветки).
     /// </summary>
     public readonly short[] MutualMergeCheckTypes;
 
-    /// <summary>РџСЂР°РІРёР»Р° СЃРѕСЃРµРґР° РїСЂРё РІР·Р°РёРјРЅРѕР№ РїСЂРѕРІРµСЂРєРµ. null вЂ” РїСЂРѕРІРµСЂРєР° РЅРµ РЅСѓР¶РЅР°.</summary>
+    /// <summary>Правила соседа при взаимной проверке. null — проверка не нужна.</summary>
     public readonly TerrariaTilesetRules MutualMergeCheckRules;
 
     /// <summary>
-    /// РЈС‡Р°СЃС‚РІСѓРµС‚ Р»Рё С‚Р°Р№Р» РІ merge-Р±Р»РѕРєР°С… РѕСЂРёРіРёРЅР°Р»Р° (Main.tileMergeDirt[num]).
+    /// Участвует ли тайл в merge-блоках оригинала (Main.tileMergeDirt[num]).
     /// </summary>
     public readonly bool ParticipatesInMergeBlocks;
 
-    /// <summary>РўРёРї РѕС‚РЅРѕСЃРёС‚СЃСЏ Рє В«С‚СЂР°РІСЏРЅРѕРјСѓВ» СЃРµРјРµР№СЃС‚РІСѓ (РґР»СЏ РЅРµРіРѕ РїСЂРѕРїСѓСЃРєР°СЋС‚СЃСЏ РєР°РґСЂС‹ 234-Р№ РєРѕР»РѕРЅРєРё).</summary>
+    /// <summary>Тип относится к «травяному» семейству (в оригинале для него пропускаются кадры 234-й колонки).</summary>
     public readonly bool IsGrassLike;
 
     /// <summary>
-    /// Р”РёР°РіРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃРµРґ РёР· MutualMergeCheckTypes СЃС‡РёС‚Р°РµС‚СЃСЏ В«СЃРІРѕРёРјВ» Р‘Р•Р— РїСЂРѕРІРµСЂРєРё
-    /// РІСЃС‚СЂРµС‡РЅРѕРіРѕ СЃР»РёСЏРЅРёСЏ (РІ РѕСЂРёРіРёРЅР°Р»Рµ Terraria РґРёР°РіРѕРЅР°Р»СЊ dirt-mergeable СЃРѕСЃРµРґР°
-    /// РЅРµ Р·Р°РїСѓСЃРєР°РµС‚ TileFrame вЂ” РїСЂРѕСЃС‚Рѕ СЃС‡РёС‚Р°РµС‚СЃСЏ СЃРІРѕРёРј).
+    /// Диагональный сосед из MutualMergeCheckTypes считается «своим» БЕЗ проверки
+    /// встречного слияния (в оригинале dirt-ветка просто делает upLeft = num).
     /// </summary>
     public readonly bool MutualMergeCheckDiagonalIsSelf;
 
@@ -73,8 +69,8 @@ public sealed class TerrariaTilesetRules {
     private static readonly short[] EmptyTypes = new short[0];
 
     /// <summary>
-    /// РќР°Р±РѕСЂ В«С‚РІС‘СЂРґС‹С…В» С‚РёРїРѕРІ С‚РµСЂСЂР°РёРЅР°. Р’СЃС‘, С‡РµРіРѕ РЅРµС‚ РІ РЅР°Р±РѕСЂРµ (РїСѓСЃС‚РѕС‚Р°, РґРµСЂРµРІСЊСЏ,
-    /// Р»РµСЃС‚РЅРёС†С‹, РґРµРєРѕСЂ, РІРѕРґР°, СЃРІРµС‚), РїСЂРё РєР°РґСЂРёСЂРѕРІР°РЅРёРё СЃС‡РёС‚Р°РµС‚СЃСЏ РїСѓСЃС‚РѕС‚РѕР№.
+    /// Набор «твёрдых» типов терраина. Всё, чего нет в наборе (пустота, деревья,
+    /// лестницы, декор, вода, свет), при кадрировании считается пустотой.
     /// </summary>
     private static readonly short[] TerrainSolidTypes = {
         (short) TileTypeEnum.Coal,
@@ -100,8 +96,8 @@ public sealed class TerrariaTilesetRules {
     }
 
     /// <summary>
-    /// РљР°РјРµРЅСЊ (Tiles_1): РєР°РјРµРЅСЊ-РєР°РјРµРЅСЊ в†’ SlotSelf, Р·РµРјР»СЏ в†’ SlotMerge (РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ
-    /// РєР°РјРЅСЏ РІ Р·РµРјР»СЋ), РѕСЃС‚Р°Р»СЊРЅРѕРµ в†’ SlotEdge. РЈС‡Р°СЃС‚РІСѓРµС‚ РІ merge-Р±Р»РѕРєР°С….
+    /// Камень (Tiles_1, type 1): камень-камень → SlotSelf, земля → SlotMerge
+    /// (Main.tileMergeDirt[1] = true, TileMergeAttempt(-2, TileID.Sets.Dirt)).
     /// </summary>
     public static readonly TerrariaTilesetRules Stone = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Stone },
@@ -112,11 +108,9 @@ public sealed class TerrariaTilesetRules {
         isGrassLike: false);
 
     /// <summary>
-    /// Р—РµРјР»СЏ (Tiles_0): Р·РµРјР»СЏ-Р·РµРјР»СЏ Рё Р·РµРјР»СЏ-С‚СЂР°РІР° в†’ SlotSelf (РІРЅСѓС‚СЂРµРЅРЅРёРµ РєР°РґСЂС‹ Р±РµР·
-    /// РіСЂР°РЅРёС†), РєР°РјРµРЅСЊ в†’ SlotEdge + РІР·Р°РёРјРЅР°СЏ РїСЂРѕРІРµСЂРєР° (РµСЃР»Рё РєР°РјРµРЅСЊ СЃР»РёРІР°РµС‚СЃСЏ РІ РЅР°С€Сѓ
-    /// СЃС‚РѕСЂРѕРЅСѓ вЂ” Р·РµРјР»СЏ СѓР±РёСЂР°РµС‚ СЃРІРѕР№ РєСЂР°Р№, РёРЅР°С‡Рµ РІРёРґРЅР° РґРІРѕР№РЅР°СЏ СЂР°РјРєР°), РѕСЃС‚Р°Р»СЊРЅРѕРµ в†’
-    /// SlotEdge. Р’ merge-Р±Р»РѕРєР°С… РЅРµ СѓС‡Р°СЃС‚РІСѓРµС‚ (РІ РѕСЂРёРіРёРЅР°Р»Рµ tileMergeDirt[0] = false).
-    /// Р”РёР°РіРѕРЅР°Р»СЊРЅС‹Р№ РєР°РјРµРЅСЊ в†’ SlotSelf Р±РµР· РїСЂРѕРІРµСЂРєРё (РѕСЂРёРіРёРЅР°Р» Terraria).
+    /// Земля (Tiles_0, type 0): земля-земля → SlotSelf; камень → взаимная проверка
+    /// (TileID.Sets.Dirt-ветка, TileMergeAttemptFrametest); иначе SlotEdge.
+    /// В merge-блоках не участвует (Main.tileMergeDirt[0] = false).
     /// </summary>
     public static readonly TerrariaTilesetRules Dirt = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
@@ -129,37 +123,32 @@ public sealed class TerrariaTilesetRules {
 }
 
 /// <summary>
-/// Р§РёСЃС‚С‹Р№ СЂРµС€Р°С‚РµР»СЊ РєР°РґСЂРѕРІ Terraria РґР»СЏ С‚Р°Р№Р»РѕРІ РѕР±С‹С‡РЅРѕРіРѕ (В«РЅРµ frameImportantВ») С‚РёРїР°.
+/// Решатель кадров, точно повторяющий WorldGen.TileFrame (Terraria 1.4.4.9)
+/// для обычных («не frameImportant») тайлов ветки Main.tileMergeDirt.
 ///
-/// РђР»РіРѕСЂРёС‚Рј РїРѕРІС‚РѕСЂСЏРµС‚ РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Р№ WorldGen.TileFrame (СЃРІРµСЂРµРЅРѕ СЃ РґРµРєРѕРјРїРёР»СЏС†РёРµР№
-/// Terraria 1.3.5.3 Рё 1.4.4.9): merge-Р±Р»РѕРєРё (РІСЃРµ 4 СЃС‚РѕСЂРѕРЅС‹ РЅРµ РіСЂР°РЅРёС†Р°) в†’ С‡Р°СЃС‚РёС‡РЅС‹Рµ
-/// СЃР»РёСЏРЅРёСЏ СЃ РѕС‚РєСЂС‹С‚С‹РјРё СЃС‚РѕСЂРѕРЅР°РјРё в†’ РѕР±С‰РёР№ РЅР°Р±РѕСЂ РєР°РґСЂРѕРІ в†’ Р±РµР·РѕРїР°СЃРЅС‹Р№ РІР°СЂРёР°РЅС‚ В«С†РµРЅС‚СЂВ».
-///
-/// Р’Р°Р¶РЅРѕРµ РѕС‚Р»РёС‡РёРµ С‡Р°СЃС‚РёС‡РЅС‹С… СЃР»РёСЏРЅРёР№ РѕС‚ РЅР°РёРІРЅРѕР№ СЂРµР°Р»РёР·Р°С†РёРё: В«СЃРѕРµРґРёРЅС‘РЅРЅР°СЏВ» СЃС‚РѕСЂРѕРЅР° РІ
-/// РёС… СѓСЃР»РѕРІРёСЏС… вЂ” Р›Р®Р‘РђРЇ РЅРµ-РіСЂР°РЅРёС†Р° (SlotSelf РР›Р SlotMerge), РєР°Рє РІ РѕСЂРёРіРёРЅР°Р»Рµ, РіРґРµ
-/// РїСЂРѕРІРµСЂРєРё РІРёРґР° `left == num || left == num32` РѕС…РІР°С‚С‹РІР°СЋС‚ Рё self, Рё merge-СЃРѕСЃРµРґРµР№.
-/// Р­С‚Рѕ СѓСЃС‚СЂР°РЅСЏРµС‚ С‡С‘СЂРЅС‹Рµ СЂР°Р·СЂС‹РІС‹ РЅР° РіСЂР°РЅРёС†Р°С… РјР°С‚РµСЂРёР°Р»РѕРІ РІ СЃР»РѕР¶РЅС‹С… РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС….
-///
-/// Р РµС€Р°С‚РµР»СЊ РЅРµ СЃРѕР·РґР°С‘С‚ РѕР±СЉРµРєС‚РѕРІ Рё РЅРµ РѕР±СЂР°С‰Р°РµС‚СЃСЏ Рє РєР°СЂС‚Рµ: РЅР° РІС…РѕРґ РїРѕРґР°СЋС‚СЃСЏ СѓР¶Рµ
-/// РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°РЅРЅС‹Рµ 8 СЃРѕСЃРµРґРµР№, РЅР° РІС‹С…РѕРґРµ вЂ” РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°РґСЂР° Рё С„Р»Р°РіРё СЃР»РёСЏРЅРёСЏ
-/// (С„Р»Р°РіРё РЅСѓР¶РЅС‹ Р·РµРјР»Рµ РґР»СЏ РІР·Р°РёРјРЅРѕР№ РїСЂРѕРІРµСЂРєРё СЃ РєР°РјРЅРµРј).
+/// ВАЖНО: все сравнения соседей — строгие, как в оригинале:
+///   `up == num`  →  `up == SlotSelf`
+///   `up == -2`   →  `up == SlotMerge`
+///   `up == -1`   →  `up == SlotEdge`
+///   `up != num`  →  `up != SlotSelf`   (Merge и Edge одинаково «не num»)
+/// В частности, сосед-SlotMerge в generic-блоке НЕ считается соединённым —
+/// он попадает в те же условия, что и пустота. Именно это определяет кадры
+/// на концах тонких полос камня в земле.
 /// </summary>
 public static class TerrariaFraming {
-    /// <summary>РЎРѕСЃРµРґ вЂ” В«СЃРІРѕР№В» С‚РѕРіРѕ Р¶Рµ РјР°С‚РµСЂРёР°Р»Р° (РєР°РјРµРЅСЊ-РєР°РјРµРЅСЊ, Р·РµРјР»СЏ-Р·РµРјР»СЏ).</summary>
+    /// <summary>Сосед того же типа (в оригинале == num).</summary>
     public const int SlotSelf = 1;
 
-    /// <summary>РЎРѕСЃРµРґ вЂ” Р·Р°РїСЂРѕСЃ СЃР»РёСЏРЅРёСЏ: РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ РЅР° РіСЂР°РЅРёС†Рµ РјР°С‚РµСЂРёР°Р»РѕРІ.</summary>
+    /// <summary>Сосед-запрос слияния (в оригинале маркер -2).</summary>
     public const int SlotMerge = -2;
 
-    /// <summary>РЎРѕСЃРµРґ вЂ” РіСЂР°РЅРёС†Р°: РїСѓСЃС‚РѕС‚Р°, С‡СѓР¶РѕР№ С‚РІС‘СЂРґС‹Р№ С‚РёРї РёР»Рё РЅРµ-С‚РІС‘СЂРґС‹Р№ С‚Р°Р№Р».</summary>
+    /// <summary>Сосед-граница: пустота или инородный тип (в оригинале -1).</summary>
     public const int SlotEdge = -1;
 
-    /// <summary>РЁР°Рі СЃРµС‚РєРё РєР°РґСЂРѕРІ РІ РїРёРєСЃРµР»СЏС… Р»РёСЃС‚Р° Terraria (16 px РєР°РґСЂ + 2 px РїР°РґРґРёРЅРі).</summary>
+    /// <summary>Шаг сетки кадров в пикселях листа Terraria (16 px кадр + 2 px паддинг).</summary>
     public const int FrameStride = 18;
 
-    /// <summary>
-    /// РљР»Р°СЃСЃРёС„РёРєР°С†РёСЏ РѕРґРЅРѕРіРѕ СЃРѕСЃРµРґР° РїРѕ С‚РёРїСѓ.
-    /// </summary>
+    /// <summary>Классификация одного соседа по типу.</summary>
     public static int ClassifyNeighbor(short neighborType, TerrariaTilesetRules rules) {
         if (!TerrariaTilesetRules.IsTerrainSolid(neighborType)) {
             return SlotEdge;
@@ -170,14 +159,12 @@ public static class TerrariaFraming {
         if (Contains(rules.MergeTypes, neighborType)) {
             return SlotMerge;
         }
-        // Р§СѓР¶РѕР№ С‚РІС‘СЂРґС‹Р№ С‚РёРї: РІ РѕСЂРёРіРёРЅР°Р»Рµ TileMergeAttemptWeird РїСЂРµРІСЂР°С‰Р°РµС‚ РµРіРѕ
-        // РІ РіСЂР°РЅРёС†Сѓ вЂ” СЂРёСЃСѓРµС‚СЃСЏ РѕР±С‹С‡РЅР°СЏ СЂР°РјРєР° РјРµР¶РґСѓ РјР°С‚РµСЂРёР°Р»Р°РјРё.
         return SlotEdge;
     }
 
     /// <summary>
-    /// РљР»Р°СЃСЃРёС„РёРєР°С†РёСЏ 8 СЃРѕСЃРµРґРµР№ РІРѕРєСЂСѓРі РєР»РµС‚РєРё (cx, cy) РїСЂСЏРјРѕ РёР· РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° РєР°СЂС‚С‹.
-    /// map[x, y]: x вЂ” РІРїСЂР°РІРѕ, y вЂ” РІРЅРёР· (y = 0 вЂ” РІРµСЂС…РЅСЏСЏ СЃС‚СЂРѕРєР° РїРµСЂРµРґР°РЅРЅРѕРіРѕ РѕРєРЅР°).
+    /// Классификация 8 соседей вокруг клетки (cx, cy) прямо из карты.
+    /// map[x, y]: x — вправо, y — вниз (y = 0 — верхняя строка окна).
     /// </summary>
     public static void ClassifyNeighbors(
         short[,] map, int cx, int cy, TerrariaTilesetRules rules,
@@ -194,8 +181,8 @@ public static class TerrariaFraming {
     }
 
     /// <summary>
-    /// РџРѕРґР±РѕСЂ РєР°РґСЂР° РїРѕ 8 РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°РЅРЅС‹Рј СЃРѕСЃРµРґСЏРј.
-    /// variant вЂ” РІР°СЂРёР°РЅС‚ С‚РµРєСЃС‚СѓСЂС‹ 0..2 (РІ РѕСЂРёРіРёРЅР°Р»Рµ tile.frameNumber()).
+    /// Подбор кадра по 8 классифицированным соседям.
+    /// variant — вариант текстуры 0..2 (в оригинале num27 / tile.frameNumber()).
     /// </summary>
     public static void Solve(
         int up, int down, int left, int right,
@@ -203,6 +190,7 @@ public static class TerrariaFraming {
         int variant, TerrariaTilesetRules rules,
         out int frameX, out int frameY,
         out bool mergeUp, out bool mergeDown, out bool mergeLeft, out bool mergeRight) {
+
         frameX = -1;
         frameY = -1;
         mergeUp = false;
@@ -216,412 +204,194 @@ public static class TerrariaFraming {
         }
 
         bool selected = false;
-        bool anyMerge = up == SlotMerge || down == SlotMerge || left == SlotMerge || right == SlotMerge;
-        bool anySelf = up == SlotSelf || down == SlotSelf || left == SlotSelf || right == SlotSelf;
 
-        // --- Р‘Р»РѕРє 1: merge-Р±Р»РѕРє, РІСЃРµ С‡РµС‚С‹СЂРµ СЃС‚РѕСЂРѕРЅС‹ РЅРµ РіСЂР°РЅРёС†Р° Р РµСЃС‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРЅР° Merge ---
-        // (РІ РѕСЂРёРіРёРЅР°Р»Рµ вЂ” if (up != -1 && ...) СЃ РїРѕСЃР»РµРґСѓСЋС‰РёРјРё merge-РїСЂРѕРІРµСЂРєР°РјРё).
-        // Р•СЃР»Рё РІСЃРµ СЃС‚РѕСЂРѕРЅС‹ Self Р±РµР· merge вЂ” СЌС‚Рѕ РѕР±С‹С‡РЅС‹Р№ РІРЅСѓС‚СЂРµРЅРЅРёР№ С‚Р°Р№Р», СѓС…РѕРґРёРј РІ Р‘Р»РѕРє 3.
-        if (rules.ParticipatesInMergeBlocks && anyMerge) {
+        if (rules.ParticipatesInMergeBlocks) {
             if (up != SlotEdge && down != SlotEdge && left != SlotEdge && right != SlotEdge) {
+                // ===== Блок 1 (WorldGen.cs 75580–75958): все 4 стороны != -1 =====
                 if (up == SlotMerge && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ: РєР°РґСЂС‹ (144..180, 108)
-                    frameX = 144 + 18 * v;
-                    frameY = 108;
-                    mergeUp = true;
+                    frameX = 144 + 18 * v; frameY = 108; mergeUp = true;          // 75582
                 } else if (up == SlotSelf && down == SlotMerge && left == SlotSelf && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРЅРёР·Сѓ: (144..180, 90)
-                    frameX = 144 + 18 * v;
-                    frameY = 90;
-                    mergeDown = true;
+                    frameX = 144 + 18 * v; frameY = 90; mergeDown = true;         // 75601
                 } else if (up == SlotSelf && down == SlotSelf && left == SlotMerge && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР°: (162, 126..162)
-                    frameX = 162;
-                    frameY = 126 + 18 * v;
-                    mergeLeft = true;
+                    frameX = 162; frameY = 126 + 18 * v; mergeLeft = true;        // 75620
                 } else if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРїСЂР°РІР°: (144, 126..162)
-                    frameX = 144;
-                    frameY = 126 + 18 * v;
-                    mergeRight = true;
+                    frameX = 144; frameY = 126 + 18 * v; mergeRight = true;       // 75639
                 } else if (up == SlotMerge && down == SlotSelf && left == SlotMerge && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ Рё СЃР»РµРІР°: (36, 90..162)
-                    frameX = 36;
-                    frameY = 90 + 36 * v;
-                    mergeUp = true;
-                    mergeLeft = true;
+                    frameX = 36; frameY = 90 + 36 * v; mergeUp = true; mergeLeft = true;    // 75658
                 } else if (up == SlotMerge && down == SlotSelf && left == SlotSelf && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ Рё СЃРїСЂР°РІР°: (54, 90..162)
-                    frameX = 54;
-                    frameY = 90 + 36 * v;
-                    mergeUp = true;
-                    mergeRight = true;
+                    frameX = 54; frameY = 90 + 36 * v; mergeUp = true; mergeRight = true;   // 75678
                 } else if (up == SlotSelf && down == SlotMerge && left == SlotMerge && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРЅРёР·Сѓ Рё СЃР»РµРІР°: (36, 108..180)
-                    frameX = 36;
-                    frameY = 108 + 36 * v;
-                    mergeDown = true;
-                    mergeLeft = true;
+                    frameX = 36; frameY = 108 + 36 * v; mergeDown = true; mergeLeft = true; // 75698
                 } else if (up == SlotSelf && down == SlotMerge && left == SlotSelf && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРЅРёР·Сѓ Рё СЃРїСЂР°РІР°: (54, 108..180)
-                    frameX = 54;
-                    frameY = 108 + 36 * v;
-                    mergeDown = true;
-                    mergeRight = true;
+                    frameX = 54; frameY = 108 + 36 * v; mergeDown = true; mergeRight = true;// 75718
                 } else if (up == SlotSelf && down == SlotSelf && left == SlotMerge && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР° Рё СЃРїСЂР°РІР°: (180, 126..162)
-                    frameX = 180;
-                    frameY = 126 + 18 * v;
-                    mergeLeft = true;
-                    mergeRight = true;
+                    frameX = 180; frameY = 126 + 18 * v; mergeLeft = true; mergeRight = true; // 75738
                 } else if (up == SlotMerge && down == SlotMerge && left == SlotSelf && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ Рё СЃРЅРёР·Сѓ: (144..180, 180)
-                    frameX = 144 + 18 * v;
-                    frameY = 180;
-                    mergeUp = true;
-                    mergeDown = true;
+                    frameX = 144 + 18 * v; frameY = 180; mergeUp = true; mergeDown = true;    // 75758
                 } else if (up == SlotMerge && down == SlotSelf && left == SlotMerge && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃ С‚СЂС‘С… СЃС‚РѕСЂРѕРЅ (СЃРІРµСЂС…Сѓ, СЃР»РµРІР°, СЃРїСЂР°РІР°): (198, 90..126)
-                    frameX = 198;
-                    frameY = 90 + 18 * v;
-                    mergeUp = true;
-                    mergeLeft = true;
-                    mergeRight = true;
+                    frameX = 198; frameY = 90 + 18 * v;                                   // 75778
+                    mergeUp = true; mergeLeft = true; mergeRight = true;
                 } else if (up == SlotSelf && down == SlotMerge && left == SlotMerge && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃ С‚СЂС‘С… СЃС‚РѕСЂРѕРЅ (СЃРЅРёР·Сѓ, СЃР»РµРІР°, СЃРїСЂР°РІР°): (198, 144..180)
-                    frameX = 198;
-                    frameY = 144 + 18 * v;
-                    mergeDown = true;
-                    mergeLeft = true;
-                    mergeRight = true;
+                    frameX = 198; frameY = 144 + 18 * v;                                  // 75799
+                    mergeDown = true; mergeLeft = true; mergeRight = true;
                 } else if (up == SlotMerge && down == SlotMerge && left == SlotSelf && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃ С‚СЂС‘С… СЃС‚РѕСЂРѕРЅ (СЃРІРµСЂС…Сѓ, СЃРЅРёР·Сѓ, СЃРїСЂР°РІР°): (216, 144..180)
-                    frameX = 216;
-                    frameY = 144 + 18 * v;
-                    mergeUp = true;
-                    mergeDown = true;
-                    mergeRight = true;
+                    frameX = 216; frameY = 144 + 18 * v;                                  // 75820
+                    mergeUp = true; mergeDown = true; mergeRight = true;
                 } else if (up == SlotMerge && down == SlotMerge && left == SlotMerge && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃ С‚СЂС‘С… СЃС‚РѕСЂРѕРЅ (СЃРІРµСЂС…Сѓ, СЃРЅРёР·Сѓ, СЃР»РµРІР°): (216, 90..126)
-                    frameX = 216;
-                    frameY = 90 + 18 * v;
-                    mergeUp = true;
-                    mergeDown = true;
-                    mergeLeft = true;
+                    frameX = 216; frameY = 90 + 18 * v;                                   // 75841
+                    mergeUp = true; mergeDown = true; mergeLeft = true;
                 } else if (up == SlotMerge && down == SlotMerge && left == SlotMerge && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРѕ РІСЃРµС… СЃС‚РѕСЂРѕРЅ: (108..144, 198)
-                    frameX = 108 + 18 * v;
-                    frameY = 198;
-                    mergeUp = true;
-                    mergeDown = true;
-                    mergeLeft = true;
-                    mergeRight = true;
-                } else {
-                    // Р’СЃРµ СЃС‚РѕСЂРѕРЅС‹ В«СЃРІРѕРёВ»: РІРЅСѓС‚СЂРµРЅРЅРёРµ СѓРіР»С‹ СЃР»РёСЏРЅРёСЏ РїРѕ РґРёР°РіРѕРЅР°Р»СЏРј
-                    // (РІ РѕСЂРёРіРёРЅР°Р»Рµ вЂ” РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ if, РїРѕР±РµР¶РґР°РµС‚ РїРѕР·РґРЅСЏСЏ РїСЂРѕРІРµСЂРєР°).
-                    bool diagonalMerge = false;
+                    frameX = 108 + 18 * v; frameY = 198;                                  // 75862
+                    mergeUp = true; mergeDown = true; mergeLeft = true; mergeRight = true;
+                } else if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
+                    // 75884–75958: внутренние углы по диагоналям; последовательные if,
+                    // побеждает ПОСЛЕДНЯЯ подошедшая диагональ.
                     if (upLeft == SlotMerge) {
-                        frameX = 18;
-                        frameY = 108 + 36 * v;
-                        diagonalMerge = true;
+                        frameX = 18; frameY = 108 + 36 * v; selected = true;
                     }
                     if (upRight == SlotMerge) {
-                        frameX = 0;
-                        frameY = 108 + 36 * v;
-                        diagonalMerge = true;
+                        frameX = 0; frameY = 108 + 36 * v; selected = true;
                     }
                     if (downLeft == SlotMerge) {
-                        frameX = 18;
-                        frameY = 90 + 36 * v;
-                        diagonalMerge = true;
+                        frameX = 18; frameY = 90 + 36 * v; selected = true;
                     }
                     if (downRight == SlotMerge) {
-                        frameX = 0;
-                        frameY = 90 + 36 * v;
-                        diagonalMerge = true;
+                        frameX = 0; frameY = 90 + 36 * v; selected = true;
                     }
-                    if (diagonalMerge) {
-                        selected = true;
-                    }
+                    // Если ни одна диагональ не сливается — кадр не назначается (уходим в Блок 3).
                 }
-                if (frameX >= 0 && frameY >= 0) {
-                    // РћРґРЅР° РёР· combo-РІРµС‚РѕРє (РёР»Рё РґРёР°РіРѕРЅР°Р»СЊРЅРѕРµ СЃР»РёСЏРЅРёРµ) РІС‹Р±СЂР°Р»Р° РєР°РґСЂ.
+
+                if (!selected && frameX >= 0 && frameY >= 0) {
                     selected = true;
                 }
             } else if (!rules.IsGrassLike) {
-                // --- Р‘Р»РѕРє 2: С‡Р°СЃС‚РёС‡РЅС‹Рµ СЃР»РёСЏРЅРёСЏ, С…РѕС‚СЏ Р±С‹ РѕРґРЅР° СЃС‚РѕСЂРѕРЅР° вЂ” РіСЂР°РЅРёС†Р° ---
-                // Р’РђР–РќРћ: В«СЃРѕРµРґРёРЅС‘РЅРЅР°СЏВ» СЃС‚РѕСЂРѕРЅР° Р·РґРµСЃСЊ вЂ” Р»СЋР±Р°СЏ РЅРµ-РіСЂР°РЅРёС†Р°
-                // (SlotSelf РР›Р SlotMerge), РєР°Рє РІ РѕСЂРёРіРёРЅР°Р»Рµ, РіРґРµ РїСЂРѕРІРµСЂРєРё РІРёРґР°
-                // `left == num || left == num32` РѕС…РІР°С‚С‹РІР°СЋС‚ РѕР±Р° РІР°СЂРёР°РЅС‚Р°.
-                // РРЅР°С‡Рµ РєР°РјРµРЅСЊ РІ СЃР»РѕР¶РЅС‹С… РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС… СЂРёСЃСѓРµС‚ generic-РєР°РґСЂС‹
+                // ===== Блок 2 (WorldGen.cs 75960–76403): хотя бы одна сторона == -1 =====
 
-                // --- 2Р°: РѕРґРЅРѕ СЃР»РёСЏРЅРёРµ + РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅР°СЏ СЃС‚РѕСЂРѕРЅР° РіСЂР°РЅРёС†Р° ---
-                if (up == SlotEdge && down == SlotMerge && left != SlotEdge && right != SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРЅРёР·Сѓ РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РІРµСЂС…Рµ: (234..270, 0)
-                    frameX = 234 + 18 * v;
-                    frameY = 0;
-                    mergeDown = true;
-                    selected = true;
-                } else if (up == SlotMerge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РЅРёР·Рµ: (234..270, 18)
-                    frameX = 234 + 18 * v;
-                    frameY = 18;
-                    mergeUp = true;
-                    selected = true;
-                } else if (up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotMerge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРїСЂР°РІР° РїСЂРё РѕС‚РєСЂС‹С‚РѕРј Р»РµРІРµ: (234..270, 36)
-                    frameX = 234 + 18 * v;
-                    frameY = 36;
-                    mergeRight = true;
-                    selected = true;
-                } else if (up != SlotEdge && down != SlotEdge && left == SlotMerge && right == SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР° РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РїСЂР°РІРµ: (234..270, 54)
-                    frameX = 234 + 18 * v;
-                    frameY = 54;
-                    mergeLeft = true;
-                    selected = true;
+                // --- 75962–76040: кадры 234-й колонки (стороны строго == num) ---
+                if (up == SlotEdge && down == SlotMerge && left == SlotSelf && right == SlotSelf) {
+                    frameX = 234 + 18 * v; frameY = 0; mergeDown = true; selected = true;   // 75964
+                } else if (up == SlotMerge && down == SlotEdge && left == SlotSelf && right == SlotSelf) {
+                    frameX = 234 + 18 * v; frameY = 18; mergeUp = true; selected = true;    // 75983
+                } else if (up == SlotSelf && down == SlotSelf && left == SlotEdge && right == SlotMerge) {
+                    frameX = 234 + 18 * v; frameY = 36; mergeRight = true; selected = true; // 76002
+                } else if (up == SlotSelf && down == SlotSelf && left == SlotMerge && right == SlotEdge) {
+                    frameX = 234 + 18 * v; frameY = 54; mergeLeft = true; selected = true;  // 76021
                 }
-                // --- 2Р±: СЃР»РёСЏРЅРёРµ + В«СЃРѕРµРґРёРЅС‘РЅРЅС‹РµВ» СЃС‚РѕСЂРѕРЅС‹ (СЃС‚СЂРѕРіРѕ Self, РєР°Рє == num РІ РѕСЂРёРіРёРЅР°Р»Рµ) ---
+
+                // --- 76041–76122: открыта левая/правая сторона, противоположная == num ---
                 if (!selected && up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotSelf) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ/СЃРЅРёР·Сѓ РїСЂРё РѕС‚РєСЂС‹С‚РѕРј Р»РµРІРµ, СЃРїСЂР°РІР° Self
                     if (up == SlotMerge && down == SlotSelf) {
-                        frameX = 72;
-                        frameY = 144 + 18 * v; // (72, 144..180)
-                        mergeUp = true;
-                        selected = true;
+                        frameX = 72; frameY = 144 + 18 * v; mergeUp = true; selected = true;    // 76043
                     } else if (down == SlotMerge && up == SlotSelf) {
-                        frameX = 72;
-                        frameY = 90 + 18 * v; // (72, 90..126)
-                        mergeDown = true;
-                        selected = true;
+                        frameX = 72; frameY = 90 + 18 * v; mergeDown = true; selected = true;   // 76062
                     }
-                }
-                if (!selected && up != SlotEdge && down != SlotEdge && left == SlotSelf && right == SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ/СЃРЅРёР·Сѓ РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РїСЂР°РІРµ, СЃР»РµРІР° Self
+                } else if (!selected && up != SlotEdge && down != SlotEdge && left == SlotSelf && right == SlotEdge) {
                     if (up == SlotMerge && down == SlotSelf) {
-                        frameX = 90;
-                        frameY = 144 + 18 * v; // (90, 144..180)
-                        mergeUp = true;
-                        selected = true;
+                        frameX = 90; frameY = 144 + 18 * v; mergeUp = true; selected = true;    // 76084
                     } else if (down == SlotMerge && up == SlotSelf) {
-                        frameX = 90;
-                        frameY = 90 + 18 * v; // (90, 90..126)
-                        mergeDown = true;
-                        selected = true;
+                        frameX = 90; frameY = 90 + 18 * v; mergeDown = true; selected = true;   // 76103
                     }
                 }
-                if (!selected && up == SlotEdge && down == SlotSelf && left != SlotEdge && right != SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР°/СЃРїСЂР°РІР° РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РІРµСЂС…Рµ, СЃРЅРёР·Сѓ Self
+                // --- 76123–76204: открыт верх/низ, горизонтальные слияния ---
+                else if (!selected && up == SlotEdge && down == SlotSelf && left != SlotEdge && right != SlotEdge) {
                     if (left == SlotMerge && right == SlotSelf) {
-                        frameX = 18 * v; // (0..36, 198)
-                        frameY = 198;
-                        mergeLeft = true;
-                        selected = true;
+                        frameX = 0 + 18 * v; frameY = 198; mergeLeft = true; selected = true;   // 76125
                     } else if (right == SlotMerge && left == SlotSelf) {
-                        frameX = 54 + 18 * v; // (54..90, 198)
-                        frameY = 198;
-                        mergeRight = true;
-                        selected = true;
+                        frameX = 54 + 18 * v; frameY = 198; mergeRight = true; selected = true; // 76144
                     }
-                }
-                if (!selected && up == SlotSelf && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР°/СЃРїСЂР°РІР° РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РЅРёР·Рµ, СЃРІРµСЂС…Сѓ Self
+                } else if (!selected && up == SlotSelf && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
                     if (left == SlotMerge && right == SlotSelf) {
-                        frameX = 18 * v; // (0..36, 216)
-                        frameY = 216;
-                        mergeLeft = true;
-                        selected = true;
+                        frameX = 0 + 18 * v; frameY = 216; mergeLeft = true; selected = true;   // 76166
                     } else if (right == SlotMerge && left == SlotSelf) {
-                        frameX = 54 + 18 * v; // (54..90, 216)
-                        frameY = 216;
-                        mergeRight = true;
-                        selected = true;
+                        frameX = 54 + 18 * v; frameY = 216; mergeRight = true; selected = true; // 76185
                     }
                 }
-                // --- 2РІ: РґРІР° СЃР»РёСЏРЅРёСЏ + РґРІРµ РѕС‚РєСЂС‹С‚С‹Рµ СЃС‚РѕСЂРѕРЅС‹ ---
-                if (!selected && up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ/СЃРЅРёР·Сѓ РїСЂРё РѕС‚РєСЂС‹С‚С‹С… Р»РµРІРµ Рё РїСЂР°РІРµ
+                // --- 76205–76326: два слияния при двух открытых сторонах ---
+                else if (!selected && up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotEdge) {
                     if (up == SlotMerge && down == SlotMerge) {
-                        frameX = 108;
-                        frameY = 216 + 18 * v; // (108, 216..252)
-                        mergeUp = true;
-                        mergeDown = true;
-                        selected = true;
+                        frameX = 108; frameY = 216 + 18 * v;                                    // 76207
+                        mergeUp = true; mergeDown = true; selected = true;
                     } else if (up == SlotMerge) {
-                        frameX = 126;
-                        frameY = 144 + 18 * v; // (126, 144..180)
-                        mergeUp = true;
-                        selected = true;
+                        frameX = 126; frameY = 144 + 18 * v; mergeUp = true; selected = true;   // 76227
                     } else if (down == SlotMerge) {
-                        frameX = 126;
-                        frameY = 90 + 18 * v; // (126, 90..126)
-                        mergeDown = true;
-                        selected = true;
+                        frameX = 126; frameY = 90 + 18 * v; mergeDown = true; selected = true;  // 76246
                     }
-                }
-                if (!selected && up == SlotEdge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃР»РµРІР°/СЃРїСЂР°РІР° РїСЂРё РѕС‚РєСЂС‹С‚С‹С… РІРµСЂС…Рµ Рё РЅРёР·Рµ
+                } else if (!selected && up == SlotEdge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
                     if (left == SlotMerge && right == SlotMerge) {
-                        frameX = 162 + 18 * v; // (162..198, 198)
-                        frameY = 198;
-                        mergeLeft = true;
-                        mergeRight = true;
-                        selected = true;
+                        frameX = 162 + 18 * v; frameY = 198;                                    // 76268
+                        mergeLeft = true; mergeRight = true; selected = true;
                     } else if (left == SlotMerge) {
-                        frameX = 18 * v; // (0..36, 252)
-                        frameY = 252;
-                        mergeLeft = true;
-                        selected = true;
+                        frameX = 0 + 18 * v; frameY = 252; mergeLeft = true; selected = true;   // 76288
                     } else if (right == SlotMerge) {
-                        frameX = 54 + 18 * v; // (54..90, 252)
-                        frameY = 252;
-                        mergeRight = true;
-                        selected = true;
+                        frameX = 54 + 18 * v; frameY = 252; mergeRight = true; selected = true; // 76307
                     }
                 }
-                // --- 2Рґ: РґРІР° СЃР»РёСЏРЅРёСЏ (РІРµСЂС…+РЅРёР·) РїСЂРё РѕС‚РєСЂС‹С‚С‹С… Р»РµРІРµ Рё РїСЂР°РІРµ ---
-                if (!selected && up == SlotMerge && down == SlotMerge && left == SlotEdge && right == SlotEdge) {
-                    // РЎР»РёСЏРЅРёРµ СЃРІРµСЂС…Сѓ Рё СЃРЅРёР·Сѓ РїСЂРё РѕС‚РєСЂС‹С‚С‹С… Р»РµРІРµ Рё РїСЂР°РІРµ: (108, 216..252)
-                    frameX = 108;
-                    frameY = 216 + 18 * v;
-                    mergeUp = true;
-                    mergeDown = true;
-                    selected = true;
-                }
-                // --- 2e: dva sliyaniya (levo+pravo) pri otkrytykh verkh i niz ---
-                if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotMerge) {
-                    frameX = 162 + 18 * v;
-                    frameY = 198;
-                    mergeLeft = true;
-                    mergeRight = true;
-                    selected = true;
-                }
-                // --- 2g: odno sliyaniye, ostalnyye otkryty ---
-                if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotEdge) {
-                    frameX = 18 * v;
-                    frameY = 234;
-                    mergeLeft = true;
-                    selected = true;
+                // --- 76327–76402: одно слияние при трёх открытых сторонах ---
+                else if (!selected && up == SlotMerge && down == SlotEdge && left == SlotEdge && right == SlotEdge) {
+                    frameX = 108; frameY = 144 + 18 * v; mergeUp = true; selected = true;       // 76327
+                } else if (!selected && up == SlotEdge && down == SlotMerge && left == SlotEdge && right == SlotEdge) {
+                    frameX = 108; frameY = 90 + 18 * v; mergeDown = true; selected = true;      // 76346
+                } else if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotEdge) {
+                    frameX = 0 + 18 * v; frameY = 234; mergeLeft = true; selected = true;       // 76365
                 } else if (!selected && up == SlotEdge && down == SlotEdge && left == SlotEdge && right == SlotMerge) {
-                    frameX = 54 + 18 * v;
-                    frameY = 234;
-                    mergeRight = true;
-                    selected = true;
+                    frameX = 54 + 18 * v; frameY = 234; mergeRight = true; selected = true;     // 76384
                 }
             }
         }
 
-        // --- Р‘Р»РѕРє 3: РѕР±С‰РёР№ РЅР°Р±РѕСЂ РєР°РґСЂРѕРІ РїРѕ 4 СЃС‚РѕСЂРѕРЅР°Рј Рё РґРёР°РіРѕРЅР°Р»СЏРј ---
+        // ===== Блок 3 (WorldGen.cs 76551–76927): generic, строгое сравнение с num =====
         if (!selected) {
-            if (IsConnected(up) && IsConnected(down) && IsConnected(left) && IsConnected(right)) {
-                // Р’РЅСѓС‚СЂРµРЅРЅРёР№ С‚Р°Р№Р»: РІР°СЂРёР°РЅС‚С‹ Р±РµР· РіСЂР°РЅРёС†, СЃ РІРЅСѓС‚СЂРµРЅРЅРёРјРё СѓРіР»Р°РјРё РїРѕ РґРёР°РіРѕРЅР°Р»СЏРј.
-                if (!IsConnected(upLeft) && !IsConnected(upRight)) {
-                    frameX = 108 + 18 * v; // (108..144, 18)
-                    frameY = 18;
-                } else if (!IsConnected(downLeft) && !IsConnected(downRight)) {
-                    frameX = 108 + 18 * v; // (108..144, 36)
-                    frameY = 36;
-                } else if (!IsConnected(upLeft) && !IsConnected(downLeft)) {
-                    frameX = 180; // (180, 0..36)
-                    frameY = 18 * v;
-                } else if (!IsConnected(upRight) && !IsConnected(downRight)) {
-                    frameX = 198; // (198, 0..36)
-                    frameY = 18 * v;
+            if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
+                if (upLeft != SlotSelf && upRight != SlotSelf) {
+                    frameX = 108 + 18 * v; frameY = 18;               // 76566
+                } else if (downLeft != SlotSelf && downRight != SlotSelf) {
+                    frameX = 108 + 18 * v; frameY = 36;               // 76584
+                } else if (upLeft != SlotSelf && downLeft != SlotSelf) {
+                    frameX = 180; frameY = 18 * v;                    // 76602
+                } else if (upRight != SlotSelf && downRight != SlotSelf) {
+                    frameX = 198; frameY = 18 * v;                    // 76620
                 } else {
-                    frameX = 18 + 18 * v; // (18..54, 18)
-                    frameY = 18;
+                    frameX = 18 + 18 * v; frameY = 18;                // 76638
                 }
-            } else if (!IsConnected(up) && IsConnected(down) && IsConnected(left) && IsConnected(right)) {
-                // Р’РµСЂС…РЅРёР№ РєСЂР°Р№: (18..54, 0)
-                frameX = 18 + 18 * v;
-                frameY = 0;
-            } else if (IsConnected(up) && !IsConnected(down) && IsConnected(left) && IsConnected(right)) {
-                // РќРёР¶РЅРёР№ РєСЂР°Р№: (18..54, 36)
-                frameX = 18 + 18 * v;
-                frameY = 36;
-            } else if (IsConnected(up) && IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
-                // Р›РµРІС‹Р№ РєСЂР°Р№: (0, 0..36)
-                frameX = 0;
-                frameY = 18 * v;
-            } else if (IsConnected(up) && IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
-                // РџСЂР°РІС‹Р№ РєСЂР°Р№: (72, 0..36)
-                frameX = 72;
-                frameY = 18 * v;
-            } else if (!IsConnected(up) && IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
-                // Р’РЅРµС€РЅРёР№ СѓРіРѕР» СЃРІРµСЂС…Сѓ-СЃР»РµРІР°: (0..72, 54)
-                frameX = 36 * v;
-                frameY = 54;
-            } else if (!IsConnected(up) && IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
-                // Р’РЅРµС€РЅРёР№ СѓРіРѕР» СЃРІРµСЂС…Сѓ-СЃРїСЂР°РІР°: (18..90, 54)
-                frameX = 18 + 36 * v;
-                frameY = 54;
-            } else if (IsConnected(up) && !IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
-                // Р’РЅРµС€РЅРёР№ СѓРіРѕР» СЃРЅРёР·Сѓ-СЃР»РµРІР°: (0..72, 72)
-                frameX = 36 * v;
-                frameY = 72;
-            } else if (IsConnected(up) && !IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
-                // Р’РЅРµС€РЅРёР№ СѓРіРѕР» СЃРЅРёР·Сѓ-СЃРїСЂР°РІР°: (18..90, 72)
-                frameX = 18 + 36 * v;
-                frameY = 72;
-            } else if (IsConnected(up) && IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
-                // Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅР°СЏ РїРѕР»РѕСЃР°: (90, 0..36)
-                frameX = 90;
-                frameY = 18 * v;
-            } else if (!IsConnected(up) && !IsConnected(down) && IsConnected(left) && IsConnected(right)) {
-                // Р’РµСЂС‚РёРєР°Р»СЊРЅР°СЏ РїРѕР»РѕСЃР°: (108..144, 72)
-                frameX = 108 + 18 * v;
-                frameY = 72;
-            } else if (!IsConnected(up) && IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
-                // В«РЁР°РїРєР°В» СЃРІРµСЂС…Сѓ: (108..144, 0)
-                frameX = 108 + 18 * v;
-                frameY = 0;
-            } else if (IsConnected(up) && !IsConnected(down) && !IsConnected(left) && !IsConnected(right)) {
-                // В«РЁР°РїРєР°В» СЃРЅРёР·Сѓ: (108..144, 54)
-                frameX = 108 + 18 * v;
-                frameY = 54;
-            } else if (!IsConnected(up) && !IsConnected(down) && !IsConnected(left) && IsConnected(right)) {
-                // РџРѕР»РѕСЃР°, РѕС‚РєСЂС‹С‚Р°СЏ СЃРІРµСЂС…Сѓ, СЃРЅРёР·Сѓ Рё СЃР»РµРІР°: (162, 0..36)
-                frameX = 162;
-                frameY = 18 * v;
-            } else if (!IsConnected(up) && !IsConnected(down) && IsConnected(left) && !IsConnected(right)) {
-                // РџРѕР»РѕСЃР°, РѕС‚РєСЂС‹С‚Р°СЏ СЃРІРµСЂС…Сѓ, СЃРЅРёР·Сѓ Рё СЃРїСЂР°РІР°: (216, 0..36)
-                frameX = 216;
-                frameY = 18 * v;
+            } else if (up != SlotSelf && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
+                frameX = 18 + 18 * v; frameY = 0;                     // 76657 верхний край
+            } else if (up == SlotSelf && down != SlotSelf && left == SlotSelf && right == SlotSelf) {
+                frameX = 18 + 18 * v; frameY = 36;                    // 76675 нижний край
+            } else if (up == SlotSelf && down == SlotSelf && left != SlotSelf && right == SlotSelf) {
+                frameX = 0; frameY = 18 * v;                          // 76693 левый край
+            } else if (up == SlotSelf && down == SlotSelf && left == SlotSelf && right != SlotSelf) {
+                frameX = 72; frameY = 18 * v;                         // 76711 правый край
+            } else if (up != SlotSelf && down == SlotSelf && left != SlotSelf && right == SlotSelf) {
+                frameX = 36 * v; frameY = 54;                         // 76729 угол сверху-слева
+            } else if (up != SlotSelf && down == SlotSelf && left == SlotSelf && right != SlotSelf) {
+                frameX = 18 + 36 * v; frameY = 54;                    // 76747 угол сверху-справа
+            } else if (up == SlotSelf && down != SlotSelf && left != SlotSelf && right == SlotSelf) {
+                frameX = 36 * v; frameY = 72;                         // 76765 угол снизу-слева
+            } else if (up == SlotSelf && down != SlotSelf && left == SlotSelf && right != SlotSelf) {
+                frameX = 18 + 36 * v; frameY = 72;                    // 76783 угол снизу-справа
+            } else if (up == SlotSelf && down == SlotSelf && left != SlotSelf && right != SlotSelf) {
+                frameX = 90; frameY = 18 * v;                         // 76801 горизонтальная полоса
+            } else if (up != SlotSelf && down != SlotSelf && left == SlotSelf && right == SlotSelf) {
+                frameX = 108 + 18 * v; frameY = 72;                   // 76819 вертикальная полоса
+            } else if (up != SlotSelf && down == SlotSelf && left != SlotSelf && right != SlotSelf) {
+                frameX = 108 + 18 * v; frameY = 0;                    // 76837 «шапка» сверху
+            } else if (up == SlotSelf && down != SlotSelf && left != SlotSelf && right != SlotSelf) {
+                frameX = 108 + 18 * v; frameY = 54;                   // 76855 «шапка» снизу
+            } else if (up != SlotSelf && down != SlotSelf && left != SlotSelf && right == SlotSelf) {
+                frameX = 162; frameY = 18 * v;                        // 76873 (наш случай полосы)
+            } else if (up != SlotSelf && down != SlotSelf && left == SlotSelf && right != SlotSelf) {
+                frameX = 216; frameY = 18 * v;                        // 76891
             } else {
-                // РћРґРёРЅРѕС‡РЅС‹Р№ Р±Р»РѕРє: (162..198, 54)
-                frameX = 162 + 18 * v;
-                frameY = 54;
+                frameX = 162 + 18 * v; frameY = 54;                   // 76909 одиночный блок
             }
             selected = true;
         }
 
-        // --- Р‘Р»РѕРє 4: Р±РµР·РѕРїР°СЃРЅС‹Р№ РІР°СЂРёР°РЅС‚, РµСЃР»Рё РЅРёС‡РµРіРѕ РЅРµ РїРѕРґРѕС€Р»Рѕ ---
+        // ===== Блок 4 (WorldGen.cs 76928–76945): безопасный вариант =====
         if (!selected) {
             frameX = 18 + 18 * v;
             frameY = 18;
         }
-
-        // --- Р¤Р»Р°РіРё СЃР»РёСЏРЅРёСЏ РґР»СЏ РІР·Р°РёРјРЅРѕР№ РїСЂРѕРІРµСЂРєРё Р·РµРјР»Рё СЃ РєР°РјРЅРµРј ---
-        // Р’ РѕСЂРёРіРёРЅР°Р»Рµ Terraria: Р»СЋР±РѕР№ СЃРѕСЃРµРґ merge_type (РґР»СЏ РєР°РјРЅСЏ вЂ” Р·РµРјР»СЏ, РґР»СЏ
-        // Р·РµРјР»Рё вЂ” РєР°РјРµРЅСЊ РїРѕСЃР»Рµ РІР·Р°РёРјРЅРѕР№ РїСЂРѕРІРµСЂРєРё) СЃС‡РёС‚Р°РµС‚СЃСЏ В«СЃРІРѕРёРјВ» вЂ” СЂРёСЃСѓРµС‚СЃСЏ
-        // Р±РµСЃС€РѕРІРЅРѕ. РџРѕСЌС‚РѕРјСѓ С„Р»Р°Рі РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РґР»СЏ РљРђР–Р”РћР™ СЃС‚РѕСЂРѕРЅС‹ СЃРѕ Р·РЅР°С‡РµРЅРёРµРј
-        // SlotMerge, РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ С‚РѕРіРѕ, РєР°РєРѕР№ РєР°РґСЂ (merge РёР»Рё generic) РІС‹Р±СЂР°РЅ.
-        // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ РІСЃРµ СЃРѕСЃРµРґРё-Р·РµРјР»СЏ РІРѕРєСЂСѓРі РєР°РјРЅСЏ РїСЂРѕС…РѕРґСЏС‚ РІР·Р°РёРјРЅСѓСЋ
-        // РїСЂРѕРІРµСЂРєСѓ Рё РЅРµ СЂРёСЃСѓСЋС‚ СЃРІРѕРё РєСЂР°СЏ.
-        mergeUp = up == SlotMerge;
-        mergeDown = down == SlotMerge;
-        mergeLeft = left == SlotMerge;
-        mergeRight = right == SlotMerge;
-    }
-
-    /// <summary>
-    /// РЎС‚РѕСЂРѕРЅР° СЃС‡РёС‚Р°РµС‚СЃСЏ В«СЃРѕРµРґРёРЅС‘РЅРЅРѕР№В» РµСЃР»Рё СЃРѕСЃРµРґ вЂ” Self (С‚РѕС‚ Р¶Рµ РјР°С‚РµСЂРёР°Р»)
-    /// РР›Р Merge (РґСЂСѓРіРѕР№ РјР°С‚РµСЂРёР°Р», СЃ РєРѕС‚РѕСЂС‹Рј РµСЃС‚СЊ РєР°РґСЂС‹ СЃР»РёСЏРЅРёСЏ).
-    /// Р’ РѕСЂРёРіРёРЅР°Р»Рµ Terraria dirt-mergeable С‚РёРїС‹ СЂРёСЃСѓСЋС‚ Р±РµСЃС€РѕРІРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ
-    /// Рё СЃ СЃРѕСЃРµРґСЏРјРё СЃРІРѕРµРіРѕ С‚РёРїР°, Рё СЃ СЃРѕСЃРµРґСЏРјРё merge-С‚РёРїР°.
-    /// </summary>
-    private static bool IsConnected(int slot) {
-        return slot == SlotSelf || slot == SlotMerge;
     }
 
     private static bool Contains(short[] types, short type) {

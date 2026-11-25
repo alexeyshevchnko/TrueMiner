@@ -1,0 +1,10 @@
+# Артефакты сборки
+bin/
+obj/
+
+# Генерируется тестами/скриптом рендера.
+# Канонические снимки результата лежат в ../artifacts/.
+terrain_preview.png
+zoom_strip.png
+framing_sheet_stone.png
+framing_sheet_dirt.png
