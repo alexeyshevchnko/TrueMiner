@@ -1,0 +1,11 @@
+version: 2
+tpsheetFileNames:
+- Assets/Resources/Items.tpsheet
+- Assets/Resources/TerrariaTiles.tpsheet
+textureFileNames:
+- Assets/Resources/Items.png
+- Assets/Resources/TerrariaTiles.png
+normalmapFileNames:
+- 
+- 
+enableDebugOutput: 0
