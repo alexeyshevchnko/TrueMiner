@@ -8,46 +8,42 @@ using System;
 /// (frameX, frameY) в пикселях листа. Один и тот же лист содержит:
 ///   • базовые кадры краёв/углов/центра (Y = 0..89);
 ///   • кадры внутренних углов (X = 108/180/198, Y = 18/36/72);
-///   • кадры слияния с другим типом (Y = 90..252) — используются, когда сосед
-///     является «запросом слияния» (в Terraria это сосед с маркером -2).
+///   • кадры слияния с другим материалом (Y = 90..252) — используются, когда сосед
+///     является «запросом слияния» (в оригинале — маркер -2).
 ///
-/// Правила описывают, какие типы считаются «своими», какие запрашивают слияние
-/// и для каких соседей нужна взаимная проверка (как dirt↔stone в Terraria).
-/// Это позволяет добавлять новые блоки без переписывания движка кадрирования.
+/// Семантика оригинала для пары земля/камень:
+///   • Земля (dirt, tileMergeDirt[0] = false) НЕ участвует в merge-блоках: земля-земля
+///     → SlotSelf (обычные внутренние кадры), камень → SlotEdge (обычный край земли;
+///     бесшовность на границе даётся merge-кадрами камня).
+///   • Камень (tileMergeDirt[1] = true) участвует: камень-камень → SlotSelf,
+///     земля → SlotMerge (кадры слияния камня в землю).
+///   • MutualMergeCheckTypes — сосед, который проверяется на «встречное» слияние:
+///     земля проверяет камень и, если камень рисует merge-кадр в её сторону,
+///     считает его «своим» (убирает свой край — иначе видна двойная рамка).
 /// </summary>
 public sealed class TerrariaTilesetRules {
-    /// <summary>Типы, которые считаются «своими» (рисуются без границы между собой).</summary>
+    /// <summary>Типы, которые считаются «своими» (SlotSelf: без границы между собой).</summary>
     public readonly short[] SelfTypes;
 
-    /// <summary>Типы-соседи, запрашивающие слияние (в оригинале — маркер -2).</summary>
+    /// <summary>Типы-соседи, запрашивающие слияние (SlotMerge: кадры слияния).</summary>
     public readonly short[] MergeTypes;
 
     /// <summary>
-    /// Типы-соседи, для которых нужна взаимная проверка: сосед считается «своим»
-    /// только если он сам при кадрировании сливается в нашу сторону
-    /// (в оригинале — dirt проверяет stone через повторный TileFrame).
+    /// Типы-соседи, для которых нужна взаимная проверка: сосед считается «своим»,
+    /// только если он сам при кадрировании сливается в нашу сторону.
+    /// В оригинале — TileMergeAttemptFrametest/TileFrame для dirt-mergeable соседей.
     /// </summary>
     public readonly short[] MutualMergeCheckTypes;
 
-    /// <summary>
-    /// Правила, по которым кадрируется сосед из MutualMergeCheckTypes при взаимной
-    /// проверке (для земли — правила камня). Может быть null, если проверка не нужна.
-    /// </summary>
+    /// <summary>Правила соседа при взаимной проверке. null — проверка не нужна.</summary>
     public readonly TerrariaTilesetRules MutualMergeCheckRules;
 
     /// <summary>
-    /// Диагональные соседи из MutualMergeCheckTypes в оригинале считаются «своими»
-    /// без взаимной проверки (для земли так обрабатывается диагональный камень).
-    /// </summary>
-    public readonly bool MutualMergeCheckDiagonalIsSelf;
-
-    /// <summary>
     /// Участвует ли тайл в merge-блоках оригинала (Main.tileMergeDirt[num]).
-    /// Для камня — true (у него есть кадры слияния), для земли — false.
     /// </summary>
     public readonly bool ParticipatesInMergeBlocks;
 
-    /// <summary>Тип относится к «травяному» семейству (в оригинале для него пропускаются кадры 234-й колонки).</summary>
+    /// <summary>Тип относится к «травяному» семейству (для него пропускаются кадры 234-й колонки).</summary>
     public readonly bool IsGrassLike;
 
     public TerrariaTilesetRules(
@@ -55,14 +51,12 @@ public sealed class TerrariaTilesetRules {
         short[] mergeTypes,
         short[] mutualMergeCheckTypes,
         TerrariaTilesetRules mutualMergeCheckRules,
-        bool mutualMergeCheckDiagonalIsSelf,
         bool participatesInMergeBlocks,
         bool isGrassLike) {
         SelfTypes = selfTypes ?? EmptyTypes;
         MergeTypes = mergeTypes ?? EmptyTypes;
         MutualMergeCheckTypes = mutualMergeCheckTypes ?? EmptyTypes;
         MutualMergeCheckRules = mutualMergeCheckRules;
-        MutualMergeCheckDiagonalIsSelf = mutualMergeCheckDiagonalIsSelf;
         ParticipatesInMergeBlocks = participatesInMergeBlocks;
         IsGrassLike = isGrassLike;
     }
@@ -97,29 +91,28 @@ public sealed class TerrariaTilesetRules {
     }
 
     /// <summary>
-    /// Камень (Tiles_1): «свой» — только камень; земля запрашивает слияние (-2),
-    /// поэтому камень рисует кадры слияния на границе с землёй. Участвует в merge-блоках.
+    /// Камень (Tiles_1): камень-камень → SlotSelf, земля → SlotMerge (кадры слияния
+    /// камня в землю), остальное → SlotEdge. Участвует в merge-блоках.
     /// </summary>
     public static readonly TerrariaTilesetRules Stone = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Stone },
         mergeTypes: new[] { (short) TileTypeEnum.Terrain0 },
         mutualMergeCheckTypes: null,
         mutualMergeCheckRules: null,
-        mutualMergeCheckDiagonalIsSelf: false,
         participatesInMergeBlocks: true,
         isGrassLike: false);
 
     /// <summary>
-    /// Земля (Tiles_0): «свои» — земля и трава (как в Terraria земля не рисует границу
-    /// к траве); камень по сторонам считается «своим» только если он сам сливается
-    /// в нашу сторону, по диагоналям — всегда. Земля не участвует в merge-блоках.
+    /// Земля (Tiles_0): земля-земля и земля-трава → SlotSelf (внутренние кадры без
+    /// границ), камень → SlotEdge + взаимная проверка (если камень сливается в нашу
+    /// сторону — земля убирает свой край, иначе видна двойная рамка), остальное →
+    /// SlotEdge. В merge-блоках не участвует (в оригинале tileMergeDirt[0] = false).
     /// </summary>
     public static readonly TerrariaTilesetRules Dirt = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
         mergeTypes: null,
         mutualMergeCheckTypes: new[] { (short) TileTypeEnum.Stone },
         mutualMergeCheckRules: Stone,
-        mutualMergeCheckDiagonalIsSelf: true,
         participatesInMergeBlocks: false,
         isGrassLike: false);
 }
@@ -128,22 +121,26 @@ public sealed class TerrariaTilesetRules {
 /// Чистый решатель кадров Terraria для тайлов обычного («не frameImportant») типа.
 ///
 /// Алгоритм повторяет оригинальный WorldGen.TileFrame (сверено с декомпиляцией
-/// Terraria 1.3.5.3 и 1.4.4.9): сначала пробуются кадры слияния, затем общий
-/// 8-соседний набор, затем — безопасный вариант «центр». Все координаты — в пикселях
-/// листа тайлсета; кадр занимает 16x16 px с шагом сетки 18 px.
+/// Terraria 1.3.5.3 и 1.4.4.9): merge-блоки (все 4 стороны не граница) → частичные
+/// слияния с открытыми сторонами → общий набор кадров → безопасный вариант «центр».
+///
+/// Важное отличие частичных слияний от наивной реализации: «соединённая» сторона в
+/// их условиях — ЛЮБАЯ не-граница (SlotSelf ИЛИ SlotMerge), как в оригинале, где
+/// проверки вида `left == num || left == num32` охватывают и self, и merge-соседей.
+/// Это устраняет чёрные разрывы на границах материалов в сложных конфигурациях.
 ///
 /// Решатель не создаёт объектов и не обращается к карте: на вход подаются уже
 /// классифицированные 8 соседей, на выходе — координаты кадра и флаги слияния
 /// (флаги нужны земле для взаимной проверки с камнем).
 /// </summary>
 public static class TerrariaFraming {
-    /// <summary>Сосед — «свой» (рисуется без границы).</summary>
+    /// <summary>Сосед — «свой» того же материала (камень-камень, земля-земля).</summary>
     public const int SlotSelf = 1;
 
-    /// <summary>Сосед запрашивает слияние (в оригинале — маркер -2).</summary>
+    /// <summary>Сосед — запрос слияния: кадры слияния на границе материалов.</summary>
     public const int SlotMerge = -2;
 
-    /// <summary>Сосед — граница: пустота, другой твёрдый тип или не-твёрдый тайл.</summary>
+    /// <summary>Сосед — граница: пустота, чужой твёрдый тип или не-твёрдый тайл.</summary>
     public const int SlotEdge = -1;
 
     /// <summary>Шаг сетки кадров в пикселях листа Terraria (16 px кадр + 2 px паддинг).</summary>
@@ -162,8 +159,8 @@ public static class TerrariaFraming {
         if (Contains(rules.MergeTypes, neighborType)) {
             return SlotMerge;
         }
-        // Другой твёрдый тип: в оригинале он остаётся своим номером и далее
-        // всё равно отсекается как «не свой» — для кадров это то же, что граница.
+        // Чужой твёрдый тип: в оригинале TileMergeAttemptWeird превращает его
+        // в границу — рисуется обычная рамка между материалами.
         return SlotEdge;
     }
 
@@ -209,7 +206,8 @@ public static class TerrariaFraming {
 
         bool selected = false;
 
-        // --- Блок 1: слияние, все четыре стороны заданы (в оригинале — if (up != -1 && ...)) ---
+        // --- Блок 1: merge-блок, все четыре стороны не граница ---
+        // (в оригинале — if (up != -1 && down != -1 && left != -1 && right != -1))
         if (rules.ParticipatesInMergeBlocks) {
             if (up != SlotEdge && down != SlotEdge && left != SlotEdge && right != SlotEdge) {
                 if (up == SlotMerge && down == SlotSelf && left == SlotSelf && right == SlotSelf) {
@@ -305,9 +303,8 @@ public static class TerrariaFraming {
                     mergeLeft = true;
                     mergeRight = true;
                 } else {
-                    // Все стороны «свои»: внутренние углы слияния по диагоналям.
-                    // В оригинале это последовательные if — при двух слияниях
-                    // побеждает более поздняя проверка (порядок важен).
+                    // Все стороны «свои»: внутренние углы слияния по диагоналям
+                    // (в оригинале — последовательные if, побеждает поздняя проверка).
                     bool diagonalMerge = false;
                     if (upLeft == SlotMerge) {
                         frameX = 18;
@@ -338,33 +335,42 @@ public static class TerrariaFraming {
                     selected = true;
                 }
             } else if (!rules.IsGrassLike) {
-                // --- Блок 2: частичное слияние, одна из сторон — граница ---
-                if (up == SlotEdge && down == SlotMerge && left == SlotSelf && right == SlotSelf) {
+                // --- Блок 2: частичное слияние, хотя бы одна сторона — граница ---
+                // ВАЖНО: «соединённая» сторона здесь — любая не-граница
+                // (SlotSelf ИЛИ SlotMerge), как в оригинале, где проверки вида
+                // `left == num || left == num32` охватывают оба варианта.
+                // Иначе камень в сложных конфигурациях рисует generic-кадры
+                // с тёмными рамками — видны чёрные разрывы на границах.
+
+                // --- 2а: одно слияние + противоположная сторона граница ---
+                if (up == SlotEdge && down == SlotMerge && left != SlotEdge && right != SlotEdge) {
                     // Слияние снизу при открытом верхе: (234..270, 0)
                     frameX = 234 + 18 * v;
                     frameY = 0;
                     mergeDown = true;
                     selected = true;
-                } else if (up == SlotMerge && down == SlotEdge && left == SlotSelf && right == SlotSelf) {
+                } else if (up == SlotMerge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
                     // Слияние сверху при открытом низе: (234..270, 18)
                     frameX = 234 + 18 * v;
                     frameY = 18;
                     mergeUp = true;
                     selected = true;
-                } else if (up == SlotSelf && down == SlotSelf && left == SlotEdge && right == SlotMerge) {
+                } else if (up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotMerge) {
                     // Слияние справа при открытом леве: (234..270, 36)
                     frameX = 234 + 18 * v;
                     frameY = 36;
                     mergeRight = true;
                     selected = true;
-                } else if (up == SlotSelf && down == SlotSelf && left == SlotMerge && right == SlotEdge) {
+                } else if (up != SlotEdge && down != SlotEdge && left == SlotMerge && right == SlotEdge) {
                     // Слияние слева при открытом праве: (234..270, 54)
                     frameX = 234 + 18 * v;
                     frameY = 54;
                     mergeLeft = true;
                     selected = true;
-                } else if (up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotSelf) {
-                    // Слияние сверху/снизу при открытом леве и «своём» праве
+                }
+                // --- 2б: слияние + «соединённые» стороны (self или merge) ---
+                if (!selected && up != SlotEdge && down != SlotEdge && left == SlotEdge && right != SlotEdge) {
+                    // Слияние сверху/снизу при открытом леве, справа соединена
                     if (up == SlotMerge && down == SlotSelf) {
                         frameX = 72;
                         frameY = 144 + 18 * v; // (72, 144..180)
@@ -375,9 +381,16 @@ public static class TerrariaFraming {
                         frameY = 90 + 18 * v; // (72, 90..126)
                         mergeDown = true;
                         selected = true;
+                    } else if (up == SlotMerge && down == SlotMerge) {
+                        // Оба слияния, лево открыто, право соединено
+                        frameX = 126;
+                        frameY = 144 + 18 * v; // (126, 144..180)
+                        mergeUp = true;
+                        selected = true;
                     }
-                } else if (up != SlotEdge && down != SlotEdge && left == SlotSelf && right == SlotEdge) {
-                    // Слияние сверху/снизу при открытом праве и «своём» леве
+                }
+                if (!selected && up != SlotEdge && down != SlotEdge && left != SlotEdge && right == SlotEdge) {
+                    // Слияние сверху/снизу при открытом праве, слева соединена
                     if (up == SlotMerge && down == SlotSelf) {
                         frameX = 90;
                         frameY = 144 + 18 * v; // (90, 144..180)
@@ -388,9 +401,15 @@ public static class TerrariaFraming {
                         frameY = 90 + 18 * v; // (90, 90..126)
                         mergeDown = true;
                         selected = true;
+                    } else if (up == SlotMerge && down == SlotMerge) {
+                        frameX = 108;
+                        frameY = 144 + 18 * v; // (108, 144..180)
+                        mergeUp = true;
+                        selected = true;
                     }
-                } else if (up == SlotEdge && down == SlotSelf && left != SlotEdge && right != SlotEdge) {
-                    // Слияние слева/справа при открытом верхе и «своём» низе
+                }
+                if (!selected && up == SlotEdge && down != SlotEdge && left != SlotEdge && right != SlotEdge) {
+                    // Слияние слева/справа при открытом верхе, снизу соединена
                     if (left == SlotMerge && right == SlotSelf) {
                         frameX = 18 * v; // (0..36, 198)
                         frameY = 198;
@@ -401,9 +420,15 @@ public static class TerrariaFraming {
                         frameY = 198;
                         mergeRight = true;
                         selected = true;
+                    } else if (left == SlotMerge && right == SlotMerge) {
+                        frameX = 54 + 18 * v; // (54..90, 234) — сдвоенное, используем ближайший
+                        frameY = 198;
+                        mergeLeft = true;
+                        selected = true;
                     }
-                } else if (up == SlotSelf && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
-                    // Слияние слева/справа при открытом низе и «своём» верхе
+                }
+                if (!selected && up != SlotEdge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
+                    // Слияние слева/справа при открытом низе, сверху соединена
                     if (left == SlotMerge && right == SlotSelf) {
                         frameX = 18 * v; // (0..36, 216)
                         frameY = 216;
@@ -414,8 +439,15 @@ public static class TerrariaFraming {
                         frameY = 216;
                         mergeRight = true;
                         selected = true;
+                    } else if (left == SlotMerge && right == SlotMerge) {
+                        frameX = 54 + 18 * v;
+                        frameY = 216;
+                        mergeRight = true;
+                        selected = true;
                     }
-                } else if (up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotEdge) {
+                }
+                // --- 2в: два слияния + две открытые стороны ---
+                if (!selected && up != SlotEdge && down != SlotEdge && left == SlotEdge && right == SlotEdge) {
                     // Слияние сверху/снизу при открытых леве и праве
                     if (up == SlotMerge && down == SlotMerge) {
                         frameX = 108;
@@ -434,7 +466,8 @@ public static class TerrariaFraming {
                         mergeDown = true;
                         selected = true;
                     }
-                } else if (up == SlotEdge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
+                }
+                if (!selected && up == SlotEdge && down == SlotEdge && left != SlotEdge && right != SlotEdge) {
                     // Слияние слева/справа при открытых верхе и низе
                     if (left == SlotMerge && right == SlotMerge) {
                         frameX = 162 + 18 * v; // (162..198, 198)
@@ -453,13 +486,15 @@ public static class TerrariaFraming {
                         mergeRight = true;
                         selected = true;
                     }
-                } else if (up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotEdge) {
+                }
+                // --- 2г: одно слияние, остальные открыты ---
+                if (!selected && up == SlotEdge && down == SlotEdge && left == SlotMerge && right == SlotEdge) {
                     // Слияние слева при открытых остальных сторонах: (0..36, 234)
                     frameX = 18 * v;
                     frameY = 234;
                     mergeLeft = true;
                     selected = true;
-                } else if (up == SlotEdge && down == SlotEdge && left == SlotEdge && right == SlotMerge) {
+                } else if (!selected && up == SlotEdge && down == SlotEdge && left == SlotEdge && right == SlotMerge) {
                     // Слияние справа при открытых остальных сторонах: (54..90, 234)
                     frameX = 54 + 18 * v;
                     frameY = 234;
