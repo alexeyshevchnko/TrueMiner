@@ -142,7 +142,8 @@ public class InfinityTileMapMesh : IInfinityTileMap {
             return;
         }
 
-        if (materials.Count > 1) {
+        if (materials.Count > 0) {
+            // Свои экземпляры материалов — по одному на текстуру (не трогаем общий ассет).
             meshRenderer.sharedMaterials = materials.ToArray();
         } else {
             meshRenderer.sharedMaterial = material;
@@ -639,6 +640,11 @@ public class InfinityTileMapMesh : IInfinityTileMap {
         isChangeUv = true;
         isChangeVertices = true;
         isChangeColors = true;
+        // Треугольники ячеек переехали в другие клетки — раскладку по текстурам
+        // нужно пересобрать на ближайшем RenderMesh, иначе сабмеш не совпадёт с UV.
+        if (cellTexture != null) {
+            submeshDirty = true;
+        }
         //chackUv.SetValue
     }
 
