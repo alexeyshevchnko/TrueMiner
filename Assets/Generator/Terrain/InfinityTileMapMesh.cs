@@ -121,10 +121,13 @@ public class InfinityTileMapMesh : IInfinityTileMap {
             return;
         }
 
-        // Одна текстура (или ни одной, как у светового слоя) — базовый материал, как раньше.
+        // Одна текстура (или ни одной, как у светового слоя) — без общего мутации ассета:
+        // при одной текстуре создаём экземпляр, чтобы слои не переопределяли общую текстуру.
         if (textures.Count <= 1) {
             if (textures.Count == 1) {
-                material.mainTexture = textures[0];
+                var single = new Material(material);
+                single.mainTexture = textures[0];
+                materials.Add(single);
             }
             return;
         }
