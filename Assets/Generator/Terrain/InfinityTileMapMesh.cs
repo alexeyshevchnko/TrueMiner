@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using UnityEngine;
 using System.Collections;
@@ -35,6 +35,26 @@ public class InfinityTileMapMesh : IInfinityTileMap {
 
     protected Material material;
 
+    // ===== Несколько текстур тайлсетов в одном меше =====
+    // Каждая ячейка сетки помнит, к какой текстуре относится её тайл (cellTexture).
+    // Треугольники группируются по текстурам в сабмеши: один меш, N материалов,
+    // N дро-коллов вместо одного — зато не нужно объединять текстуры в атлас.
+    protected readonly List<Texture2D> textures = new List<Texture2D>();
+    protected readonly List<Material> materials = new List<Material>();
+    protected readonly Dictionary<string, int> spriteTextureIndex = new Dictionary<string, int>();
+    protected int[] cellTexture;
+    protected List<int>[] submeshTriangles;
+    protected MeshRenderer meshRenderer;
+    protected bool submeshDirty;
+    private int[] allTriangles;
+
+    // Атлас слоя — запасной вариант для записей SpriteData без TexturePath.
+    protected Texture2D layerAtlasTexture;
+
+    // Мини-кеш последнего запроса: тайлы одного типа идут подряд.
+    private string lastTileName;
+    private int lastTextureIndex = -1;
+
     public virtual void LoadMesh(GameObject go, int countHorizontal, int countVertical, float tileSize, LayerData layer) {
         TileSize = tileSize;
         this.layerData = layer;
@@ -48,20 +68,31 @@ public class InfinityTileMapMesh : IInfinityTileMap {
         mesh = CreateMesh(countHorizontal, countVertical, tileSize);
         mesh2 = CreateMesh(countHorizontal, countVertical, tileSize);
 
-        var texture = Resources.Load<Texture>(layer.TexrureName);
         material = Resources.Load<Material>(layer.Material);
-        material.mainTexture = texture;
 
         LoadSprites(layer.TexrureName);
+
+        cellTexture = new int[sizeX * sizeY];
+        for (int i = 0; i < cellTexture.Length; i++) {
+            cellTexture[i] = -1;
+        }
         chackUv = new Vector2[mesh.uv.Length];
        
         
 
 
+        BuildMaterials();
+
         meshFilter = (MeshFilter)go.AddComponent(typeof(MeshFilter));
-        MeshRenderer renderer = go.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        renderer.sharedMaterial = material;
-        renderer.sharedMaterial.mainTexture = texture;
+        meshRenderer = go.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+        ApplyMaterials();
+
+        // Оба меша должны иметь одинаковое число сабмешей, иначе Unity ругается
+        // на несоответствие количества материалов и сабмешей.
+        RebuildSubmeshes(mesh);
+        RebuildSubmeshes(mesh2);
+        submeshDirty = false;
+
         meshFilter.mesh = mesh; 
        
         //mesh.
@@ -75,6 +106,47 @@ public class InfinityTileMapMesh : IInfinityTileMap {
             mesh.colors = colors;
      //   }
    */
+    }
+
+    /// <summary>
+    /// Готовит материалы: при одной текстуре используется базовый материал слоя
+    /// (поведение как раньше), при нескольких — по экземпляру материала на текстуру.
+    /// </summary>
+    protected void BuildMaterials() {
+        materials.Clear();
+
+        if (material == null) {
+            Debug.LogError("InfinityTileMapMesh: не найден материал слоя '" +
+                           (layerData != null ? layerData.Material : "?") + "'");
+            return;
+        }
+
+        // Одна текстура (или ни одной, как у светового слоя) — базовый материал, как раньше.
+        if (textures.Count <= 1) {
+            if (textures.Count == 1) {
+                material.mainTexture = textures[0];
+            }
+            return;
+        }
+
+        for (int i = 0; i < textures.Count; i++) {
+            var instance = new Material(material);
+            instance.mainTexture = textures[i];
+            materials.Add(instance);
+        }
+    }
+
+    /// <summary>Назначает материалы рендереру: один базовый либо по одному на текстуру.</summary>
+    protected void ApplyMaterials() {
+        if (meshRenderer == null) {
+            return;
+        }
+
+        if (materials.Count > 1) {
+            meshRenderer.sharedMaterials = materials.ToArray();
+        } else {
+            meshRenderer.sharedMaterial = material;
+        }
     }
 
     public void SetLayer(int layerId) {
@@ -100,24 +172,154 @@ public class InfinityTileMapMesh : IInfinityTileMap {
         return texture;
     }
 
-    protected  virtual void LoadSprites(string texrureName) {
+    protected virtual void LoadSprites(string layerTextureName) {
         uvProvider = new UvProvider();
-        
-        Sprite[] sprites = Resources.LoadAll<Sprite>(texrureName);
-        foreach (var sprite in sprites) {
-            Debug.Log("load tile collection = " + sprite.name);
-            if (SpriteData.Sprites.ContainsKey(sprite.name)) {
 
-                var data = SpriteData.Sprites[sprite.name];
-                ((UvProvider)uvProvider).LoadTiles(sprite, data.ShiftPaddingX, data.ShiftPaddingY, data.CountHeight);
+        textures.Clear();
+        spriteTextureIndex.Clear();
+        lastTileName = null;
+        lastTextureIndex = -1;
 
-              
-
-               
+        // Общий атлас слоя читаем только как запасной вариант — для записей SpriteData
+        // без собственной текстуры (и для совместимости со старыми наборами).
+        layerAtlasTexture = null;
+        Dictionary<string, Sprite> atlasSprites = null;
+        if (!string.IsNullOrEmpty(layerTextureName)) {
+            Sprite[] atlas = Resources.LoadAll<Sprite>(layerTextureName);
+            if (atlas != null && atlas.Length > 0) {
+                layerAtlasTexture = atlas[0].texture;
+                atlasSprites = new Dictionary<string, Sprite>(atlas.Length);
+                for (int i = 0; i < atlas.Length; i++) {
+                    atlasSprites[atlas[i].name] = atlas[i];
+                }
             }
         }
-         
-        texture = sprites[0].texture;
+
+        int fromTileset = 0;
+        int fromAtlas = 0;
+        int withoutTexture = 0;
+
+        foreach (var pair in SpriteData.Sprites) {
+            var data = pair.Value;
+            if (data == null || string.IsNullOrEmpty(data.Name)) {
+                continue;
+            }
+
+            Texture2D tilesetTexture = TilesetTextures.Get(data);
+            if (tilesetTexture != null) {
+                int index = RegisterTexture(tilesetTexture);
+                ((UvProvider)uvProvider).LoadTiles(data.Name, 0f, tilesetTexture.height,
+                    tilesetTexture.width, tilesetTexture.height,
+                    data.ShiftPaddingX, data.ShiftPaddingY, data.CountHeight);
+                spriteTextureIndex[data.Name] = index;
+                fromTileset++;
+                continue;
+            }
+
+            Sprite atlasSprite;
+            if (atlasSprites != null && atlasSprites.TryGetValue(data.Name, out atlasSprite)) {
+                int index = RegisterTexture(layerAtlasTexture);
+                ((UvProvider)uvProvider).LoadTiles(atlasSprite, data.ShiftPaddingX, data.ShiftPaddingY, data.CountHeight);
+                spriteTextureIndex[data.Name] = index;
+                fromAtlas++;
+                continue;
+            }
+
+            withoutTexture++;
+        }
+
+        texture = layerAtlasTexture != null
+            ? layerAtlasTexture
+            : (textures.Count > 0 ? textures[0] : null);
+
+        Debug.Log("InfinityTileMapMesh[" + (layerData != null ? layerData.Name : "?") + "]: текстур " +
+                  textures.Count + " (из тайлсетов " + fromTileset + ", из атласа " + fromAtlas +
+                  ", без текстуры " + withoutTexture + "); " + TilesetTextures.GetDiagnostics());
+    }
+
+    /// <summary>Возвращает индекс текстуры в списке слоя, добавляя её при первом обращении.</summary>
+    protected int RegisterTexture(Texture2D texture2D) {
+        if (texture2D == null) {
+            return -1;
+        }
+        for (int i = 0; i < textures.Count; i++) {
+            if (textures[i] == texture2D) {
+                return i;
+            }
+        }
+        textures.Add(texture2D);
+        return textures.Count - 1;
+    }
+
+    /// <summary>Индекс текстуры для имени тайла; -1 — тайл не зарегистрирован.</summary>
+    protected int GetTextureIndex(string tileName) {
+        if (string.IsNullOrEmpty(tileName)) {
+            return -1;
+        }
+        if (tileName == lastTileName) {
+            return lastTextureIndex;
+        }
+        int index;
+        if (!spriteTextureIndex.TryGetValue(tileName, out index)) {
+            index = -1;
+        }
+        lastTileName = tileName;
+        lastTextureIndex = index;
+        return index;
+    }
+
+    /// <summary>
+    /// Перестраивает сабмеши: треугольники каждой ячейки попадают в сабмеш её текстуры.
+    /// Вызывается только при смене привязки тайлов к текстурам, а не каждый кадр.
+    /// </summary>
+    protected void RebuildSubmeshes(Mesh target) {
+        if (target == null) {
+            return;
+        }
+
+        int count = textures.Count;
+        if (count <= 1) {
+            if (target.subMeshCount != 1) {
+                target.subMeshCount = 1;
+            }
+            if (allTriangles != null) {
+                target.SetTriangles(allTriangles, 0, false);
+            }
+            return;
+        }
+
+        if (submeshTriangles == null || submeshTriangles.Length != count) {
+            submeshTriangles = new List<int>[count];
+            for (int i = 0; i < count; i++) {
+                submeshTriangles[i] = new List<int>(256);
+            }
+        }
+        for (int i = 0; i < count; i++) {
+            submeshTriangles[i].Clear();
+        }
+
+        for (int x = 0; x < sizeX; x++) {
+            int rowBase = x * sizeY;
+            for (int y = 0; y < sizeY; y++) {
+                int textureIndex = cellTexture[rowBase + y];
+                if (textureIndex < 0 || textureIndex >= count) {
+                    continue;
+                }
+                int v = tileUVIndexs[x, y].verticesIndex;
+                var list = submeshTriangles[textureIndex];
+                list.Add(v);
+                list.Add(v + 1);
+                list.Add(v + 2);
+                list.Add(v + 2);
+                list.Add(v + 3);
+                list.Add(v);
+            }
+        }
+
+        target.subMeshCount = count;
+        for (int i = 0; i < count; i++) {
+            target.SetTriangles(submeshTriangles[i], i, false);
+        }
     }
 
     Mesh CreateMesh(int countHorizontal, int countVertical, float tileSize) {
@@ -200,7 +402,10 @@ public class InfinityTileMapMesh : IInfinityTileMap {
         }
 
         m.vertices = vertices.ToArray();
-        m.triangles = triangles.ToArray();
+        // Раскладка треугольников одинакова для mesh и mesh2 — запоминаем её,
+        // чтобы можно было переустанавливать при переключении на один сабмеш.
+        allTriangles = triangles.ToArray();
+        m.triangles = allTriangles;
 
         m.uv = uv.ToArray();
         m.RecalculateNormals();
@@ -217,6 +422,18 @@ public class InfinityTileMapMesh : IInfinityTileMap {
         chackUv[++index] = uv.uvP2;
         chackUv[++index] = uv.uvP3;
         chackUv[++index] = uv.uvP4;
+
+        // К какой текстуре относится тайл этой ячейки (для раскладки треугольников по сабмешам).
+        // Пустой тайл текстуры не требует: его вершины схлопываются в ноль.
+        if (cellTexture != null) {
+            int textureIndex = uv == ((IUvProvider)uvProvider).uvEmpty ? -1 : GetTextureIndex(tileName);
+            int flatIndex = x * sizeY + y;
+            if (cellTexture[flatIndex] != textureIndex) {
+                cellTexture[flatIndex] = textureIndex;
+                submeshDirty = true;
+            }
+        }
+
         /*
         try {
 
@@ -405,6 +622,11 @@ public class InfinityTileMapMesh : IInfinityTileMap {
                             chackColors[cacheIndexVerticesTo + 1] = chackColors[cacheIndexVerticesFrom + 1];
                             chackColors[cacheIndexVerticesTo + 2] = chackColors[cacheIndexVerticesFrom + 2];
                             chackColors[cacheIndexVerticesTo + 3] = chackColors[cacheIndexVerticesFrom + 3];
+
+                            // Привязка ячейки к текстуре переезжает вместе с тайлом.
+                            if (cellTexture != null) {
+                                cellTexture[toX * sizeY + toY] = cellTexture[fromX * sizeY + fromY];
+                            }
                             
                         }
                     }
@@ -451,6 +673,14 @@ public class InfinityTileMapMesh : IInfinityTileMap {
             changeMesh.colors32 = chackColors;
             isChangeColors = false;
             //  mesh.Optimize();
+            isChange = true;
+        }
+
+        // Раскладка треугольников по текстурам. Пересобирается только когда поменялась
+        // привязка тайлов к текстурам (прокрутка/правка блока), а не каждый кадр.
+        if (submeshDirty) {
+            RebuildSubmeshes(changeMesh);
+            submeshDirty = false;
             isChange = true;
         }
 

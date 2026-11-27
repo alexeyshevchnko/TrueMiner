@@ -41,8 +41,33 @@ public class UvProvider : IUvProvider {
     }
 
     public virtual void LoadTiles(Sprite sprite, long shiftPaddingX = 1, long shiftPaddingY = 1, int countHeight = 1) {
-
         var rect = sprite.textureRect;
+        LoadTilesCore(sprite.name, rect.xMin, rect.yMax, sprite.texture.width, sprite.texture.height,
+            shiftPaddingX, shiftPaddingY, countHeight);
+    }
+
+    /// <summary>
+    /// Регистрация кадров тайлсета, лежащего в СВОЕЙ текстуре (без Sprite-обёртки).
+    /// rectXMin/rectYMax — левый верхний угол области тайлсета в пикселях текстуры;
+    /// textureWidth/textureHeight — размеры всей текстуры (для нормализации UV).
+    /// Формула кадров та же, что и для атласа (16 px кадр, 2 px паддинг).
+    /// </summary>
+    public void LoadTiles(string spriteName, float rectXMin, float rectYMax,
+        int textureWidth, int textureHeight,
+        long shiftPaddingX = 1, long shiftPaddingY = 1, int countHeight = 1) {
+        LoadTilesCore(spriteName, rectXMin, rectYMax, textureWidth, textureHeight,
+            shiftPaddingX, shiftPaddingY, countHeight);
+    }
+
+    protected void LoadTilesCore(string spriteName, float rectXMin, float rectYMax,
+        int textureWidth, int textureHeight,
+        long shiftPaddingX, long shiftPaddingY, int countHeight) {
+
+        if (textureWidth <= 0 || textureHeight <= 0) {
+            Debug.LogError("UvProvider: некорректный размер текстуры для '" + spriteName + "': " +
+                           textureWidth + "x" + textureHeight);
+            return;
+        }
 
         float shiftX = 0;
         float shiftY = 0;
@@ -54,26 +79,26 @@ public class UvProvider : IUvProvider {
                     shiftY = GetTileSize() * y + GetPadding() * Mathf.FloorToInt((float)y / (float)shiftPaddingY);
 
                     Rect newRect = new Rect(
-                        rect.xMin + shiftX,
-                        rect.yMax - GetTileSize() - shiftY + h,
+                        rectXMin + shiftX,
+                        rectYMax - GetTileSize() - shiftY + h,
                         GetTileSize(),
                         GetTileSize()
                         );
 
-                    var v1 = new Vector2(newRect.x/sprite.texture.width, newRect.y/sprite.texture.height);
-                    var v2 = new Vector2((newRect.x + newRect.width)/sprite.texture.width,
-                        newRect.y/sprite.texture.height);
-                    var v3 = new Vector2((newRect.x + newRect.width)/sprite.texture.width,
-                        (newRect.y + newRect.height)/sprite.texture.height);
-                    var v4 = new Vector2((newRect.x)/sprite.texture.width,
-                        (newRect.y + newRect.height)/sprite.texture.height);
+                    var v1 = new Vector2(newRect.x/textureWidth, newRect.y/textureHeight);
+                    var v2 = new Vector2((newRect.x + newRect.width)/textureWidth,
+                        newRect.y/textureHeight);
+                    var v3 = new Vector2((newRect.x + newRect.width)/textureWidth,
+                        (newRect.y + newRect.height)/textureHeight);
+                    var v4 = new Vector2((newRect.x)/textureWidth,
+                        (newRect.y + newRect.height)/textureHeight);
                     TileUVCoordinate uv = new TileUVCoordinate();
                     uv.uvP1 = v1;
                     uv.uvP2 = v2;
                     uv.uvP3 = v3; 
                     uv.uvP4 = v4;
                     uv.rect = newRect;
-                    SetUV2(uv, sprite.name, x, y, h);
+                    SetUV2(uv, spriteName, x, y, h);
                 }
             }
         }  
