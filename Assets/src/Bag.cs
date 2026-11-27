@@ -23,7 +23,8 @@ public class Bag : IBag {
         items[2] = new BackswordItem() { Count = 1 };
         items[3] = new GrenadeItem() { Count = 999 };
         items[4] = new PickItem() { Count = 1 };
-        items[5] = new TorchItem() { Count = 100 };
+        //items[5] = new TorchItem() { Count = 100 };
+        items[5] = new BlowBlockItem(0,  (short)TileTypeEnum.Terrain8) { Count = 100 };
         items[6] = new BlowBlockItem(0,  (short)TileTypeEnum.Stone) { Count = 100 };
         items[7] = new BlowBlockItem(0, 2) { Count = 100 };
         

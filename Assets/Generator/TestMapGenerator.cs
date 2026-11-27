@@ -595,6 +595,39 @@ public class TestMapGenerator : IMapGenerator {
         }
  
 
+        //Tiles_8 — тестовый участок нового тайлсета: цельное пятно, не вперемешку
+        //с землёй и камнем. Составлено из двух частей на одном чистом диапазоне X:
+        //  1) выступ («плато») над поверхностью — виден сразу при загрузке;
+        //  2) жила в глубине — видна при копании и в пещерах.
+        int oreCenterX = map.GetLength(0) / 2;
+        int oreHalfSpan = 15;      // полширины участка (всего 31 тайл)
+        int oreSlabHeight = 6;     // высота выступа над грунтом
+        int oreVeinDepth = 30;     // глубина жилы под грунтом
+
+        for (int x = oreCenterX - oreHalfSpan; x <= oreCenterX + oreHalfSpan && x < map.GetLength(0); x++) {
+            if (x < 0) {
+                continue;
+            }
+            int groundY = surface[x].y; // верхний блок грунта (там трава)
+
+            // 1) выступ над поверхностью: заполняем только пустоту,
+            //    чтобы не тронуть траву/деревья/растительность
+            for (int y = groundY - oreSlabHeight; y < groundY; y++) {
+                if (IsValidPoint(new Vector2Int(x, y)) && map[x, y].type == 0) {
+                    map[x, y].type = (short)TileTypeEnum.Terrain8;
+                }
+            }
+
+            // 2) жила под грунтом: заменяем твёрдые блоки (землю/камень),
+            //    пустоту пещер не трогаем
+            for (int y = groundY + 1; y <= groundY + oreVeinDepth; y++) {
+                if (IsValidPoint(new Vector2Int(x, y)) && map[x, y].type != 0) {
+                    map[x, y].type = (short)TileTypeEnum.Terrain8;
+                }
+            }
+        }
+ 
+
         //изза воды тк её нужно непосредственно на карте генерировать
         mapType = MapGenerator.MapType.world;
 

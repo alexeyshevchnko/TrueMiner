@@ -14,6 +14,8 @@ public class SpriteData {
     // окно 5x5 для взаимной проверки слияния с камнем (см. TerrainTileShema).
     private static readonly TerrainTileShema terrainFramingDirt = new TerrainTileShema(TerrariaTilesetRules.Dirt);
     private static readonly TerrainTileShema terrainFramingStone = new TerrainTileShema(TerrariaTilesetRules.Stone);
+    // Tiles_8: тот же решатель Terraria-структуры, но без merge-пар (правила Terrain8).
+    private static readonly TerrainTileShema terrainFramingOre8 = new TerrainTileShema(TerrariaTilesetRules.Terrain8);
     private static ITileShema grassTerrainTileShema = new GrassTerrainTileShema();
     private static ITileShema terrainBgShema = new TerrainBGTileShema();
     
@@ -50,6 +52,10 @@ public class SpriteData {
     public static SpriteData Tiles_med = new SpriteData("Tiles_med", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Med, texturePath: TilesetDir + "Tiles_med");
     public static SpriteData Tiles_iron = new SpriteData("Tiles_stal", 1, 1, legacyTerrainShema, 3, (short)TileTypeEnum.Iron, texturePath: TilesetDir + "Tiles_stal");
     public static SpriteData Tiles_stone = new SpriteData(/*"Tiles_stone"*/"Tiles_1", 1, 1, terrainFramingStone, 5, (short)TileTypeEnum.Stone, texturePath: TilesetDir + "Tiles_1");
+
+    // Tiles_8 — отдельная текстура Terraria-структуры (288x270, шаг 18 px).
+    // SquareSizeByShema = 3: окно 3x3 достаточно — взаимной проверки у Terrain8 нет.
+    public static SpriteData Tiles_8 = new SpriteData("Tiles_8", 1, 1, terrainFramingOre8, 3, (short)TileTypeEnum.Terrain8, texturePath: TilesetDir + "Tiles_8");
 
 
     public static SpriteData Liquid_000 = new SpriteData("Liquid_000", 1, 1, liquidShema, 3,-10, texturePath: TilesetDir + "Liquid_000");

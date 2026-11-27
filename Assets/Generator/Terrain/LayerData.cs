@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +24,7 @@ public class LayerData  {
         (short) TileTypeEnum.Iron,
         (short) TileTypeEnum.Stone,
         (short) TileTypeEnum.Stairs,
+        (short) TileTypeEnum.Terrain8,
 
     }, false, false, typeof(InfinityTileMapMesh/*InfinityTileMapSets*/), "Default");
     

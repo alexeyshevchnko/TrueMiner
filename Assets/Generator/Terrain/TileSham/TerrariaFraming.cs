@@ -64,9 +64,24 @@ public sealed class TerrariaTilesetRules {
         ParticipatesInMergeBlocks = participatesInMergeBlocks;
         IsGrassLike = isGrassLike;
         MutualMergeCheckDiagonalIsSelf = mutualMergeCheckDiagonalIsSelf;
+        // Каждый правиловый набор регистрируется автоматически: типы SelfTypes/MergeTypes
+        // становятся «твёрдыми» для IsTerrainSolid (см. ниже). Новый тайлсет того же
+        // формата добавляет только свой набор правил — отдельная логика не нужна.
+        RegisteredRules.Add(this);
     }
 
     private static readonly short[] EmptyTypes = new short[0];
+
+    /// <summary>
+    /// Регистр всех созданных наборов правил Terraria-структуры.
+    /// ОБЪЯВЛЕН РАНЬШЕ инстансов (Stone/Dirt/Terrain8 …): статические поля
+    /// инициализируются по порядку объявления, поэтому список готов к тому
+    /// моменту, когда конструкторы наборов добавляют себя в него. Новый
+    /// тайлсет того же формата добавляет ТОЛЬКО свой набор правил:
+    /// решатель кадров и «твёрдость» типа работают для него автоматически.
+    /// </summary>
+    private static readonly System.Collections.Generic.List<TerrariaTilesetRules> RegisteredRules =
+        new System.Collections.Generic.List<TerrariaTilesetRules>();
 
     /// <summary>
     /// Набор «твёрдых» типов терраина. Всё, чего нет в наборе (пустота, деревья,
@@ -92,34 +107,87 @@ public sealed class TerrariaTilesetRules {
                 return true;
             }
         }
+        // Типы зарегистрированных правил Terraria-структуры «твёрдые» автоматически:
+        // сам тип тайлсета и типы, с которыми он сливается. Новый тайлсет той же
+        // структуры попадает сюда без правок движка.
+        for (int r = 0; r < RegisteredRules.Count; r++) {
+            var rules = RegisteredRules[r];
+            for (int i = 0; i < rules.SelfTypes.Length; i++) {
+                if (rules.SelfTypes[i] == type) {
+                    return true;
+                }
+            }
+            for (int i = 0; i < rules.MergeTypes.Length; i++) {
+                if (rules.MergeTypes[i] == type) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
     /// <summary>
-    /// Камень (Tiles_1, type 1): камень-камень → SlotSelf, земля → SlotMerge
-    /// (Main.tileMergeDirt[1] = true, TileMergeAttempt(-2, TileID.Sets.Dirt)).
+    /// Правила тайлсета, которому принадлежит тип (ищет по SelfTypes в регистре).
+    /// Нужно для взаимной проверки: земля проверяет сосед-камень по правилам камня,
+    /// сосед-руда по правилам руды — без отдельной логики на каждый тип.
+    /// null — тип не относится ни к одному Terraria-набору (для него взаимодействие
+    /// не проверяется, работаем по MutualMergeCheckRules вызывающей стороны).
+    /// </summary>
+    public static TerrariaTilesetRules FindRulesForType(short type) {
+        for (int r = 0; r < RegisteredRules.Count; r++) {
+            var rules = RegisteredRules[r];
+            for (int i = 0; i < rules.SelfTypes.Length; i++) {
+                if (rules.SelfTypes[i] == type) {
+                    return rules;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Камень (Tiles_1, type 1): камень-камень → SlotSelf, земля/руда → SlotMerge
+    /// (Main.tileMergeDirt[1] = true, TileMergeAttempt(-2, TileID.Sets.Dirt), в
+    /// Terraria руда с Main.tileStone распознаётся камнем как своя семья слияния).
     /// </summary>
     public static readonly TerrariaTilesetRules Stone = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Stone },
-        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
+        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass, (short) TileTypeEnum.Terrain8 },
         mutualMergeCheckTypes: null,
         mutualMergeCheckRules: null,
         participatesInMergeBlocks: true,
         isGrassLike: false);
 
     /// <summary>
-    /// Земля (Tiles_0, type 0): земля-земля → SlotSelf; камень → взаимная проверка
+    /// Земля (Tiles_0, type 0): земля-земля → SlotSelf; stone/руда → взаимная проверка
     /// (TileID.Sets.Dirt-ветка, TileMergeAttemptFrametest); иначе SlotEdge.
     /// В merge-блоках не участвует (Main.tileMergeDirt[0] = false).
+    /// Правила соседа ищутся по его типу через FindRulesForType — взаимная проверка
+    /// работает для любого merge-тайлсета той же структуры, без правки dirt-логики.
     /// </summary>
     public static readonly TerrariaTilesetRules Dirt = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
         mergeTypes: null,
-        mutualMergeCheckTypes: new[] { (short) TileTypeEnum.Stone },
+        mutualMergeCheckTypes: new[] { (short) TileTypeEnum.Stone, (short) TileTypeEnum.Terrain8 },
         mutualMergeCheckRules: Stone,
         participatesInMergeBlocks: false,
         isGrassLike: false,
         mutualMergeCheckDiagonalIsSelf: true);
+
+    /// <summary>
+    /// Tiles_8 (руда): структура листа точно такая же, как у камня (288×270,
+    /// шаг 18 px, все варианты соединений), поэтому правила полностью зеркальны камню:
+    /// руда-руда → SlotSelf, земля/трава/камень → SlotMerge (взаимно: камень тоже
+    /// держит руду в своих MergeTypes), участие в merge-блоках — как у Main.tileMergeDirt.
+    /// Решатель один и тот же; тип автоматически «твёрдый» через регистр правил.
+    /// </summary>
+    public static readonly TerrariaTilesetRules Terrain8 = new TerrariaTilesetRules(
+        selfTypes: new[] { (short) TileTypeEnum.Terrain8 },
+        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass, (short) TileTypeEnum.Stone },
+        mutualMergeCheckTypes: null,
+        mutualMergeCheckRules: null,
+        participatesInMergeBlocks: true,
+        isGrassLike: false);
 }
 
 /// <summary>

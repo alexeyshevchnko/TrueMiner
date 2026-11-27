@@ -95,7 +95,8 @@ public class TerrainTileShema : ITileShema {
             return slot;
         }
 
-        TerrariaTilesetRules neighborRules = rules.MutualMergeCheckRules;
+        TerrariaTilesetRules neighborRules = TerrariaTilesetRules.FindRulesForType(neighborType)
+                                                ?? rules.MutualMergeCheckRules;
         if (neighborRules == null || size < 5) {
             // Окрестность соседа недоступна (нужно окно 5x5) — безопасная граница.
             return TerrariaFraming.SlotEdge;

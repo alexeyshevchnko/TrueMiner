@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public enum TileTypeEnum : short  {
@@ -28,5 +28,7 @@ public enum TileTypeEnum : short  {
     Stone = 23,
 
     Stairs = 24,
+
+    Terrain8 = 25, // Тайлсет Tiles_8 (рудный блок на земляной подложке)
 
 }
