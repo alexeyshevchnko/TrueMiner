@@ -19,7 +19,7 @@ public class ItemManager : IItemManager, IoC.IInitialize {
     public BlockPoolBagItem CreateBlock(Vector2 worldPos, string tileCollection) {
         var go = IgoPoolManager.Spawn<BlockPoolBagItem>(worldPos, new Quaternion());
         var spriteRenderer = go.GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.CreateSprite(tileCollection, 2, 3);
+        spriteRenderer.sprite = SpriteManager.CreateSprite(tileCollection, Random.Range(9,11) , 3);
         var mbPhysicItem = go.GetComponent<MonoBehaviourPhysicItem>();
 
         var PhysicItem = mbPhysicItem.GetPhysicItem();

@@ -38,7 +38,7 @@ public class Block : MonoBehaviour, IWeapon, IoC.IInitialize {
         itemData = blowBlock;
         layer = (byte)blowBlock.Layer;
         type = (short)blowBlock.Type;
-        spriteRenderer.sprite = SpriteManager.CreateSprite(blowBlock.TileCollection, 2, 3);
+        spriteRenderer.sprite = SpriteManager.CreateSprite(blowBlock.TileCollection, Random.Range(9,11) , 3);
         
     }
 
