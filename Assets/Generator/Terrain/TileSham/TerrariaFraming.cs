@@ -51,6 +51,7 @@ public sealed class TerrariaTilesetRules {
 
     public TerrariaTilesetRules(
         short[] selfTypes,
+        short primaryType,
         short[] mergeTypes,
         short[] mutualMergeCheckTypes,
         TerrariaTilesetRules mutualMergeCheckRules,
@@ -58,6 +59,7 @@ public sealed class TerrariaTilesetRules {
         bool isGrassLike,
         bool mutualMergeCheckDiagonalIsSelf = false) {
         SelfTypes = selfTypes ?? EmptyTypes;
+        PrimaryType = primaryType;
         MergeTypes = mergeTypes ?? EmptyTypes;
         MutualMergeCheckTypes = mutualMergeCheckTypes ?? EmptyTypes;
         MutualMergeCheckRules = mutualMergeCheckRules;
@@ -69,6 +71,10 @@ public sealed class TerrariaTilesetRules {
         // формата добавляет только свой набор правил — отдельная логика не нужна.
         RegisteredRules.Add(this);
     }
+
+    /// <summary>Тип самого тайлсета (для ключа пары в TilesetMergeConfig).</summary>
+    public readonly short PrimaryType;
+
 
     private static readonly short[] EmptyTypes = new short[0];
 
@@ -146,44 +152,46 @@ public sealed class TerrariaTilesetRules {
     }
 
     /// <summary>
-    /// Камень (Tiles_1, type 1): камень-камень → SlotSelf, земля/руда → SlotMerge
-    /// (Main.tileMergeDirt[1] = true, TileMergeAttempt(-2, TileID.Sets.Dirt), в
-    /// Terraria руда с Main.tileStone распознаётся камнем как своя семья слияния).
+    /// Камень (Tiles_1): камень-камень → SlotSelf. С кем камень сливается (земля,
+    /// руда, будущие тайлсеты) задаётся файлом TilesetMergeRules.txt, а не кодом.
+    /// ParticipatesInMergeBlocks = true: участвует в merge-блоках оригинала
+    /// (Main.tileMergeDirt[1] = true).
     /// </summary>
     public static readonly TerrariaTilesetRules Stone = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Stone },
-        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass, (short) TileTypeEnum.Terrain8 },
+        primaryType: (short) TileTypeEnum.Stone,
+        mergeTypes: null,               // совместимость — в TilesetMergeRules.txt
         mutualMergeCheckTypes: null,
         mutualMergeCheckRules: null,
         participatesInMergeBlocks: true,
         isGrassLike: false);
 
     /// <summary>
-    /// Земля (Tiles_0, type 0): земля-земля → SlotSelf; stone/руда → взаимная проверка
-    /// (TileID.Sets.Dirt-ветка, TileMergeAttemptFrametest); иначе SlotEdge.
-    /// В merge-блоках не участвует (Main.tileMergeDirt[0] = false).
-    /// Правила соседа ищутся по его типу через FindRulesForType — взаимная проверка
-    /// работает для любого merge-тайлсета той же структуры, без правки dirt-логики.
+    /// Земля (Tiles_0): земля-земля → SlotSelf. ParticipatesInMergeBlocks = false —
+    /// земля не участвует в merge-блоках, поэтому каждый merge-сосед (разрешённый
+    /// конфигурацией) проходит взаимную проверку: рисует ли он merge-кадр в нашу
+    /// сторону (в оригинале TileID.Sets.Dirt-ветка + TileMergeAttemptFrametest).
+    /// Правила соседа ищутся по его типу через FindRulesForType — общий механизм.
+    /// Диагональные merge-соседи считаются своими без проверки (DiagonalIsSelf).
     /// </summary>
     public static readonly TerrariaTilesetRules Dirt = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass },
-        mergeTypes: null,
-        mutualMergeCheckTypes: new[] { (short) TileTypeEnum.Stone, (short) TileTypeEnum.Terrain8 },
-        mutualMergeCheckRules: Stone,
+        primaryType: (short) TileTypeEnum.Terrain0,
+        mergeTypes: null,               // совместимость — в TilesetMergeRules.txt
+        mutualMergeCheckTypes: null,    // взаимная проверка — общий механизм
+        mutualMergeCheckRules: null,
         participatesInMergeBlocks: false,
         isGrassLike: false,
         mutualMergeCheckDiagonalIsSelf: true);
 
     /// <summary>
-    /// Tiles_8 (руда): структура листа точно такая же, как у камня (288×270,
-    /// шаг 18 px, все варианты соединений), поэтому правила полностью зеркальны камню:
-    /// руда-руда → SlotSelf, земля/трава/камень → SlotMerge (взаимно: камень тоже
-    /// держит руду в своих MergeTypes), участие в merge-блоках — как у Main.tileMergeDirt.
-    /// Решатель один и тот же; тип автоматически «твёрдый» через регистр правил.
+    /// Tiles_8 (руда): структура листа точно такая же, как у камня, правила зеркальны
+    /// камню. С кем сливается — файл TilesetMergeRules.txt (Камень↔Руда, Земля↔Руда).
     /// </summary>
     public static readonly TerrariaTilesetRules Terrain8 = new TerrariaTilesetRules(
         selfTypes: new[] { (short) TileTypeEnum.Terrain8 },
-        mergeTypes: new[] { (short) TileTypeEnum.Terrain0, (short) TileTypeEnum.TerrainGrass, (short) TileTypeEnum.Stone },
+        primaryType: (short) TileTypeEnum.Terrain8,
+        mergeTypes: null,               // совместимость — в TilesetMergeRules.txt
         mutualMergeCheckTypes: null,
         mutualMergeCheckRules: null,
         participatesInMergeBlocks: true,
@@ -216,7 +224,13 @@ public static class TerrariaFraming {
     /// <summary>Шаг сетки кадров в пикселях листа Terraria (16 px кадр + 2 px паддинг).</summary>
     public const int FrameStride = 18;
 
-    /// <summary>Классификация одного соседа по типу.</summary>
+    /// <summary>
+    /// Сосед того же тайлсета → SlotSelf; сосед другого тайлсета → SlotMerge
+    /// ТОЛЬКО если пара разрешена в конфигурации TilesetMergeConfig
+    /// (Assets/Resources/TilesetMergeRules.txt). Отсутствующее/выключенное правило
+    /// = SlotEdge (граница). Логика «какие кадры рисовать при Merge» остаётся
+    /// целиком в решателе — конфиг влияет только на классификацию.
+    /// </summary>
     public static int ClassifyNeighbor(short neighborType, TerrariaTilesetRules rules) {
         if (!TerrariaTilesetRules.IsTerrainSolid(neighborType)) {
             return SlotEdge;
@@ -224,7 +238,7 @@ public static class TerrariaFraming {
         if (Contains(rules.SelfTypes, neighborType)) {
             return SlotSelf;
         }
-        if (Contains(rules.MergeTypes, neighborType)) {
+        if (TilesetMergeConfig.AllowsMerge(rules.PrimaryType, neighborType)) {
             return SlotMerge;
         }
         return SlotEdge;

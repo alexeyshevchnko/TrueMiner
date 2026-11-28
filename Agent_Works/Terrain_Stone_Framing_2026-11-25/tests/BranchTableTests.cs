@@ -46,33 +46,47 @@ public static class BranchTableTests {
         cases.Clear();
         BuildTable();
 
+        // TerrariaTilesetRules с одинаковой структурой (камень и Tiles_8-руда)
+        // обязаны давать идентичные кадры только потому that правила зеркальны.
+        var ruleSets = new[] {
+            new { Label = "Stone", Rules = TerrariaTilesetRules.Stone },
+            new { Label = "Terrain8", Rules = TerrariaTilesetRules.Terrain8 }
+        };
+
         Console.WriteLine("--- Таблица веток WorldGen.TileFrame (1.4.4.9) ---");
-        foreach (var c in cases) {
-            for (int v = 0; v < 3; v++) {
-                TerrariaFraming.Solve(c.Up, c.Down, c.Left, c.Right, c.UL, c.UR, c.DL, c.DR,
-                    v, TerrariaTilesetRules.Stone,
-                    out int fx, out int fy,
-                    out bool mu, out bool md, out bool ml, out bool mr);
+        foreach (var ruleSet in ruleSets) {
+            int setFailed = 0;
+            int setPassed = 0;
+            foreach (var c in cases) {
+                for (int v = 0; v < 3; v++) {
+                    TerrariaFraming.Solve(c.Up, c.Down, c.Left, c.Right, c.UL, c.UR, c.DL, c.DR,
+                        v, ruleSet.Rules,
+                        out int fx, out int fy,
+                        out bool mu, out bool md, out bool ml, out bool mr);
 
-                int expFx = v == 0 ? c.Fx0 : (v == 1 ? c.Fx1 : c.Fx2);
-                int expFy = v == 0 ? c.Fy0 : (v == 1 ? c.Fy1 : c.Fy2);
-                int flags = (mu ? 1 : 0) | (md ? 2 : 0) | (ml ? 4 : 0) | (mr ? 8 : 0);
+                    int expFx = v == 0 ? c.Fx0 : (v == 1 ? c.Fx1 : c.Fx2);
+                    int expFy = v == 0 ? c.Fy0 : (v == 1 ? c.Fy1 : c.Fy2);
+                    int flags = (mu ? 1 : 0) | (md ? 2 : 0) | (ml ? 4 : 0) | (mr ? 8 : 0);
 
-                bool ok = fx == expFx && fy == expFy && flags == c.Flags;
-                if (ok) {
-                    passed++;
-                } else {
-                    failures++;
-                    if (failures <= 20) {
-                        Console.WriteLine($"FAIL  {c.Name} v={v}: получено ({fx},{fy}) flags={flags}, " +
-                                          $"ожидалось ({expFx},{expFy}) flags={c.Flags}");
+                    bool ok = fx == expFx && fy == expFy && flags == c.Flags;
+                    if (ok) {
+                        passed++;
+                        setPassed++;
+                    } else {
+                        failures++;
+                        setFailed++;
+                        if (failures <= 20) {
+                            Console.WriteLine($"FAIL  [{ruleSet.Label}] {c.Name} v={v}: получено ({fx},{fy}) flags={flags}, " +
+                                              $"ожидалось ({expFx},{expFy}) flags={c.Flags}");
+                        }
                     }
                 }
             }
+
+            Console.WriteLine($"Таблица веток [{ruleSet.Label}]: {setPassed} OK, {setFailed} FAIL " +
+                              $"({cases.Count} веток × 3 варианта)");
         }
 
-        Console.WriteLine($"Таблица веток: {passed} OK, {failures} FAIL " +
-                          $"({cases.Count} веток × 3 варианта)");
         return failures;
     }
 
@@ -165,6 +179,114 @@ public static class BranchTableTests {
             fails++;
             Console.WriteLine($"FAIL  Проблемная конфигурация M-M-E-S → ({fx},{fy}) flags={mu}/{md}/{ml}/{mr}, " +
                               "ожидалось (162,0) flags=false");
+        }
+        return fails;
+    }
+
+    /// <summary>
+    /// Стык руды (Tiles_8) и земли через полную схему TerrainTileShema:
+    /// земля под рудой должна пройти взаимную проверку (рудник сверху рисует
+    /// merge-кадр вниз) и не рисовать свой край — кадр земли = внутренний (18+18v, 18).
+    /// </summary>
+    public static int CheckOreDirtSeam() {
+        int fails = 0;
+        const short ORE = (short)TileTypeEnum.Terrain8;
+        const short DIRT = (short)TileTypeEnum.Terrain0;
+
+        // Окно 5x5 (как TileDataProvider): центр — земля, рудник сверху и по диагоналям верха.
+        var map = new short[5, 5];
+        for (int x = 0; x < 5; x++)
+            for (int y = 0; y < 5; y++)
+                map[x, y] = DIRT;
+        map[2, 1] = ORE;   // руда сверху
+        map[1, 1] = ORE;   // диагональ сверху-слева
+        map[3, 1] = ORE;   // диагональ сверху-справа
+
+        var info = new TileInfoStructure(DIRT, 0);
+        var f = new TerrainTileShema(TerrariaTilesetRules.Dirt).GetShema(map, info);
+        if (f.FrameX == 1 && f.FrameY == 1) {
+            Console.WriteLine("PASS  Стык руда-земля: земля рисует внутренний кадр (взаимная проверка пройдена)");
+        } else {
+            fails++;
+            Console.WriteLine($"FAIL  Стык руда-земля: получено ({f.FrameX},{f.FrameY}), ожидалось (1,1)");
+        }
+
+        // Руда с землёй ТОЛЬКО снизу (сквозь проверку должен пройти merge-кадр):
+        // up=d/left=r = Self (руда-руда), down = Merge → ветка 75601: (144+18v, 90) → (8,5).
+        var map2 = new short[5, 5];
+        for (int x = 0; x < 5; x++)
+            for (int y = 0; y < 5; y++)
+                map2[x, y] = ORE;
+        map2[2, 3] = DIRT;   // земля снизу
+        var info2 = new TileInfoStructure(ORE, 0);
+        TerrariaFraming.ClassifyNeighbors(map2, 2, 2, TerrariaTilesetRules.Terrain8,
+            out int cu, out int cd, out int cl, out int cr,
+            out int cul, out int cur, out int cdl, out int cdr);
+        Console.WriteLine($"DEBUG classify: up={cu} down={cd} left={cl} right={cr} ul={cul} ur={cur} dl={cdl} dr={cdr} " +
+            $"solid(ORE)={TerrariaTilesetRules.IsTerrainSolid(ORE)} solid(DIRT)={TerrariaTilesetRules.IsTerrainSolid(DIRT)}");
+        Console.WriteLine($"DEBUG find(ORE)={(TerrariaTilesetRules.FindRulesForType(ORE) != null ? "найдены" : "нет")} " +
+            $"oreSelf={(TerrariaTilesetRules.Terrain8.SelfTypes.Length > 0 ? $"{TerrariaTilesetRules.Terrain8.SelfTypes[0]}" : "пусто")}");
+        var f2 = new TerrainTileShema(TerrariaTilesetRules.Terrain8).GetShema(map2, info2);
+        if (f2.FrameX == 8 && f2.FrameY == 5) {
+            Console.WriteLine("PASS  Руда над землёй: merge-кадр вниз (144+18v, 90) → сетка (8,5)");
+        } else {
+            fails++;
+            Console.WriteLine($"FAIL  Руда над землёй: получено ({f2.FrameX},{f2.FrameY}), ожидалось (8,5)");
+        }
+        return fails;
+    }
+
+    /// <summary>
+    /// Стык руда↔камень в обоих направлениях: обе стороны классифицируют соседа
+    /// как Merge и рисуют merge-кадры — стык без тёмных рамок.
+    /// </summary>
+    public static int CheckOreStoneSeam() {
+        const short ORE = (short)TileTypeEnum.Terrain8;
+        const short STONE = (short)TileTypeEnum.Stone;
+        int fails = 0;
+
+        // Камень, снизу руда
+        var m1 = new short[3, 3];
+        for (int x = 0; x < 3; x++)
+            for (int y = 0; y < 3; y++)
+                m1[x, y] = STONE;
+        m1[1, 2] = ORE;
+        var f1 = new TerrainTileShema(TerrariaTilesetRules.Stone).GetShema(m1,
+            new TileInfoStructure(STONE, 0));
+        if (f1.FrameX == 8 && f1.FrameY == 5) {
+            Console.WriteLine("PASS  Камень над рудой: камень рисует merge-кадр вниз (8,5)");
+        } else {
+            fails++;
+            Console.WriteLine($"FAIL  Камень над рудой: получено ({f1.FrameX},{f1.FrameY}), ожидалось (8,5)");
+        }
+
+        // Руда, снизу камень
+        var m2 = new short[3, 3];
+        for (int x = 0; x < 3; x++)
+            for (int y = 0; y < 3; y++)
+                m2[x, y] = ORE;
+        m2[1, 2] = STONE;
+        var f2 = new TerrainTileShema(TerrariaTilesetRules.Terrain8).GetShema(m2,
+            new TileInfoStructure(ORE, 0));
+        if (f2.FrameX == 8 && f2.FrameY == 5) {
+            Console.WriteLine("PASS  Руда над камнем: руда рисует merge-кадр вниз (8,5)");
+        } else {
+            fails++;
+            Console.WriteLine($"FAIL  Руда над камнем: получено ({f2.FrameX},{f2.FrameY}), ожидалось (8,5)");
+        }
+
+        // Массив камня вплотную к массиву руды: merge-кадр вбок (левая колонка руда)
+        var m3 = new short[3, 3];
+        for (int x = 0; x < 3; x++)
+            for (int y = 0; y < 3; y++)
+                m3[x, y] = x < 1 ? ORE : STONE;
+        var f3 = new TerrainTileShema(TerrariaTilesetRules.Stone).GetShema(m3,
+            new TileInfoStructure(STONE, 0));
+        if (f3.FrameX == 9 && f3.FrameY == 7) {
+            Console.WriteLine("PASS  Массив камня у руды слева: merge-кадр влево (9,7)");
+        } else {
+            fails++;
+            Console.WriteLine($"FAIL  Массив камня у руды: получено ({f3.FrameX},{f3.FrameY}), ожидалось (9,7)");
         }
         return fails;
     }

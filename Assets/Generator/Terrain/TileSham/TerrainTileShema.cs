@@ -49,22 +49,26 @@ public class TerrainTileShema : ITileShema {
             out int up, out int down, out int left, out int right,
             out int upLeft, out int upRight, out int downLeft, out int downRight);
 
-        if (rules.MutualMergeCheckTypes.Length > 0) {
-            // Кардинальные соседи: взаимная проверка слияния (в оригинале —
-            // re-frame соседа + проверка WorldGen.mergeDown/Up/Left/Right).
+        if (!rules.ParticipatesInMergeBlocks) {
+            // Dirt-подобный тайл (не участвует в merge-блоках): его лист НЕ содержит
+            // merge-кадров, поэтому каждый сосед-участник слияния (разрешённый
+            // TilesetMergeConfig) должен пройти встречную проверку — рисует ли он
+            // merge-кадр в нашу сторону (в оригинале TileID.Sets.Dirt-ветка +
+            // TileMergeAttemptFrametest). Список соседей НЕ зашит: участником
+            // считается тот, у кого есть правила с ParticipatesInMergeBlocks.
             up = ResolveMutualSlot(map, size, c, c, 0, -1, up, rules);
             down = ResolveMutualSlot(map, size, c, c, 0, 1, down, rules);
             left = ResolveMutualSlot(map, size, c, c, -1, 0, left, rules);
             right = ResolveMutualSlot(map, size, c, c, 1, 0, right, rules);
 
-            // Диагональные соседи из MutualMergeCheckTypes: считаются «своими» без
-            // встречной проверки, если MutualMergeCheckDiagonalIsSelf включён
-            // (в оригинале Terraria диагональ dirt-mergeable соседа не запускает TileFrame).
+            // Диагональные merge-соседи: считаются «своими» без встречной проверки,
+            // если MutualMergeCheckDiagonalIsSelf включён (как в оригинале Terraria —
+            // диагональ dirt-mergeable соседа не запускает TileFrame).
             if (rules.MutualMergeCheckDiagonalIsSelf) {
-                if (IsMutualCheckType(map[c - 1, c - 1], rules)) { upLeft = TerrariaFraming.SlotSelf; }
-                if (IsMutualCheckType(map[c + 1, c - 1], rules)) { upRight = TerrariaFraming.SlotSelf; }
-                if (IsMutualCheckType(map[c - 1, c + 1], rules)) { downLeft = TerrariaFraming.SlotSelf; }
-                if (IsMutualCheckType(map[c + 1, c + 1], rules)) { downRight = TerrariaFraming.SlotSelf; }
+                if (IsMergeParticipant(map[c - 1, c - 1], rules)) { upLeft = TerrariaFraming.SlotSelf; }
+                if (IsMergeParticipant(map[c + 1, c - 1], rules)) { upRight = TerrariaFraming.SlotSelf; }
+                if (IsMergeParticipant(map[c - 1, c + 1], rules)) { downLeft = TerrariaFraming.SlotSelf; }
+                if (IsMergeParticipant(map[c + 1, c + 1], rules)) { downRight = TerrariaFraming.SlotSelf; }
             }
         }
 
@@ -91,12 +95,11 @@ public class TerrainTileShema : ITileShema {
     private static int ResolveMutualSlot(
         short[,] map, int size, int cx, int cy, int dx, int dy, int slot, TerrariaTilesetRules rules) {
         short neighborType = map[cx + dx, cy + dy];
-        if (slot == TerrariaFraming.SlotSelf || !IsMutualCheckType(neighborType, rules)) {
+        if (slot == TerrariaFraming.SlotSelf || !IsMergeParticipant(neighborType, rules)) {
             return slot;
         }
 
-        TerrariaTilesetRules neighborRules = TerrariaTilesetRules.FindRulesForType(neighborType)
-                                                ?? rules.MutualMergeCheckRules;
+        TerrariaTilesetRules neighborRules = TerrariaTilesetRules.FindRulesForType(neighborType);
         if (neighborRules == null || size < 5) {
             // Окрестность соседа недоступна (нужно окно 5x5) — безопасная граница.
             return TerrariaFraming.SlotEdge;
@@ -125,13 +128,16 @@ public class TerrainTileShema : ITileShema {
         return mergedTowardUs ? TerrariaFraming.SlotSelf : TerrariaFraming.SlotEdge;
     }
 
-    private static bool IsMutualCheckType(short type, TerrariaTilesetRules rules) {
-        short[] types = rules.MutualMergeCheckTypes;
-        for (int i = 0; i < types.Length; i++) {
-            if (types[i] == type) {
-                return true;
-            }
-        }
-        return false;
+    /// <summary>
+    /// Нужна ли этому типу встречная проверка (это merge-участник: у него есть
+    /// правила Terraria-структуры с ParticipatesInMergeBlocks и пара разрешена
+    /// в TilesetMergeConfig). Совместимость с конкретным тайлсетом задаётся
+    /// конфигурацией, а не кодом.
+    /// </summary>
+    private static bool IsMergeParticipant(short neighborType, TerrariaTilesetRules rules) {
+        TerrariaTilesetRules neighborRules = TerrariaTilesetRules.FindRulesForType(neighborType);
+        return neighborRules != null &&
+               neighborRules.ParticipatesInMergeBlocks &&
+               TilesetMergeConfig.AllowsMerge(rules.PrimaryType, neighborType);
     }
 }

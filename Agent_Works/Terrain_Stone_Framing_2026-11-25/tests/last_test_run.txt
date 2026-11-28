@@ -1,4 +1,29 @@
-﻿=== Проверка Terraria-кадрирования (Tiles_0 земля / Tiles_1 камень) ===
+﻿D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(34,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Image.Dispose()" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(35,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Image.Dispose()" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(30,22): warning CA1416: Этот сайт вызова доступен на всех платформах. "Image.FromFile(string)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(31,23): warning CA1416: Этот сайт вызова доступен на всех платформах. "Image.FromFile(string)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(66,25): warning CA1416: Этот сайт вызова доступен на всех платформах. "Bitmap" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(84,13): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.DrawString(string?, Font, Brush, float, float)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(84,39): warning CA1416: Этот сайт вызова доступен на всех платформах. "Brushes.Yellow" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(72,47): warning CA1416: Этот сайт вызова доступен на всех платформах. "FontStyle.Bold" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(71,20): warning CA1416: Этот сайт вызова доступен на всех платформах. "Font" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(66,44): warning CA1416: Этот сайт вызова доступен на всех платформах. "PixelFormat.Format32bppArgb" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(122,56): warning CA1416: Этот сайт вызова доступен на всех платформах. "GraphicsUnit.Pixel" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(73,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.DrawString(string?, Font, Brush, float, float)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(72,22): warning CA1416: Этот сайт вызова доступен на всех платформах. "Font" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(130,27): warning CA1416: Этот сайт вызова доступен на всех платформах. "ImageFormat.Png" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(68,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.Clear(Color)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(70,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.PixelOffsetMode" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(70,29): warning CA1416: Этот сайт вызова доступен на всех платформах. "PixelOffsetMode.Half" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(69,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.InterpolationMode" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(69,31): warning CA1416: Этот сайт вызова доступен на всех платформах. "InterpolationMode.NearestNeighbor" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(67,23): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.FromImage(Image)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(120,21): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.DrawImage(Image, Rectangle, Rectangle, GraphicsUnit)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(74,21): warning CA1416: Этот сайт вызова доступен на всех платформах. "Brushes.Lime" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(126,13): warning CA1416: Этот сайт вызова доступен на всех платформах. "Graphics.DrawRectangle(Pen, int, int, int, int)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(130,9): warning CA1416: Этот сайт вызова доступен на всех платформах. "Image.Save(string, ImageFormat)" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingSheet.cs(126,29): warning CA1416: Этот сайт вызова доступен на всех платформах. "Pens.DimGray" поддерживается только в "windows" 6.1 и более поздних версий. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\FramingTest.csproj]
+=== Проверка Terraria-кадрирования (Tiles_0 земля / Tiles_1 камень) ===
 
 --- Сценарии ---
 PASS  1. Поверхность земли: получено (1,0), ожидалось (1,0)
@@ -62,15 +87,50 @@ PASS  После удаления верхнего соседа: получен�
   OK: 20000 случайных карт, все кадры в сетке 16x15.
 
 --- Производительность ---
-  Карта 800x200: обработано 124691 тайлов за 80,1 мс (1555,79 тыс. тайлов/с).
+  Карта 800x200: обработано 124691 тайлов за 88,3 мс (1411,56 тыс. тайлов/с).
 
 --- Таблица веток WorldGen.TileFrame (1.4.4.9) ---
-Таблица веток: 171 OK, 0 FAIL (57 веток × 3 варианта)
+Таблица веток [Stone]: 171 OK, 0 FAIL (57 веток × 3 варианта)
+Таблица веток [Terrain8]: 171 OK, 0 FAIL (57 веток × 3 варианта)
 PASS  Проблемная конфигурация M-M-E-S → (162,0) [ветка 76873]
+PASS  Стык руда-земля: земля рисует внутренний кадр (взаимная проверка пройдена)
+DEBUG classify: up=1 down=-2 left=1 right=1 ul=1 ur=1 dl=1 dr=1 solid(ORE)=True solid(DIRT)=True
+DEBUG find(ORE)=найдены oreSelf=25
+PASS  Руда над землёй: merge-кадр вниз (144+18v, 90) → сетка (8,5)
+PASS  Камень над рудой: камень рисует merge-кадр вниз (8,5)
+PASS  Руда над камнем: руда рисует merge-кадр вниз (8,5)
+PASS  Массив камня у руды слева: merge-кадр влево (9,7)
+--- Конфигурация совместимости тайлсетов ---
+PASS  1a камень над землёй: (8,5)
+PASS  1c камень над рудой: (8,5)
+PASS  1d руда над камнем: (8,5)
+PASS  1e земля-ст тыс (внутр., стык с камнем): (1,1)
+PASS  2a камень над землёй: пара отключена → бок (18+18v,36) = (1,2): (1,2)
+PASS  2b земля под камнем: пара отключена → верхний совокуп. кадр камня...: (1,2)
+PASS  2c камень над рудой (не затронут): (8,5)
+PASS  2d руда над камнем (не затронут): (8,5)
+PASS  2e земля-руда (не затронуто, направление земля): (1,1)
+PASS  3a пара земля-камень: направление камень: (8,5)
+PASS  3b пара земля-оруда: направление руда: (8,5)
+PASS  4a руда над землёй: пара отключена → (1,2): (1,2)
+PASS  4b камень над рудой (не затронут): (8,5)
+PASS  4c камень над землёй (не затронуто): (8,5)
+PASS  5a камень над рудой: пара отключена → бок (1,2): (1,2)
+PASS  5b руда над камнем: пара отключена → бок (1,2): (1,2)
+PASS  5c руда над землёй (не затронуто): (8,5)
+PASS  5d земля-камень (не затронут): (8,5)
+PASS  6a руда над травой: пара по умолчанию включена → merge (8,5): (8,5)
+PASS  6b камень над травой: пара по умолчанию включена → merge (8,5): (8,5)
+PASS  6c руда над травой: пара отключена через конфиг → бок (1,2): (1,2)
+PASS  6d камень над травой (не затронуто отключением руда↔трава) → (8,5): (8,5)
+PASS  6e руда над травой: пара включена обратно → merge (8,5): (8,5)
+PASS  7a земля над землёй-не-пара (Self, всегда) (1,1): (1,1)
+PASS  7b камень/дерево: дерева нет в правилах → нижний край (1,2): (1,2)
+Конфигурация: 25 OK, 0 FAIL
 Диагностика: камней 381, из них generic-кадр при merge-соседе (норма для непокрытых комбинаций): 12
 Файл: D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\bin\Release\net10.0\..\..\..\diagnostic.csv
 Атлас stone: D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\bin\Release\net10.0\..\..\..\framing_sheet_stone.png (1470x1650, 81 комбинаций)
 Атлас dirt: D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\bin\Release\net10.0\..\..\..\framing_sheet_dirt.png (1470x1650, 81 комбинаций)
-Кадры превью: D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\bin\Release\net10.0\..\..\..\terrain_frames.csv (1698 тайлов)
+РљР°РґСЂС‹ РїСЂРµРІСЊСЋ: D:\projects\TrueMiner\Agent_Works\Terrain_Stone_Framing_2026-11-25\tests\bin\Release\net10.0\..\..\..\terrain_frames.csv (1783 С‚Р°Р№Р»РѕРІ)
 
 ИТОГ: все проверки пройдены.

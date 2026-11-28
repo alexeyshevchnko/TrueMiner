@@ -18,6 +18,7 @@ param(
     [string]$Csv        = "terrain_frames.csv",
     [string]$TilesDirt  = "tiles_0_dump.png",
     [string]$TilesStone = "tiles_1_dump.png",
+    [string]$TilesOre8   = "tiles_8_dump.png",
     [string]$Out        = "terrain_preview.png",
     [int]$Zoom = 2,
     [int]$X0 = 0, [int]$Y0 = 0, [int]$X1 = 0, [int]$Y1 = 0   # X1/Y1 = 0 → вся карта
@@ -37,6 +38,7 @@ function Resolve-Asset([string]$name) {
 $csvPath = Resolve-Asset $Csv
 $dirt    = [System.Drawing.Bitmap]::FromFile((Resolve-Asset $TilesDirt))
 $stone   = [System.Drawing.Bitmap]::FromFile((Resolve-Asset $TilesStone))
+$ore8    = [System.Drawing.Bitmap]::FromFile((Resolve-Asset $TilesOre8))
 
 $rows = Get-Content $csvPath | Select-Object -Skip 1 | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 
@@ -71,7 +73,7 @@ foreach ($r in $rows) {
     [int]$fx = $p[3]; [int]$fy = $p[4]
     if ($x -lt $X0 -or $x -ge $X1 -or $y -lt $Y0 -or $y -ge $Y1) { continue }
 
-    $sheet = if ($type -eq 1) { $stone } else { $dirt }
+    $sheet = if ($type -eq 1) { $stone } elseif ($type -eq 2) { $ore8 } else { $dirt }
     [int]$sx = $fx * $stride
     [int]$sy = $fy * $stride
     if ($sx -lt 0 -or $sy -lt 0 -or ($sx + $tilePx) -gt $sheet.Width -or ($sy + $tilePx) -gt $sheet.Height) {
@@ -89,5 +91,7 @@ foreach ($r in $rows) {
 $g.Dispose()
 $outPath = Join-Path $dir $Out
 $bmp.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)
-$bmp.Dispose(); $dirt.Dispose(); $stone.Dispose()
+$bmp.Dispose(); $dirt.Dispose(); $stone.Dispose(); $ore8.Dispose()
 Write-Output "Сохранено: $outPath ($drawn тайлов, область ${X0}..${X1} x ${Y0}..${Y1}, zoom=$Zoom)"
+
+

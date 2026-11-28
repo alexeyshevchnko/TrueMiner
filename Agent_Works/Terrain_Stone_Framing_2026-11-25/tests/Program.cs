@@ -41,6 +41,9 @@ public static class Program {
         PerfCheck();
         failures += BranchTableTests.Run();
         failures += BranchTableTests.CheckProblemConfig();
+        failures += BranchTableTests.CheckOreDirtSeam();
+        failures += BranchTableTests.CheckOreStoneSeam();
+        failures += ConfigTests.Run();
         Diagnostic.Run();
         FramingSheet.Run();
         PreviewGen.Run();
