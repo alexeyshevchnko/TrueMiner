@@ -390,7 +390,7 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
 
     void LiftGhost(Slot source, Vector2 screenPos)
     {
-        dragGhost.sprite = GuiAtlas.Get(dragCtx.Icon);
+        dragGhost.sprite = ResolveIconSprite(dragCtx.Icon);
         dragGhost.color = Color.white;
         dragGhost.rectTransform.anchoredPosition = ScreenPointToCanvasLocal(screenPos);
         dragGhost.gameObject.SetActive(true);
@@ -508,12 +508,23 @@ public class GameUi : MonoBehaviour, IoC.IInitialize
     void UpdateIcon(Slot s, BagItemContext ctx)
     {
         var sprite = (ctx != null && !ctx.Empty && !string.IsNullOrEmpty(ctx.Icon))
-            ? GuiAtlas.Get(ctx.Icon)
+            ? ResolveIconSprite(ctx.Icon)
             : null;
         // Переназначаем только при фактической смене, чтобы не пересобирать Graphic каждый кадр.
         if (!ReferenceEquals(s.icon.sprite, sprite)) s.icon.sprite = sprite;
         var color = sprite != null ? Color.white : Color.clear;
         if (s.icon.color != color) s.icon.color = color;
+    }
+
+    /// <summary>
+    /// Резолв иконки предмета: блоки ("tile:ИмяТайлсета") берут спрайт из собственного
+    /// тайлсета через BlockIcons (кэш внутри), остальные предметы — из gui-атласа.
+    /// </summary>
+    Sprite ResolveIconSprite(string icon) {
+        if (icon != null && icon.StartsWith("tile:")) {
+            return BlockIcons.GetSprite(icon.Substring(5));
+        }
+        return GuiAtlas.Get(icon);
     }
 
     // ---- helpers ----

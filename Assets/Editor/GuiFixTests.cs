@@ -15,10 +15,10 @@ public class GuiFixTests
 {
     static readonly string[] ItemIconNames =
     {
-        // Имена, возвращаемые GetUiIcon() всех предметов (см. Assets/src/weapons):
-        "torch", "kirka", "granade1", "bow2", "Axe", "Item1",
-        // Блоки BlowBlockItem:
-        "ground", "green", "coal", "gold", "wood", "brick", "kost", "meat", "med", "stal", "stone"
+        // Имена, возвращаемые GetUiIcon() предметов-инструментов (см. Assets/src/weapons).
+        // Блоки (BlowBlockItem) иконки из gui.png больше не используют — их иконки
+        // собираются из собственных тайлсетов через BlockIcons (см. ConfigTests/tests).
+        "torch", "kirka", "granade1", "bow2", "Axe", "Item1"
     };
 
     [Test]

@@ -24,38 +24,10 @@ public class BlowBlockItem : BaseWeaponItem {
     }
 
     public override string GetUiIcon() {
-      //  Debug.LogError("Type = " + Type + " Layer = " + Layer + " colect = " + TileCollection);
-        
-        switch (Type) {
-            case   (short) TileTypeEnum.Terrain0:
-                return "ground";
-            case (short) TileTypeEnum.TerrainGrass:
-                return "green";
-            case (short) TileTypeEnum.Coal:
-                return "coal";
-            case (short) TileTypeEnum.Gold:
-                return "gold";
-
-            case (short) TileTypeEnum.TreeBody:
-            case (short) TileTypeEnum.Wood:
-                return "wood";
-            
-            case (short) TileTypeEnum.Brick:
-                return "brick";
-            case (short) TileTypeEnum.Bone:
-                return "kost";
-            case (short) TileTypeEnum.Meat:
-                return "meat";
-            case (short) TileTypeEnum.Med:
-                return "med";
-            case (short) TileTypeEnum.Iron:
-                return "stal";
-
-            case (short)TileTypeEnum.Stone:
-                return "stone";
-        }
-
-        return "ground";
+        // Иконка блока берётся из СОБСТВЕННОГО тайлсета блока: префикс "tile:" говорит
+        // интерфейсу резолвить спрайт через BlockIcons.GetSprite(TileCollection),
+        // а не через атлас gui.png. Представляющий кадр выбирает схема тайлсета.
+        return "tile:" + TileCollection;
     }
 
     public override bool IsEqualType(IItem other) {
